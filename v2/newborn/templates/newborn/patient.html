@@ -1,0 +1,44 @@
+{% load static %}
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+<html lang="en">
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% if title %}
+        <title>NICU - {{ title }}</title>
+    {% else %}
+        <title> NICU </title>
+    {% endif %}
+</head>
+<body>
+<h1>Holy Innocents Childrens' Hospital<h1>
+<h3>Newborn Admission</h3>
+<p>Date of Admission<p> <p>Time of Admission: </p>
+<p>Baby's Name<p> <p>Sex</p> <p>bwt:<p>
+<p>Date of Birth<p> <p>Place of birth<p>
+
+<h3>Delivery Details<h3>
+<p>Place of birth<p><p>Mode of Delivery<p>
+<p>Indication for C/s<p><p>Time Between Decision of C/S and actual Delivery</p>
+<p>Resuscitation<p><p>Yes or No</p>
+<p>If yes</p><p>For how long<p>
+<p>with what</p><!-- give choice here e.g Bag and mask, Oxygen, Both -->
+
+<p>Referral yes or No<p>
+<p>Reason for referral<p> <!--Birth aspyxia, Prematurity, Sepsis, Meningitis, Self referral -->
+
+<h3>Mother's Demographics</h3>
+<p>District:<p>
+<p>Subcounty: </p>
+<p>Parish</p>
+<p>Village/Cell</p>
+</body>
+</html>

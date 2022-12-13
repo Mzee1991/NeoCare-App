@@ -1,0 +1,16 @@
+{% extends 'newborn/base.html' %}
+{% load render_table from django_tables2 %}
+{% block content %}
+	<div class="row">
+		<div class="col">
+			<div class="card card-body">
+				{% if searched %}
+					{% render_table newborns %}
+				{% else %}
+					<h1>Type in a name in the search box</h1>
+				{% endif %}
+					
+			</div>
+		</div>
+	</div>
+{% endblock %}

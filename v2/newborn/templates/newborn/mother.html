@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Hello</title>
+<body>
+	<div class="container p-3 my-3 bg-info border rounded">
+		<form action="" method="POST">
+			{% csrf_token %}
+			<div class="row">
+				<div class="col p-3 bg-white mr-2 my-5 border rounded">
+					<h3> Mother's Details</h3>
+					{% bootstrap_form detail_form %}
+				</div>
+				<div class="col p-5 bg-white ml-2 my-5 border rounded">
+					<h3>Mother's Contact Information</h3>
+					{% bootstrap_form location_form %}
+				</div>
+			</div>
+			<input type="submit" class="btn bg-white text-info">
+		</form>
+	</div>
+
+</body>
+</html>

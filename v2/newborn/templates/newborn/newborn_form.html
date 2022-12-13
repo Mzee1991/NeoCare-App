@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Hello</title>
+<body>
+	<div class="container">
+		<h3> Newborn Record</h3>
+		<form action="" method="POST">
+			{% csrf_token %}	
+			{% bootstrap_form form %}
+			<input type="submit" class="btn btn-info">
+		</form>
+	</div>
+</body>
+</html>
