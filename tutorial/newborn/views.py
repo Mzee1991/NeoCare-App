@@ -13,7 +13,7 @@ class CreateView(generic.edit.CreateView):
         form.fields["admission_date"].widget = DatePickerInput(
             attrs={"class": "form-control"},
             options={
-                "format": "DD-MM-YYYY",
+                "format": "YYYY-MM-DD",
                 "showTodayButton": False,
             },
         )
@@ -21,7 +21,7 @@ class CreateView(generic.edit.CreateView):
         form.fields["discharge_date"].widget = DatePickerInput(
             attrs={"class": "form-control"},
             options={
-                "format": "DD-MM-YYYY",
+                "format": "YYYY-MM-DD",
                 "showTodayButton": False,
             },
         )

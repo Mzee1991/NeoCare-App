@@ -3,8 +3,6 @@ from django import forms
 from .models import Newborn
 from bootstrap_datepicker_plus.widgets import DatePickerInput
 
-class DateInput(forms.DateInput):
-    input_type = 'date'
 
 class NewbornForm(ModelForm):
     class Meta:
@@ -13,8 +11,8 @@ class NewbornForm(ModelForm):
 
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'admission_date': DateInput(),
+            'admission_date': forms.DateInput(format=['%Y-%m-%d'],attrs={'class': 'form-control','placeholder': 'Select a date','type': 'date'}),
             'gestation_age': forms.TextInput(attrs={'class': 'form-control'}),
             'diagnosis': forms.TextInput(attrs={'class': 'form-control'}),
-            'discharge_date':DateInput()
+            'discharge_date': forms.DateInput(format=['%Y-%m-%d'],attrs={'class': 'form-control','placeholder': 'Select a date','type': 'date'}),
         }
