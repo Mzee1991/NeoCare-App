@@ -143,5 +143,5 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = ("bootstrap3", "bootstrap4", "bootstrap5")
 #        },
 #    }
 #}
-
-DATE_INPUT_FORMATS = ('%d-%m-%Y')
+#DATE_FORMAT = ['N j, Y']
+#DATE_INPUT_FORMATS = ['%d-%m-%Y']

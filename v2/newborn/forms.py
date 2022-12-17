@@ -8,19 +8,19 @@ class NewbornForm(ModelForm):
         fields = ['name', 'admission_date', 'date_of_birth', 'birth_weight', 'age_in_days', 'gestation_age', 'diagnosis', 'discharge_date']
         widgets = {
             'admission_date': forms.DateInput(
-                format=['%Y-%m-%d'],
+                format=['%d-%m-%Y'],
                 attrs={'class': 'form-control', 
                     'placeholder': 'Select a date',
                     'type': 'date'
                 }),
             'discharge_date': forms.DateInput(
-                format=('%Y-%m-%d'),
+                format=['%d-%m-%Y'],
                 attrs={'class': 'form-control', 
                     'placeholder': 'Select a date',
                     'type': 'date'
                 }),
             'date_of_birth': forms.DateInput(
-                format=('%Y-%m-%d'),
+                format=['%d-%m-%Y'],
                 attrs={'class': 'form-control', 
                     'placeholder': 'Select a date',
                     'type': 'date'

@@ -63,8 +63,7 @@ def index(request):
             return redirect('home-page')
     else:
         form = NewbornForm()
-        context = {'form': form}
-    return render(request, 'newborn/index.html', context)
+    return render(request, 'newborn/index.html', {'form': form})
 
 def home(request):
     return render(request, 'newborn/home.html', {'title': 'Home'})
