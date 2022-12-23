@@ -6,4 +6,4 @@ class NewbornTable(tables.Table):
         model = Newborn
         sequence = ('name', 'age_in_days', 'diagnosis', 'discharge_date',)
         exclude =('id', 'date_of_birth', 'admission_date', 'gestation_age',)
-        attrs = {"class": "table table-striped table-hover"}
+        attrs = {"class": "table table-striped table-hover rounded", "th": {"class": "text-danger bg-dark text-light", "style": "height: 100px;"}}

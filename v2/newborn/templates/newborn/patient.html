@@ -19,26 +19,63 @@
     {% endif %}
 </head>
 <body>
-<h1>Holy Innocents Childrens' Hospital<h1>
+<div class="container">
+<h1>Holy Innocents Childrens' Hospital</h1>
 <h3>Newborn Admission</h3>
-<p>Date of Admission<p> <p>Time of Admission: </p>
-<p>Baby's Name<p> <p>Sex</p> <p>bwt:<p>
-<p>Date of Birth<p> <p>Place of birth<p>
+<p>Date of Admission: {{ newborn.admission_date}}</p> 
+<p>Time of Admission: </p>
+<p>Baby's Name: {{ newborn.name}}</p> 
+<p>Sex</p> <p>bwt: {{ newborn.birth_weight}}</p>
+<p>Date of Birth: {{ newborn.date_of_birth}}</p> <p>Place of birth</p>
 
-<h3>Delivery Details<h3>
-<p>Place of birth<p><p>Mode of Delivery<p>
-<p>Indication for C/s<p><p>Time Between Decision of C/S and actual Delivery</p>
-<p>Resuscitation<p><p>Yes or No</p>
-<p>If yes</p><p>For how long<p>
+<h3>Delivery Details</h3>
+<p>Place of birth</p><p>Mode of Delivery</p>
+<p>Indication for C/s</p><p>Time Between Decision of C/S and actual Delivery</p>
+<p>Resuscitation</p><p>Yes or No</p>
+<p>If yes</p><p>For how long</p>
 <p>with what</p><!-- give choice here e.g Bag and mask, Oxygen, Both -->
 
-<p>Referral yes or No<p>
-<p>Reason for referral<p> <!--Birth aspyxia, Prematurity, Sepsis, Meningitis, Self referral -->
+<p>Referral yes or No</p>
+<p>Reason for referral</p> <!--Birth aspyxia, Prematurity, Sepsis, Meningitis, Self referral -->
+<div class="card">
+<h3 class="card-header text-center">Mother's Demographics</h3>
+<div class="row">
 
-<h3>Mother's Demographics</h3>
-<p>District:<p>
-<p>Subcounty: </p>
-<p>Parish</p>
-<p>Village/Cell</p>
+	<div class="col">
+		<div class="card">
+			<div class="card-body mx-auto">
+				<h5 class="card-title text-center">BioData</h5>
+				</br>
+<p><b>Mother's Name:</b> {{ newborn.mother.name}}</p>
+<p><b>Mother's Age:</b> {{ newborn.mother.age}}</p>
+<p><b>Mother's NIN:</b> {{ newborn.mother.nin_no}}</p>
+<p><b>Mother's Blood_Group:</b> {{ newborn.mother.blood_group}}</p>
+<p><b>HIV status:</b> {{ newborn.mother.hiv_status}}</p>
+<p><b>Parity:</b> {{ newborn.mother.parity}}</p>
+<p><b>Children Alive:</b> {{ newborn.mother.number_of_living_children }}</p>
+<p><b>Education Level:</b> {{ newborn.mother.level_of_education}}</p>
+<p><b>Occupation:</b> {{ newborn.mother.occupation}}</p>
+			</div>
+    </div>
+  </div>
+
+  <div class="col">
+    <div class="card">
+      <div class="card-body mx-auto">
+        <h5 class="card-title text-center">Contact info</h5>
+					</br>
+<p><b>District:</b> {{ newborn.mother.location.district}}</p>
+<p><b>Subcounty:</b> {{ newborn.mother.location.subcounty}} </p>
+<p><b>Parish:</b> {{ newborn.mother.location.parish}}</p>
+<p><b>Village:</b> {{ newborn.mother.location.village}}</p>
+<p><b>Tel no:</b> {{ newborn.mother.location.contact}} </p></div>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+
+</div>
 </body>
 </html>

@@ -7,24 +7,29 @@
 <html lang="en">
 <head>
 	<meta charset="utf-8">
-	<title>Hello</title>
+	<title>Mother Detail Form</title>
 <body>
-	<div class="container p-3 my-3 bg-info border rounded">
+	<div class="container-fluid pt-2 my-3 bg-info border rounded" style="width: 1300px;">
+		<div class=" container d-flex justify-content-center text-light">
+			<h3><b>Mother's BioData</b></h3>
+		</div>
+		<div class="container">
 		<form action="" method="POST">
 			{% csrf_token %}
 			<div class="row">
-				<div class="col p-3 bg-white mr-2 my-5 border rounded">
-					<h3> Mother's Details</h3>
+				<div class="col p-2 bg-white mr-3 my-3 border rounded">
+					<h3 class="text-center"> Mother's Details</h3>
 					{% bootstrap_form detail_form %}
 				</div>
-				<div class="col p-5 bg-white ml-2 my-5 border rounded">
-					<h3>Mother's Contact Information</h3>
+				<div class="col p-2 bg-white ml-3 my-3 border rounded">
+					<h3 class="text-center">Mother's Contact Information</h3>
 					{% bootstrap_form location_form %}
 				</div>
 			</div>
-			<input type="submit" class="btn bg-white text-info">
+			<input type="submit" class="btn bg-white d-flex justify-content-center text-info mb-2">
 		</form>
 	</div>
+</div>
 
 </body>
 </html>

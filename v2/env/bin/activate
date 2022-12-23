@@ -37,7 +37,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="/home/mzee/Training/Newborn-Admission/v2/env"
+VIRTUAL_ENV="/home/mzee/From_GitHub/Newborn_Project/Newborn-Admission/v2/env"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

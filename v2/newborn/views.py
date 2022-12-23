@@ -7,6 +7,7 @@ from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
 from django.views.generic import ListView
+from django.contrib.auth.decorators import login_required
 
 def newborn_list(request):
     """
@@ -51,8 +52,7 @@ def newborn_detail(request, pk):
         newborn.delete()
         return HttpResponse(status=204)
 
-#from django.views.decorators.csrf import csrf_exempt
-#@csrf_exempt
+@login_required
 def index(request):
     if request.method == 'POST':
         form = NewbornForm(request.POST)        
@@ -73,6 +73,7 @@ def newborn_table(request):
 
     return render(request, 'newborn/home.html', {'table': table})
 
+@login_required
 def newborn_search(request):
     if request.method == 'GET':
         searched = request.GET.get('searched', False)
@@ -84,6 +85,7 @@ def newborn_search(request):
 ########
 #more
 
+@login_required
 def mother(request):
     if request.method == 'POST':
         location_form = MotherLocationForm(request.POST)
@@ -100,3 +102,9 @@ def mother(request):
         location_form = MotherLocationForm()
         context = {'detail_form': detail_form, 'location_form': location_form}
     return render(request, 'newborn/mother.html/', context)
+
+def print_detail(request):
+    context = {
+        'newborn': Newborn.objects.all().order_by('-id')[0]
+    }
+    return render(request, 'newborn/patient.html', context)

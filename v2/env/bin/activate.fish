@@ -29,7 +29,7 @@ end
 # unset irrelevant variables
 deactivate nondestructive
 
-set -gx VIRTUAL_ENV "/home/mzee/Training/Newborn-Admission/v2/env"
+set -gx VIRTUAL_ENV "/home/mzee/From_GitHub/Newborn_Project/Newborn-Admission/v2/env"
 
 set -gx _OLD_VIRTUAL_PATH $PATH
 set -gx PATH "$VIRTUAL_ENV/bin" $PATH

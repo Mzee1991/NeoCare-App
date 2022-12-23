@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Profile Update Form</title>
+</head>
+<body>
+	<nav class="navbar navbar-expand-md navbar-light bg-info topnavbar text-light justify-text-center" style="height: 50px;">
+		<div class="container">
+			<div class="collapse navbar-collapse justify-content-center">
+				<ul class="navbar-nav">
+					<li>
+						<h3><b>Update User Profile</b></h3>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div class="container p-3 my-3  border rounded">
+		<div class="media">
+      <div class="media-body">
+        <h2 class="account-heading">{{ user.username }}</h2>
+        <p class="text-secondary">{{ user.email }}</p>
+      </div>
+    </div>
+    <form  method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <fieldset class="form-group">
+          <legend class="border-bottom mb-4">Profile Info</legend>
+          {% bootstrap_form u_form %}
+        </fieldset>
+        <div class="form-group">
+          <button class="btn btn-outline-info" type="submit">Update</button>
+        </div>
+    </form>
+  </div>
+</body>
+</html>

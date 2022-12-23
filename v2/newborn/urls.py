@@ -5,6 +5,7 @@ urlpatterns = [
     path('newborn/', views.newborn_list),
     path('newborn/<int:pk>/', views.newborn_detail),
     path('newborn/index/', views.index, name='add-newborn'),
+    path('newborn/print/', views.print_detail),
     path('newborn/mother/', views.mother, name='mother-details'),
    #path('', views.home, name='newborn-home'),
     path('', views.newborn_table, name='home-page'),

@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'newborn',
+    'users',
     #'bootstrap_datepicker_plus',
     'crispy_forms',
     'bootstrap4',
@@ -145,3 +146,12 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = ("bootstrap3", "bootstrap4", "bootstrap5")
 #}
 #DATE_FORMAT = ['N j, Y']
 #DATE_INPUT_FORMATS = ['%d-%m-%Y']
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'home-page'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'yohanamariamzee@gmail.com'
+EMAIL_HOST_PASSWORD = 'bjiqbhoqfungxdgh'

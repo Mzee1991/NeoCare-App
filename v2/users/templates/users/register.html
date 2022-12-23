@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Registration Form</title>
+</head>
+<body>
+	<nav class="navbar navbar-expand-md navbar-light bg-info topnavbar text-light justify-text-center" style="height: 50px;">
+		<div class="container">
+			<div class="collapse navbar-collapse justify-content-center">
+				<ul class="navbar-nav">
+					<li>
+						<h3><b>User Registration</b></h3>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+    <div class="container p-3 my-2  border rounded" style="width: 1000px;">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">Join Today</legend>
+                {% bootstrap_form form %}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Sign Up</button>
+            </div>
+        </form>
+        <div class="border-top pt-3">
+            <small class="text-muted">
+                Already Have An Account? <a class="ml-2" href="{% url 'login' %}">Sign In</a>
+            </small>
+        </div>
+    </div>
+</body>
+</html>
