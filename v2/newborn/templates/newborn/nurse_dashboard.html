@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <h2>Nurse Dashboard</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Patient Name</th>
+        <th>Medication</th>
+        <th>Administered</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for medication in medications %}
+      <tr>
+        <td>{{ medication.patient.name }}</td>
+        <td>{{ medication.medication_text }}</td>
+        <td><input type="checkbox" name="administered"></td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+

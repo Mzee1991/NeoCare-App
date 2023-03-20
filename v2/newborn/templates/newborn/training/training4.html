@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Patient Admission Form</title>
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+</head>
+<body>
+  <div class="container my-5">
+    <h1>Patient Admission Form</h1>
+    <form>
+      <div class="card my-3">
+        <div class="card-header">Symptoms</div>
+        <div class="card-body">
+          <div id="symptoms">
+            <div class="form-group">
+              <label for="symptom1">Symptom 1</label>
+              <select class="form-control" id="symptom1" name="symptom[]">
+                <option value="">-- Select --</option>
+                <option value="Fever">Fever</option>
+                <option value="Cough">Cough</option>
+                <option value="Diarrhea">Diarrhea</option>
+              </select>
+            </div>
+          </div>
+          <button type="button" class="btn btn-primary" id="add-symptom">Add Symptom</button>
+        </div>
+      </div>
+      <div class="card my-3">
+        <div class="card-header">Clinical Findings</div>
+        <div class="card-body">
+          <div class="form-group">
+            <label for="diagnosis">Diagnosis</label>
+            <textarea class="form-control" id="diagnosis" name="diagnosis" rows="3"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="treatment">Treatment</label>
+            <textarea class="form-control" id="treatment" name="treatment" rows="3"></textarea>
+          </div>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+
+  <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+  <script>
+    $(document).ready(function() {
+      var symptomsCount = 1;
+      $('#add-symptom').click(function() {
+        symptomsCount++;
+        $('#symptoms').append('<div class="form-group"><label for="symptom'+symptomsCount+'">Symptom '+symptomsCount+'</label><select class="form-control" id="symptom'+symptomsCount+'" name="symptom[]"><option value="">-- Select --</option><option value="Fever">Fever</option><option value="Cough">Cough</option><option value="Diarrhea">Diarrhea</option></select></div>');
+      });
+    });
+  </script>
+</body>
+</html>

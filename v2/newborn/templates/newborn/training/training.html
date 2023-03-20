@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Admit Patient Form</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+  
+<div class="container mt-5">
+  <h2>Admit Patient Form</h2>
+  <form>
+    <div class="form-group">
+      <label for="patientName">Patient Name:</label>
+      <input type="text" class="form-control" id="patientName" placeholder="Enter patient name" name="patientName">
+    </div>
+    <div class="form-group">
+      <label for="patientAge">Patient Age:</label>
+      <input type="number" class="form-control" id="patientAge" placeholder="Enter patient age" name="patientAge">
+    </div>
+    <div class="form-group">
+      <label for="patientGender">Patient Gender:</label>
+      <select class="form-control" id="patientGender" name="patientGender">
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="symptoms">Symptoms:</label>
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" placeholder="Enter symptom" name="symptoms[]">
+        <div class="input-group-append">
+          <button class="btn btn-success" type="button" id="addSymptom">Add Symptoms</button>
+        </div>
+      </div>
+    </div>
+	</form>
+</div>
+</body>
+</html>

@@ -103,8 +103,21 @@ def mother(request):
         context = {'detail_form': detail_form, 'location_form': location_form}
     return render(request, 'newborn/mother.html/', context)
 
-def print_detail(request):
+def print_detail(request, pk):
     context = {
-        'newborn': Newborn.objects.all().order_by('-id')[0]
+            'newborn': Newborn.objects.get(pk=pk)
     }
+
     return render(request, 'newborn/patient.html', context)
+
+def print_care2x(request):
+    context = {
+         'newborn': Newborn.objects.all().order_by('-id')[0]
+    }
+    return render(request, 'newborn/details.html', context)
+
+def print_clerkship(request):
+    context = {
+          'newborn': Newborn.objects.all().order_by('-id')[0]
+    }
+    return render(request, 'newborn/clerkship.html', context)

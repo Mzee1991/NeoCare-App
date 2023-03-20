@@ -1,0 +1,75 @@
+{% load static %}
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+<html lang="en">
+<head>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    {% if title %}
+        <title>NICU - {{ title }}</title>
+    {% else %}
+        <title> NICU </title>
+    {% endif %}
+</head>
+<body>
+    <nav class="container navbar navbar-expand-md navbar-light bg-info topnavbar text-light justify-text-center mb-2 mt-3 rounded" style="height: 60px;">
+        <div class="container">
+            <ul class="ml-5 nav navbar-nav navbar-center">
+                <li>
+                    <h1 class="text-center">Holy Innocents's Neonatal Admission Unit<h1>
+                </li>
+            </ul>
+        </div>
+     </nav>
+    <div class="container">
+        <div class="row">
+            <nav class="col-md-2 d-none d-md-block bg-light sidebar">
+                <div class="sidebar-sticky">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><span data-feather="file"></span>Clerkship</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><span data-feather="file"></span>WardRounds</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><span data-feather="file"></span>Nursing Assessments</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#"><span data-feather="file"></span>Labs</a>
+                        </li>
+                     </ul>
+                 </div>
+              </nav>
+              <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
+                <div class="justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h3>Newborn Admission</h3>
+                    <p><b>Date of Admission:</b> {{ newborn.admission_date}}</p> 
+                    <p><b>Time of Admission:</b> </p>
+                    <p><b>Baby's Name:</b> {{ newborn.name}}</p> 
+                    <p><b>Date of Birth:</b> {{ newborn.date_of_birth}}</p> <p><b>Place of birth</b></p>
+                    <p><b>HIV status:</b> {{ newborn.mother.hiv_status}}</p>
+                    <p><b>Parity:</b> {{ newborn.mother.parity}}</p>
+                    <p><b>Village:</b> {{ newborn.mother.location.village}}</p>
+                    <p><b>Tel no:</b> {{ newborn.mother.location.contact}} </p></div>
+                 </div>
+               </main>
+            </div>
+         </div>
+        <div class="container mt-5" style="background-color: #191970;">
+            <div class="container mt-5">
+                <a class="btn btn-info mr-6" href="#" role="button">Update</a>
+                <a class="btn btn-success mr-6" href="#" role="button">Discharge</a>
+                <a class="btn btn-warning mr-6" href="#" role="button">Refer</a>
+                <a class="btn btn-danger" href="#" role="button">Death Certificate</a>
+            </div>
+        </div>
+</body>
+</html>
