@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Hello</title>
+<body>
+	<div class="container mt-4">
+        <div class="card">
+            <div class="card-header">
+                <h4>Lab Investigations</h4>
+            </div>
+		<form class="" method="POST">
+			{% csrf_token %}
+			<fieldset class="form-group">
+				{% bootstrap_form form %}
+			</fieldset>
+			<div class="form-group">
+			 <button type="submit" class="btn btn-info">Submit</button>
+			</div>
+		</form>
+        </div>
+	</div>
+
+</body>
+</html>

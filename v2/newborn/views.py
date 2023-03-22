@@ -1,8 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
-from newborn.models import Newborn, MotherDetails, MotherLocation
-from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm
+from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation
+from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
@@ -65,6 +65,17 @@ def index(request):
         form = NewbornForm()
     return render(request, 'newborn/index.html', {'form': form})
 
+def lab_request(request):
+    if request.method == 'POST':
+        form = LabInvestigationForm(request.POST)
+        if form.is_valid():
+            instance = form.save()
+            instance.save()
+            return redirect('more-details')
+    else:
+        form = LabInvestigationForm()
+    return render(request, 'newborn/lab_request.html', {'form': form})
+
 def home(request):
     return render(request, 'newborn/home.html', {'title': 'Home'})
 
@@ -108,13 +119,13 @@ def print_detail(request, pk):
             'newborn': Newborn.objects.get(pk=pk)
     }
 
-    return render(request, 'newborn/patient.html', context)
+    return render(request, 'newborn/details.html', context)
 
 def print_care2x(request):
     context = {
          'newborn': Newborn.objects.all().order_by('-id')[0]
     }
-    return render(request, 'newborn/details.html', context)
+    return render(request, 'newborn/patient.html', context)
 
 def print_clerkship(request):
     context = {

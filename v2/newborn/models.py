@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 from datetime import date
 
 HIV_STATUS = [
@@ -33,6 +34,25 @@ OCCUPATION = [
     ('ENG', 'Engineer'),
     ('SW', 'Social Worker'),
     ('OTH', 'Other'),
+]
+SEROLOGY_CHOICES = [
+        ('RPR', 'RPR'),
+        ('RCT', 'RCT'),
+        ('BAT', 'BAT'),
+    ]
+MICROBIOLOGY_CHOICES = [
+	('Gram stain', 'Gram stain'),
+    ('Culture', 'Culture'),
+]
+CHEMISTRY_CHOICES = [
+	('Serum electrolytes', 'Serum electrolytes'),
+    ('Serum Urea', 'Serum Urea'),
+    ('Serum creatinine', 'Serum creatinine'),
+    ('Urinalysis', 'Urinalysis'),
+]
+HEMATOLOGY_CHOICES = [
+	('CBC', 'CBC'),
+    ('Blood grouping', 'Blood grouping'),
 ]
 
 class MotherLocation(models.Model):
@@ -77,3 +97,11 @@ class Newborn(models.Model):
 
     class Meta:
         ordering = ['admission_date']
+
+class LabInvestigation(models.Model):
+    author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    serology = models.TextField(max_length=100, choices=SEROLOGY_CHOICES, null=True,blank=True)
+    microbiology = models.TextField(max_length=100, choices=MICROBIOLOGY_CHOICES,null=True, blank=True)
+    chemistry = models.TextField(max_length=100, choices=CHEMISTRY_CHOICES, null=True,blank=True)
+    hematology = models.TextField(max_length=100, choices=HEMATOLOGY_CHOICES, null=True, blank=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
