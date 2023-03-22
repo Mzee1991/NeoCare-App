@@ -70,7 +70,7 @@ class LabInvestigationForm(ModelForm):
         model = LabInvestigation
         fields = ['serology', 'microbiology', 'chemistry', 'hematology']
         widgets = {
-                'serology': forms.RadioSelect(attrs={'class': 'form-check-input'}),
+                'serology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
                 'microbiology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
                 'chemistry': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
                 'hematology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
