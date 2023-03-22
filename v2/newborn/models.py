@@ -1,3 +1,4 @@
+from multiselectfield import MultiSelectField
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import date
@@ -98,10 +99,11 @@ class Newborn(models.Model):
     class Meta:
         ordering = ['admission_date']
 
+
 class LabInvestigation(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    serology = models.TextField(max_length=100, choices=SEROLOGY_CHOICES, null=True,blank=True)
-    microbiology = models.TextField(max_length=100, choices=MICROBIOLOGY_CHOICES,null=True, blank=True)
-    chemistry = models.TextField(max_length=100, choices=CHEMISTRY_CHOICES, null=True,blank=True)
-    hematology = models.TextField(max_length=100, choices=HEMATOLOGY_CHOICES, null=True, blank=True)
+    serology = MultiSelectField(max_length=100, choices=SEROLOGY_CHOICES)
+    microbiology = MultiSelectField(max_length=100, choices=MICROBIOLOGY_CHOICES)
+    chemistry = MultiSelectField(max_length=100, choices=CHEMISTRY_CHOICES)
+    hematology = MultiSelectField(max_length=100, choices=HEMATOLOGY_CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)

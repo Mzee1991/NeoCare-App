@@ -68,12 +68,15 @@ def index(request):
 def lab_request(request):
     if request.method == 'POST':
         form = LabInvestigationForm(request.POST)
+        print("Fill this form")
         if form.is_valid():
+            print("Has valid info")
             instance = form.save()
             instance.save()
             return redirect('more-details')
     else:
         form = LabInvestigationForm()
+        print("Get the form")
     return render(request, 'newborn/lab_request.html', {'form': form})
 
 def home(request):
