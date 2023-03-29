@@ -8,6 +8,10 @@ HIV_STATUS = [
     ('POS', 'Positive'),
     ('UNS', 'Not sure'),
 ]
+SEX = [
+    ('F', 'FEMALE'),
+    ('M', 'MALE'),
+]
 BLOOD_GROUP = [
     ('A+', 'A RhD+'),
     ('B+', 'B RhD+'),
@@ -62,7 +66,8 @@ class MotherLocation(models.Model):
     subcounty = models.CharField(max_length=100)
     parish = models.CharField(max_length=100)
     village = models.CharField(max_length=100)
-    contact = models.IntegerField(default=28)
+    nin_no = models.CharField(max_length=100, default='CMX10000000')
+    contact = models.CharField(max_length=100, default='+256 ')
 
     def __str__(self):
         return self.district
@@ -75,7 +80,6 @@ class MotherDetails(models.Model):
     number_of_living_children = models.CharField(max_length=100)
     hiv_status = models.CharField(max_length=3, choices=HIV_STATUS)
     level_of_education = models.CharField(max_length=2, choices=LEVEL_OF_EDUCATION)
-    nin_no = models.CharField(max_length=100)
     occupation = models.CharField(max_length=3, choices=OCCUPATION)
     location = models.ForeignKey(MotherLocation, on_delete=models.CASCADE, null=True)
     
@@ -84,13 +88,13 @@ class MotherDetails(models.Model):
 
 class Newborn(models.Model):
     name = models.CharField(max_length=50)
+    sex = models.CharField(max_length=10, choices=SEX)
     date_of_birth = models.DateField()
-    birth_weight = models.IntegerField()
+    birth_weight = models.DecimalField(max_digits=2, decimal_places=1)
     admission_date = models.DateField()
     age_in_days = models.IntegerField(default=0)
     gestation_age = models.IntegerField(default=28)
     diagnosis = models.CharField(max_length=100)
-    discharge_date = models.DateField()
     mother = models.ForeignKey(MotherDetails, on_delete=models.CASCADE, null=True)
 
     def __str__(self):
@@ -107,3 +111,53 @@ class LabInvestigation(models.Model):
     chemistry = MultiSelectField(max_length=100, choices=CHEMISTRY_CHOICES)
     hematology = MultiSelectField(max_length=100, choices=HEMATOLOGY_CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)
+
+class Patient(models.Model):
+    symptoms = models.TextField(blank=True)
+    general_findings = models.TextField(blank=True)
+    respiratory_findings = models.TextField(blank=True)
+    cardiovascular_findings = models.TextField(blank=True)
+    abdominal_findings = models.TextField(blank=True)
+
+class BirthRecord(models.Model):
+    PLACE_OF_BIRTH_CHOICES = [
+        ('Home', 'Home'),
+        ('Health Facility', 'Health Facility'),
+        ('Road side', 'Road side')
+    ]
+    MODE_OF_DELIVERY_CHOICES = [
+        ('Ceaserean section', 'Ceaserean section'),
+        ('SVD', 'SVD'),
+        ('Assisted Delivery', 'Assisted Delivery')
+    ]
+    INDICATION_FOR_CSECTION_CHOICES = [
+        ('Preeclampsia', 'Preeclampsia'),
+        ('Preterm labour', 'Preterm labour')
+    ]
+    TIME_BTN_CS_AND_DELIVERY_CHOICES = [
+        ('less than 30min', 'less than 30min'),
+        ('30min to 1 hour', '30min to 1 hour'),
+        ('more than 1 hour', 'more than 1 hour')
+    ]
+    LENGTH_OF_RESUSCITATION_CHOICES = [
+        ('less than 10min', 'less than 10min'),
+        ('btn 10min to 15 min', 'btn 10min to 15 min'),
+        ('more than 15min', 'more than 15min')
+    ]
+    YES_NO_CHOICES = [
+        ('Yes', 'Yes'),
+        ('No', 'No')
+    ]
+    place_of_birth = models.CharField(choices=PLACE_OF_BIRTH_CHOICES, max_length=20)
+    name_of_health_facility = models.CharField(blank=True, null=True, max_length=100)
+    location_of_health_facility = models.CharField(blank=True, null=True, max_length=100)
+    mode_of_delivery = models.CharField(choices=MODE_OF_DELIVERY_CHOICES, max_length=20)
+    indication_for_csection = models.CharField(choices=INDICATION_FOR_CSECTION_CHOICES, blank=True, null=True, max_length=20)
+    time_btn_cs_and_delivery = models.CharField(choices=TIME_BTN_CS_AND_DELIVERY_CHOICES, blank=True, null=True, max_length=20)
+    resuscitation = models.CharField(choices=YES_NO_CHOICES, max_length=3)
+    length_of_resuscitation = models.CharField(choices=LENGTH_OF_RESUSCITATION_CHOICES, blank=True, null=True, max_length=30)
+    was_ox_connected = models.CharField(choices=YES_NO_CHOICES, blank=True, null=True, max_length=3)
+    referral = models.CharField(choices=YES_NO_CHOICES, max_length=3)
+    reason_for_referral = models.CharField(blank=True, null=True, max_length=100)
+    date_and_time_of_referral = models.DateTimeField(blank=True, null=True)
+    mean_of_transport = models.CharField(blank=True, null=True, max_length=100)

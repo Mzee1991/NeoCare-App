@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Mother Detail Form</title>
+</head>
+<body>
+	<div class="container-fluid pt-2 my-3 bg-info border rounded">
+		<div class="row justify-content-center text-light mb-3">
+			<div class="col-12 text-center">
+				<h3>Mother's BioData</h3>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-6 mb-3">
+				<div class="card">
+					<div class="card-header text-center">
+						<h4 class="card-title">Mother's Details</h4>
+					</div>
+					<div class="card-body">
+						<form action="" method="POST">
+							{% csrf_token %}
+							{% bootstrap_form detail_form %}
+							<input type="submit" class="btn btn-primary mt-3" value="Submit">
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="col-lg-6 mb-3">
+				<div class="card">
+					<div class="card-header text-center">
+						<h4 class="card-title">Mother's Contact Information</h4>
+					</div>
+					<div class="card-body">
+						<form action="" method="POST">
+							{% csrf_token %}
+							{% bootstrap_form location_form %}
+							<input type="submit" class="btn btn-info mt-3" value="Submit">
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+</html>
+

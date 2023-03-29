@@ -1,13 +1,17 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
-from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation
-from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm
+from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient
+from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, BirthRecordForm, PatientForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
-from django.views.generic import ListView
+from django.views.generic import ListView, CreateView
 from django.contrib.auth.decorators import login_required
+from django.db.models import Avg, Count
+from datetime import date
+import json
 
 def newborn_list(request):
     """
@@ -68,15 +72,12 @@ def index(request):
 def lab_request(request):
     if request.method == 'POST':
         form = LabInvestigationForm(request.POST)
-        print("Fill this form")
         if form.is_valid():
-            print("Has valid info")
             instance = form.save()
             instance.save()
-            return redirect('more-details')
+            return redirect('home-page')
     else:
         form = LabInvestigationForm()
-        print("Get the form")
     return render(request, 'newborn/lab_request.html', {'form': form})
 
 def home(request):
@@ -115,7 +116,7 @@ def mother(request):
         detail_form = MotherDetailForm()
         location_form = MotherLocationForm()
         context = {'detail_form': detail_form, 'location_form': location_form}
-    return render(request, 'newborn/mother.html/', context)
+    return render(request, 'newborn/mother3.html/', context)
 
 def print_detail(request, pk):
     context = {
@@ -124,14 +125,53 @@ def print_detail(request, pk):
 
     return render(request, 'newborn/details.html', context)
 
-def print_care2x(request):
+def print_care2x(request, pk):
     context = {
-         'newborn': Newborn.objects.all().order_by('-id')[0]
+         'newborn': Newborn.objects.get(pk=pk)
     }
-    return render(request, 'newborn/patient.html', context)
+    return render(request, 'newborn/patient2.html', context)
 
 def print_clerkship(request):
     context = {
           'newborn': Newborn.objects.all().order_by('-id')[0]
     }
     return render(request, 'newborn/clerkship.html', context)
+
+
+def dashboard(request):
+    # Retrieve data for charts
+    age_data = Newborn.objects.filter(age_in_days__lte=5)\
+                             .values('age_in_days')\
+                             .annotate(num_age=Count('id'))
+
+    sex_data = Newborn.objects.values('sex')\
+                             .annotate(num_sex=Count('id'))
+
+    diagnosis_data = Newborn.objects.values('diagnosis')\
+                                    .annotate(num_dx=Count('id'))
+
+    # Retrieve data for lists
+    new_admissions = Newborn.objects.filter(admission_date=date.today())
+
+    # Render template with data
+    return render(request, 'newborn/dashboard3.html', {
+        'age_data_json': json.dumps(list(age_data)),
+        'sex_data_json': json.dumps(list(sex_data)),
+        'diagnosis_data_json': json.dumps(list(diagnosis_data)),
+        'new_admissions': new_admissions,
+    })
+
+
+def create_birth_record(request):
+    if request.method == 'POST':
+        form = BirthRecordForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('birth_records')
+    else:
+        form = BirthRecordForm()
+    return render(request, 'newborn/create_birth_record6.html', {'form': form})
+
+def discharge_form(request, pk):
+    newborn = Newborn.objects.get(pk=pk)
+    return render(request, 'newborn/discharge_form.html', {'newborn': newborn})

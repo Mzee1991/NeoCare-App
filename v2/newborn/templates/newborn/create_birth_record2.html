@@ -1,0 +1,116 @@
+{% extends "newborn/base.html" %}
+{% block head %}
+  {{ block.super }}
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Show/hide name/location of health facility based on place of birth
+      $('select#id_place_of_birth').on('change', function() {
+        if ($(this).val() === 'Health Facility') {
+          $('#id_name_of_health_facility').parent().show();
+          $('#id_location_of_health_facility').parent().show();
+        } else {
+          $('#id_name_of_health_facility').parent().hide();
+          $('#id_location_of_health_facility').parent().hide();
+        }
+      }).trigger('change'); // Trigger change event on page load
+
+      // Show/hide indication and time between C/S and delivery based on mode of delivery
+      $('select#id_mode_of_delivery').on('change', function() {
+        if ($(this).val() === 'Ceaserean section') {
+          $('#id_indication_for_csection').parent().show();
+          $('#id_time_btn_cs_and_delivery').parent().show();
+        } else {
+          $('#id_indication_for_csection').parent().hide();
+          $('#id_time_btn_cs_and_delivery').parent().hide();
+        }
+      }).trigger('change'); // Trigger change event on page load
+
+      // Show/hide length of resuscitation and oxygen connection based on resuscitation
+      $('select#id_resuscitation').on('change', function() {
+        if ($(this).val() === 'Yes') {
+          $('#id_length_of_resuscitation').parent().show();
+          $('#id_was_ox_connected').parent().show();
+        } else {
+          $('#id_length_of_resuscitation').parent().hide();
+          $('#id_was_ox_connected').parent().hide();
+        }
+      }).trigger('change'); // Trigger change event on page load
+
+      // Show/hide reason for referral, date/time of referral, and mean of transport based on referral
+      $('select#id_referral').on('change', function() {
+        if ($(this).val() === 'Yes') {
+          $('#id_reason_for_referral').parent().show();
+          $('#id_date_and_time_of_referral').parent().show();
+          $('#id_mean_of_transport').parent().show();
+        } else {
+          $('#id_reason_for_referral').parent().hide();
+          $('#id_date_and_time_of_referral').parent().hide();
+          $('#id_mean_of_transport').parent().hide();
+        }
+      }).trigger('change'); // Trigger change event on page load
+    });
+  </script>
+{% endblock %}
+
+
+
+{% block content %}
+<div class="container">
+  <h1>Create Birth Record</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    {% if form.place_of_birth.value == 'Health Facility' %}
+    <div class="form-group">
+      <label for="{{ form.name_of_health_facility.id_for_label }}">Name of Health Facility:</label>
+      {{ form.name_of_health_facility }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.location_of_health_facility.id_for_label }}">Location of Health Facility:</label>
+      {{ form.location_of_health_facility }}
+    </div>
+    {% endif %}
+
+    {% if form.mode_of_delivery.value == 'Ceaserean section' %}
+    <div class="form-group">
+      <label for="{{ form.indication_for_csection.id_for_label }}">Indication for Ceaserean section:</label>
+      {{ form.indication_for_csection }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.time_btn_cs_and_delivery.id_for_label }}">Time between C/S and Delivery:</label>
+      {{ form.time_btn_cs_and_delivery }}
+    </div>
+    {% endif %}
+
+    {% if form.resuscitation.value == 'Yes' %}
+    <div class="form-group">
+      <label for="{{ form.length_of_resuscitation.id_for_label }}">Length of Resuscitation:</label>
+      {{ form.length_of_resuscitation }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.was_ox_connected.id_for_label }}">Was oxygen connected?</label>
+      {{ form.was_ox_connected }}
+    </div>
+    {% endif %}
+
+    {% if form.referral.value == 'Yes' %}
+    <div class="form-group">
+      <label for="{{ form.reason_for_referral.id_for_label }}">Reason for Referral:</label>
+      {{ form.reason_for_referral }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.date_and_time_of_referral.id_for_label }}">Date and Time of Referral:</label>
+      {{ form.date_and_time_of_referral }}
+    </div>
+    <div class="form-group">
+      <label for="{{ form.mean_of_transport.id_for_label }}">Mean of Transport:</label>
+      {{ form.mean_of_transport }}
+    </div>
+    {% endif %}
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+  </form>
+</div>
+{% endblock %}

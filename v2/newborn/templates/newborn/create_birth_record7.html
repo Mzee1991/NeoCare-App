@@ -1,0 +1,84 @@
+{% extends "newborn/base.html" %}
+
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+
+{% block content %}
+    <div class="container">
+        <h1>Birth Record</h1>
+        <form method="POST" id="birth_record_form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+    <script type="text/javascript">
+        function showHideFields() {
+            var placeOfBirth = document.getElementById("id_place_of_birth");
+            var nameOfHealthFacility = document.getElementById("id_name_of_health_facility");
+            var locationOfHealthFacility = document.getElementById("id_location_of_health_facility");
+            var modeOfDelivery = document.getElementById("id_mode_of_delivery");
+            var indicationForCSection = document.getElementById("id_indication_for_csection");
+            var timeBtnCSAndDelivery = document.getElementById("id_time_btn_cs_and_delivery");
+            var resuscitation = document.getElementById("id_resuscitation");
+            var lengthOfResuscitation = document.getElementById("id_length_of_resuscitation");
+            var wasOxConnected = document.getElementById("id_was_ox_connected");
+            var referral = document.getElementById("id_referral");
+            var reasonForReferral = document.getElementById("id_reason_for_referral");
+            var dateAndTimeOfReferral = document.getElementById("id_date_and_time_of_referral");
+            var meanOfTransport = document.getElementById("id_mean_of_transport");
+            
+            // Show or hide Name of Health Facility and Location of Health Facility fields
+            if (placeOfBirth.value === "Health Facility") {
+                nameOfHealthFacility.parentNode.parentNode.style.display = "block";
+                locationOfHealthFacility.parentNode.parentNode.style.display = "block";
+            } else {
+                nameOfHealthFacility.parentNode.parentNode.style.display = "none";
+                locationOfHealthFacility.parentNode.parentNode.style.display = "none";
+            }
+            
+            // Show or hide Indication for C-Section and Time btn C-Section and Delivery fields
+            if (modeOfDelivery.value === "Ceaserean section") {
+                indicationForCSection.parentNode.parentNode.style.display = "block";
+                timeBtnCSAndDelivery.parentNode.parentNode.style.display = "block";
+            } else {
+                indicationForCSection.parentNode.parentNode.style.display = "none";
+                timeBtnCSAndDelivery.parentNode.parentNode.style.display = "none";
+            }
+		// Show or hide length of resuscitation and was ox connected fields
+if (resuscitation.value === "Yes") {
+lengthOfResuscitation.parentNode.parentNode.style.display = "block";
+wasOxConnected.parentNode.parentNode.style.display = "block";
+} else {
+lengthOfResuscitation.parentNode.parentNode.style.display = "none";
+wasOxConnected.parentNode.parentNode.style.display = "none";
+}
+
+arduino
+Copy code
+        // Show or hide Reason for Referral, Date and Time of Referral, and Mean of Transport fields
+        if (referral.value === "Yes") {
+            reasonForReferral.parentNode.parentNode.style.display = "block";
+            dateAndTimeOfReferral.parentNode.parentNode.style.display = "block";
+            meanOfTransport.parentNode.parentNode.style.display = "block";
+        } else {
+            reasonForReferral.parentNode.parentNode.style.display = "none";
+            dateAndTimeOfReferral.parentNode.parentNode.style.display = "none";
+            meanOfTransport.parentNode.parentNode.style.display = "none";
+        }
+    }
+    
+    // Call the function on page load and on change of form fields
+    window.onload = showHideFields;
+    document.getElementById("id_place_of_birth").addEventListener("change", showHideFields);
+    document.getElementById("id_mode_of_delivery").addEventListener("change", showHideFields);
+    document.getElementById("id_resuscitation").addEventListener("change", showHideFields);
+    document.getElementById("id_referral").addEventListener("change", showHideFields);
+</script>
+{% endblock %}

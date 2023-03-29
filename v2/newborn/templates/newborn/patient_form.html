@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Admitting Patient Form</title>
+	<!-- Bootstrap 4 CSS -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+</head>
+<body>
+	<div class="container">
+		<h1>Admitting Patient Form</h1>
+		<form method="post">
+			{% csrf_token %}
+			<div class="card">
+				<div class="card-header">
+					<h3>Symptoms</h3>
+				</div>
+				<div class="card-body">
+					{% for field in form.symptoms %}
+						<div class="form-group">
+							{{ field.label_tag }}
+							{{ field }}
+						</div>
+					{% endfor %}
+					<button type="button" class="btn btn-primary" id="add-symptom">Add Symptom</button>
+				</div>
+			</div>
+			<div class="card mt-3">
+				<div class="card-header">
+					<h3>Clinical Findings</h3>
+				</div>
+				<div class="card-body">
+					{% for field in form.general_findings %}
+						<div class="card">
+							<div class="card-header">
+								<h4>General Examination</h4>
+							</div>
+							<div class="card-body">
+								<div class="form-group">
+									{{ field.label_tag }}
+									{{ field }}
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+					{% for field in form.respiratory_findings %}
+						<div class="card mt-3">
+							<div class="card-header">
+								<h4>Respiratory exam</h4>
+							</div>
+							<div class="card-body">
+								<div class="form-group">
+									{{ field.label_tag }}
+									{{ field }}
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+					{% for field in form.cardiovascular_findings %}
+						<div class="card mt-3">
+							<div class="card-header">
+								<h4>Cardiovascular exam</h4>
+							</div>
+							<div class="card-body">
+								<div class="form-group">
+									{{ field.label_tag }}
+									{{ field }}
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+					{% for field in form.abdominal_findings %}
+						<div class="card mt-3">
+							<div class="card-header">
+								<h4>Abdominal Exam</h4>
+							</div>
+							<div class="card-body">
+								<div class="form-group">
+									{{ field.label_tag }}
+									{{ field }}
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+			<button type="submit" class="btn btn-success mt-3">Submit</button>
+		</form>
+	</div>
+	<!-- jQuery -->
+	<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+	<!-- Bootstrap 4 JS -->
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+	<script>
+		$(document).ready(function(){
+			var count = 1;
+			$('#add-symptom').click(function(){
+				count++;
+				var html = '<div class="form-group"><input type="text" name="symptom_' + count + '" id="id_symptom_' + count + '" class="form-control"></div>';
+				$('#id_symptoms-TOTAL_FORMS').val(count);
+				$(html).insertBefore('#add-symptom');
+			});
+		});
+	</script>
+
+</body>
+</html>

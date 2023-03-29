@@ -1,0 +1,104 @@
+{% load static %}
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+php
+Copy code
+<!-- Required meta tags -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+{% if title %}
+    <title>NICU - {{ title }}</title>
+{% else %}
+    <title> NICU </title>
+{% endif %}
+
+<!-- Bootstrap CSS -->
+{% bootstrap_css %}
+</head>
+<body>
+php
+Copy code
+<div class="container">
+
+    <h1 class="text-center mb-5">Holy Innocents Children's Hospital</h1>
+
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h3 class="card-title">Newborn Admission</h3>
+                    <p class="card-text">Date of Admission: {{ newborn.admission_date }}</p> 
+                    <p class="card-text">Time of Admission: </p>
+                    <p class="card-text">Baby's Name: {{ newborn.name }}</p> 
+                    <p class="card-text">Sex: </p>
+                    <p class="card-text">Birth Weight: {{ newborn.birth_weight }}</p>
+                    <p class="card-text">Date of Birth: {{ newborn.date_of_birth }}</p>
+                    <p class="card-text">Place of Birth: </p>
+                </div>
+            </div>
+
+            <div class="card mt-5">
+                <div class="card-body">
+                    <h3 class="card-title">Delivery Details</h3>
+                    <p class="card-text">Place of birth: </p>
+                    <p class="card-text">Mode of Delivery: </p>
+                    <p class="card-text">Indication for C/S: </p>
+                    <p class="card-text">Time Between Decision of C/S and actual Delivery: </p>
+                    <p class="card-text">Resuscitation: Yes or No</p>
+                    <p class="card-text">If yes:</p>
+                    <p class="card-text">For how long: </p>
+                    <p class="card-text">With what:</p> <!-- give choice here e.g Bag and mask, Oxygen, Both -->
+                    <p class="card-text">Referral yes or No: </p>
+                    <p class="card-text">Reason for referral: </p> <!--Birth asphyxia, Prematurity, Sepsis, Meningitis, Self-referral -->
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+
+            <div class="card mb-5">
+                <h3 class="card-header text-center">Mother's Demographics</h3>
+                <div class="card-body">
+                    <h5 class="card-title text-center">BioData</h5>
+                    <ul class="list-group">
+                        <li class="list-group-item"><b>Mother's Name:</b> {{ newborn.mother.name }}</li>
+                        <li class="list-group-item"><b>Mother's Age:</b> {{ newborn.mother.age }}</li>
+                        <li class="list-group-item"><b>Mother's NIN:</b> {{ newborn.mother.nin_no }}</li>
+                        <li class="list-group-item"><b>Mother's Blood Group:</b> {{ newborn.mother.blood_group }}</li>
+                        <li class="list-group-item"><b>Mother's Occupation:</b> {{ newborn.mother.occupation }}</li>
+			<li class="list-group-item"><b>Mother's Phone Number:</b> {{ newborn.mother.phone_no }}</li>
+			<li class="list-group-item"><b>Residential Address:</b> {{ newborn.mother.address }}</li>
+			<li class="list-group-item"><b>Name of Father:</b> {{ newborn.father.name }}</li>
+			<li class="list-group-item"><b>Occupation of Father:</b> {{ newborn.father.occupation }}</li>
+			<li class="list-group-item"><b>Phone Number of Father:</b> {{ newborn.father.phone_no }}</li>
+		    </ul>
+		</div>
+	    </div>
+ 	    <div class="card">
+            <h3 class="card-header text-center">Clinical Information</h3>
+            <div class="card-body">
+                <h5 class="card-title text-center">Presenting Complaints</h5>
+                <p class="card-text">{{ newborn.presenting_complaints }}</p>
+                <h5 class="card-title text-center">Past Medical and Surgical History</h5>
+                <p class="card-text">{{ newborn.medical_history }}</p>
+                <h5 class="card-title text-center">Antenatal and Perinatal History</h5>
+                <p class="card-text">{{ newborn.ant_per_history }}</p>
+                <h5 class="card-title text-center">Immunization Status</h5>
+                <p class="card-text">{{ newborn.immunization_status }}</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</div>
+{% bootstrap_javascript jquery='full' %}
+
+</body>
+</html> 

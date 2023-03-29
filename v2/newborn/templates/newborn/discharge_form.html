@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Holy Innocents Children's Hospital</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+	<style>
+		body {
+			background-color: #f2f2f2;
+		}
+		.form-group label {
+			color: #007bff;
+		}
+		.btn-primary {
+			background-color: #007bff;
+			border-color: #007bff;
+		}
+		.btn-primary:hover {
+			background-color: #0062cc;
+			border-color: #0062cc;
+		}
+		.btn-primary:focus, .btn-primary.focus {
+			box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.5);
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h2 class="text-center my-4">Discharge Form</h2>
+		<form>
+			<div class="form-group">
+				<label for="newborn-name">Newborn Name:</label>
+				<input type="text" class="form-control" id="newborn-name" value="{{ newborn.name }}" disabled>
+			</div>
+			<div class="form-group">
+				<label for="newborn-id">Newborn ID:</label>
+				<input type="text" class="form-control" id="newborn-id" value="{{ newborn.id }}" disabled>
+			</div>
+			<div class="form-group">
+				<label for="sex">Sex:</label>
+				<input type="text" class="form-control" id="sex" value="{{ newborn.sex }}" disabled>
+			</div>
+			<div class="form-group">
+				<label for="birth-weight">Birth Weight:</label>
+				<input type="text" class="form-control" id="birth-weight" value="{{ newborn.birth_weight }}" disabled>
+			</div>
+			<div class="form-group">
+				<label for="mother-name">Mother's Name:</label>
+				<input type="text" class="form-control" id="mother-name" value="{{ newborn.mother.name }}" disabled>
+			</div>
+			<div class="form-group">
+				<label for="admission-symptoms">Admission Symptoms:</label>
+				<textarea class="form-control" id="admission-symptoms" rows="3"></textarea>
+			</div>
+			<div class="form-group">
+				<label for="treatment-given">Treatment Given:</label>
+				<textarea class="form-control" id="treatment-given" rows="3"></textarea>
+			</div>
+			<div class="form-group">
+				<labelfor="discharge-plan">Discharge Plan:</label>
+			<textarea class="form-control" id="discharge-plan" rows="3"></textarea>
+			</div>
+			<button type="submit" class="btn btn-primary">Submit</button>
+		</form>
+	</div>
+
+</body>
+</html>
+
