@@ -67,7 +67,7 @@ def index(request):
             return redirect('home-page')
     else:
         form = NewbornForm()
-    return render(request, 'newborn/index.html', {'form': form})
+    return render(request, 'newborn/delivery.html', {'form': form})
 
 def lab_request(request):
     if request.method == 'POST':
@@ -175,3 +175,16 @@ def create_birth_record(request):
 def discharge_form(request, pk):
     newborn = Newborn.objects.get(pk=pk)
     return render(request, 'newborn/discharge_form.html', {'newborn': newborn})
+
+
+#def delivery_view(request):
+ #   if request.method == 'POST':
+  #      form = DeliveryForm(request.POST)
+   #     if form.is_valid():
+    #        delivery = form.save()
+     #       delivery.save()
+      #      return redirect('home-page')
+       
+    #else:
+     #   form = DeliveryForm()
+    #return render(request, 'newborn/delivery.html', {'form': form})

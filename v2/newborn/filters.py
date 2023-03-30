@@ -6,4 +6,4 @@ class NewbornFilter(django_filters.FilterSet):
 
     class Meta:
         model = Newborn
-        fields = ['name', 'diagnosis']
+        fields = ['name', 'mother']

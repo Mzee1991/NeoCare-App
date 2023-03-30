@@ -4,13 +4,13 @@ from django.contrib.auth.models import User
 from datetime import date
 
 HIV_STATUS = [
-    ('NEG', 'Negative'),
-    ('POS', 'Positive'),
-    ('UNS', 'Not sure'),
+    ('Negative', 'Negative'),
+    ('Positive', 'Positive'),
+    ('Not sure', 'Not sure'),
 ]
 SEX = [
-    ('F', 'FEMALE'),
-    ('M', 'MALE'),
+    ('FEMALE', 'FEMALE'),
+    ('MALE', 'MALE'),
 ]
 BLOOD_GROUP = [
     ('A+', 'A RhD+'),
@@ -23,22 +23,22 @@ BLOOD_GROUP = [
     ('O-', 'O RhD-'),
 ]
 LEVEL_OF_EDUCATION = [
-    ('PR', 'Primary'),
-    ('SR', 'Secondary'),
-    ('DP', 'Diploma'),
-    ('BA', 'Bachelors Degree'),
-    ('MA', 'Masters'),
+    ('Primary', 'Primary'),
+    ('Secondary', 'Secondary'),
+    ('Diploma', 'Diploma'),
+    ('Bachelors Degree', 'Bachelors Degree'),
+    ('Masters', 'Masters'),
 ]
 OCCUPATION = [
-    ('HW', 'Health Worker'),
-    ('TR', 'Teacher'),
-    ('LW', 'Lawyer'),
-    ('AC', 'Accountant'),
-    ('BU', 'Business'),
-    ('FMR', 'Farmer'),
-    ('ENG', 'Engineer'),
-    ('SW', 'Social Worker'),
-    ('OTH', 'Other'),
+    ('Health Worker', 'Health Worker'),
+    ('Teacher', 'Teacher'),
+    ('Lawyer', 'Lawyer'),
+    ('Accountant', 'Accountant'),
+    ('Business', 'Business'),
+    ('Farmer', 'Farmer'),
+    ('Engineer', 'Engineer'),
+    ('Social Worker', 'Social Worker'),
+    ('Other', 'Other'),
 ]
 SEROLOGY_CHOICES = [
         ('RPR', 'RPR'),
@@ -75,33 +75,48 @@ class MotherLocation(models.Model):
 class MotherDetails(models.Model):
     name = models.CharField(max_length=50)
     age = models.IntegerField(default=28)
-    blood_group = models.CharField(max_length=3, choices=BLOOD_GROUP)
+    blood_group = models.CharField(max_length=50, choices=BLOOD_GROUP)
     parity = models.CharField(max_length=100)
     number_of_living_children = models.CharField(max_length=100)
-    hiv_status = models.CharField(max_length=3, choices=HIV_STATUS)
-    level_of_education = models.CharField(max_length=2, choices=LEVEL_OF_EDUCATION)
-    occupation = models.CharField(max_length=3, choices=OCCUPATION)
+    hiv_status = models.CharField(max_length=50, choices=HIV_STATUS)
+    level_of_education = models.CharField(max_length=50, choices=LEVEL_OF_EDUCATION)
+    occupation = models.CharField(max_length=50, choices=OCCUPATION)
     location = models.ForeignKey(MotherLocation, on_delete=models.CASCADE, null=True)
     
     def __str__(self):
         return self.name
 
 class Newborn(models.Model):
-    name = models.CharField(max_length=50)
-    sex = models.CharField(max_length=10, choices=SEX)
-    date_of_birth = models.DateField()
-    birth_weight = models.DecimalField(max_digits=2, decimal_places=1)
+    PLACE_OF_BIRTH_CHOICES = (
+        ('Hospital', 'Hospital'),
+        ('Home', 'Home'),
+        ('Along the road', 'Along the road'),
+    )
+
+    MODE_OF_DELIVERY_CHOICES = (
+        ('Vaginal', 'Vaginal'),
+        ('C-Section', 'C-Section'),
+        ('Assisted Vaginal Delivery', 'Assisted Vaginal Delivery'),
+    )
+
+    Yes_No_CHOICES = (
+        ('Yes', 'Yes'),
+        ('No', 'No'),
+    )
+    
     admission_date = models.DateField()
-    age_in_days = models.IntegerField(default=0)
-    gestation_age = models.IntegerField(default=28)
-    diagnosis = models.CharField(max_length=100)
+    name = models.CharField(max_length=100)
+    sex = models.CharField(max_length=100, choices=SEX)
+    birth_weight = models.DecimalField(max_digits=2, decimal_places=1)
+    delivery_date = models.DateTimeField()
+    place_of_birth = models.CharField(max_length=100, choices=PLACE_OF_BIRTH_CHOICES)
+    mode_of_delivery = models.CharField(max_length=100, choices=MODE_OF_DELIVERY_CHOICES)
+    resuscitated = models.CharField(max_length=100, choices=Yes_No_CHOICES)
+    referral = models.CharField(max_length=100, choices=Yes_No_CHOICES)
     mother = models.ForeignKey(MotherDetails, on_delete=models.CASCADE, null=True)
-
+    
     def __str__(self):
-        return self.name + ': ' + self.diagnosis
-
-    class Meta:
-        ordering = ['admission_date']
+        return f"Delivery to {self.place_of_birth}, {self.mode_of_delivery}"
 
 
 class LabInvestigation(models.Model):
@@ -161,3 +176,5 @@ class BirthRecord(models.Model):
     reason_for_referral = models.CharField(blank=True, null=True, max_length=100)
     date_and_time_of_referral = models.DateTimeField(blank=True, null=True)
     mean_of_transport = models.CharField(blank=True, null=True, max_length=100)
+
+

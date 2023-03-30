@@ -3,31 +3,6 @@ from django import forms
 from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, BirthRecord, Patient
 from .models import SEROLOGY_CHOICES, MICROBIOLOGY_CHOICES, CHEMISTRY_CHOICES, HEMATOLOGY_CHOICES
 
-class NewbornForm(ModelForm):
-    class Meta:
-        model = Newborn
-        fields = ['name', 'sex', 'admission_date', 'date_of_birth', 'birth_weight', 'age_in_days', 'gestation_age', 'diagnosis']
-        widgets = {
-            'admission_date': forms.DateInput(
-                format=['%d-%m-%Y'],
-                attrs={'class': 'form-control', 
-                    'placeholder': 'Select a date',
-                    'type': 'date'
-                }),
-            'date_of_birth': forms.DateInput(
-                format=['%d-%m-%Y'],
-                attrs={'class': 'form-control', 
-                    'placeholder': 'Select a date',
-                    'type': 'date'
-                }),
-            'name': forms.TextInput(attrs={'class': 'form-control'}),
-            'sex': forms.Select(attrs={'class': 'form-control'}),
-            'age_in_days': forms.NumberInput(attrs={'class': 'form-control'}),
-            'gestation_age': forms.NumberInput(attrs={'class': 'form-control'}),
-            'birth_weight': forms.NumberInput(attrs={'class': 'form-control'}),
-            'diagnosis': forms.TextInput(attrs={'class': 'form-control'}),
-        }
-
 
 class MotherDetailForm(ModelForm):
     class Meta:
@@ -99,3 +74,20 @@ class PatientForm(forms.ModelForm):
             'cardiovascular_findings',
             'abdominal_findings',
         ]
+
+class NewbornForm(forms.ModelForm):
+    class Meta:
+        model = Newborn
+        fields = ('admission_date','name','sex','birth_weight','delivery_date', 'place_of_birth', 'mode_of_delivery', 'resuscitated', 'referral')
+
+    admission_date = forms.DateTimeField(widget=forms.TextInput(attrs={'type': 'datetime-local'}))
+    delivery_date = forms.DateTimeField(widget=forms.TextInput(attrs={'type': 'datetime-local'}))
+    place_of_birth = forms.ChoiceField(choices=Newborn.PLACE_OF_BIRTH_CHOICES)
+    mode_of_delivery = forms.ChoiceField(choices=Newborn.MODE_OF_DELIVERY_CHOICES)
+    resuscitated = forms.ChoiceField(choices=Newborn.Yes_No_CHOICES, widget=forms.RadioSelect)
+    referral = forms.ChoiceField(choices=Newborn.Yes_No_CHOICES, widget=forms.RadioSelect)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['delivery_date'].input_formats = ('%Y-%m-%dT%H:%M',)  # set input format for datetime-local widget
+        self.fields['admission_date'].input_formats = ('%Y-%m-%dT%H:%M',)  # set input format for datetime-local widget
