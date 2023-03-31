@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hello</title>
+</head>
+<body>
+<div class="container">
+  <div class="row justify-content-center mt-5">
+    <div class="col-md-8">
+      <div class="card">
+        <div class="card-header">
+          <h4 class="card-title mb-0">Clinical Findings</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" class="form">
+            {% csrf_token %}
+            <fieldset id="vital-signs">
+              <legend>Vital signs</legend>
+              {% bootstrap_form form layout='horizontal' exclude='general_appearance,head_and_neck,chest,abdomen,genitalia,extremities,neurological_exam' %}
+            </fieldset>
+            <fieldset id="physical-exam">
+              <legend>Physical Examination</legend>
+              {% bootstrap_form form layout='horizontal' exclude='weight,respiratory_rate,heart_rate,temperature' %}
+            </fieldset>
+            <div class="form-group">
+              <div class="col-md-10 offset-md-2">
+                <button type="submit" class="btn btn-primary">Save</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+
+</body>
+</html>
+

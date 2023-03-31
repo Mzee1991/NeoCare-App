@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, BirthRecord, Patient
+from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam
 from .models import SEROLOGY_CHOICES, MICROBIOLOGY_CHOICES, CHEMISTRY_CHOICES, HEMATOLOGY_CHOICES
 
 
@@ -48,18 +48,18 @@ class LabInvestigationForm(ModelForm):
 
 
 
-class BirthRecordForm(forms.ModelForm):
-    class Meta:
-        model = BirthRecord
-        fields = ['place_of_birth', 'name_of_health_facility', 'location_of_health_facility', 'mode_of_delivery',
-                  'indication_for_csection', 'time_btn_cs_and_delivery', 'resuscitation', 'length_of_resuscitation',
-                  'was_ox_connected', 'referral', 'reason_for_referral', 'date_and_time_of_referral', 'mean_of_transport']
-        widgets = {
-            'place_of_birth': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
-            'mode_of_delivery': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
-            'resuscitation': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
-            'referral': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
-        }
+#class BirthRecordForm(forms.ModelForm):
+ #   class Meta:
+  #      model = BirthRecord
+   #     fields = ['place_of_birth', 'name_of_health_facility', 'location_of_health_facility', 'mode_of_delivery',
+    #              'indication_for_csection', 'time_btn_cs_and_delivery', 'resuscitation', 'length_of_resuscitation',
+     #             'was_ox_connected', 'referral', 'reason_for_referral', 'date_and_time_of_referral', 'mean_of_transport']
+      #  widgets = {
+       #     'place_of_birth': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
+        #    'mode_of_delivery': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
+         #   'resuscitation': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
+          #  'referral': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
+        #}
 
 
 class PatientForm(forms.ModelForm):
@@ -91,3 +91,22 @@ class NewbornForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['delivery_date'].input_formats = ('%Y-%m-%dT%H:%M',)  # set input format for datetime-local widget
         self.fields['admission_date'].input_formats = ('%Y-%m-%dT%H:%M',)  # set input format for datetime-local widget
+
+
+class NewbornExamForm(forms.ModelForm):
+    class Meta:
+        model = NewbornExam
+        fields = [
+            'weight',
+            'respiratory_rate',
+            'heart_rate',
+            'temperature',
+            'skin_color',
+            'general_appearance',
+            'head_and_neck',
+            'chest',
+            'abdomen',
+            'genitalia',
+            'extremities',
+            'neurological_exam',
+        ]

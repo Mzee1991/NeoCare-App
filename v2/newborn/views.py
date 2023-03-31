@@ -1,16 +1,16 @@
 from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient
-from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, BirthRecordForm, PatientForm
+from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
 from django.views.generic import ListView, CreateView
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count
-from datetime import date
+from datetime import date, timedelta
 import json
 
 def newborn_list(request):
@@ -119,8 +119,12 @@ def mother(request):
     return render(request, 'newborn/mother3.html/', context)
 
 def print_detail(request, pk):
+    newborn = Newborn.objects.get(pk=pk)
+    age_delta = newborn.admission_date.date() - newborn.delivery_date.date()
+    age_days = age_delta.days
     context = {
-            'newborn': Newborn.objects.get(pk=pk)
+            'newborn': newborn,
+            'age_days': age_days,
     }
 
     return render(request, 'newborn/details.html', context)
@@ -140,10 +144,6 @@ def print_clerkship(request):
 
 def dashboard(request):
     # Retrieve data for charts
-    age_data = Newborn.objects.filter(age_in_days__lte=5)\
-                             .values('age_in_days')\
-                             .annotate(num_age=Count('id'))
-
     sex_data = Newborn.objects.values('sex')\
                              .annotate(num_sex=Count('id'))
 
@@ -155,7 +155,6 @@ def dashboard(request):
 
     # Render template with data
     return render(request, 'newborn/dashboard3.html', {
-        'age_data_json': json.dumps(list(age_data)),
         'sex_data_json': json.dumps(list(sex_data)),
         'diagnosis_data_json': json.dumps(list(diagnosis_data)),
         'new_admissions': new_admissions,
@@ -188,3 +187,18 @@ def discharge_form(request, pk):
     #else:
      #   form = DeliveryForm()
     #return render(request, 'newborn/delivery.html', {'form': form})
+
+
+def newborn_exam_form(request, pk):
+    if request.method == 'POST':
+        form = NewbornExamForm(request.POST)
+        if form.is_valid():
+            instance = form.save()
+            instance.neonate = Newborn.objects.get(pk=pk)
+            instance.save()
+            return redirect(reverse('clerkship-page', kwargs={'pk': pk})) # Replace 'success' with the URL name of your success page
+    else:
+        form = NewbornExamForm()
+
+    return render(request, 'newborn/newborn_exam_form.html', {'form': form})
+

@@ -104,7 +104,7 @@ class Newborn(models.Model):
         ('No', 'No'),
     )
     
-    admission_date = models.DateField()
+    admission_date = models.DateTimeField()
     name = models.CharField(max_length=100)
     sex = models.CharField(max_length=100, choices=SEX)
     birth_weight = models.DecimalField(max_digits=2, decimal_places=1)
@@ -134,47 +134,18 @@ class Patient(models.Model):
     cardiovascular_findings = models.TextField(blank=True)
     abdominal_findings = models.TextField(blank=True)
 
-class BirthRecord(models.Model):
-    PLACE_OF_BIRTH_CHOICES = [
-        ('Home', 'Home'),
-        ('Health Facility', 'Health Facility'),
-        ('Road side', 'Road side')
-    ]
-    MODE_OF_DELIVERY_CHOICES = [
-        ('Ceaserean section', 'Ceaserean section'),
-        ('SVD', 'SVD'),
-        ('Assisted Delivery', 'Assisted Delivery')
-    ]
-    INDICATION_FOR_CSECTION_CHOICES = [
-        ('Preeclampsia', 'Preeclampsia'),
-        ('Preterm labour', 'Preterm labour')
-    ]
-    TIME_BTN_CS_AND_DELIVERY_CHOICES = [
-        ('less than 30min', 'less than 30min'),
-        ('30min to 1 hour', '30min to 1 hour'),
-        ('more than 1 hour', 'more than 1 hour')
-    ]
-    LENGTH_OF_RESUSCITATION_CHOICES = [
-        ('less than 10min', 'less than 10min'),
-        ('btn 10min to 15 min', 'btn 10min to 15 min'),
-        ('more than 15min', 'more than 15min')
-    ]
-    YES_NO_CHOICES = [
-        ('Yes', 'Yes'),
-        ('No', 'No')
-    ]
-    place_of_birth = models.CharField(choices=PLACE_OF_BIRTH_CHOICES, max_length=20)
-    name_of_health_facility = models.CharField(blank=True, null=True, max_length=100)
-    location_of_health_facility = models.CharField(blank=True, null=True, max_length=100)
-    mode_of_delivery = models.CharField(choices=MODE_OF_DELIVERY_CHOICES, max_length=20)
-    indication_for_csection = models.CharField(choices=INDICATION_FOR_CSECTION_CHOICES, blank=True, null=True, max_length=20)
-    time_btn_cs_and_delivery = models.CharField(choices=TIME_BTN_CS_AND_DELIVERY_CHOICES, blank=True, null=True, max_length=20)
-    resuscitation = models.CharField(choices=YES_NO_CHOICES, max_length=3)
-    length_of_resuscitation = models.CharField(choices=LENGTH_OF_RESUSCITATION_CHOICES, blank=True, null=True, max_length=30)
-    was_ox_connected = models.CharField(choices=YES_NO_CHOICES, blank=True, null=True, max_length=3)
-    referral = models.CharField(choices=YES_NO_CHOICES, max_length=3)
-    reason_for_referral = models.CharField(blank=True, null=True, max_length=100)
-    date_and_time_of_referral = models.DateTimeField(blank=True, null=True)
-    mean_of_transport = models.CharField(blank=True, null=True, max_length=100)
 
-
+class NewbornExam(models.Model):
+    weight = models.DecimalField(max_digits=2, decimal_places=1) # measured in kg
+    respiratory_rate = models.IntegerField() # measured in breaths per minute
+    heart_rate = models.IntegerField() # measured in beats per minute
+    temperature = models.DecimalField(max_digits=3, decimal_places=1) # measured in degrees Celsius
+    skin_color = models.CharField(max_length=100)
+    general_appearance = models.CharField(max_length=100)
+    head_and_neck = models.CharField(max_length=100)
+    chest = models.CharField(max_length=100)
+    abdomen = models.CharField(max_length=100)
+    genitalia = models.CharField(max_length=100)
+    extremities = models.CharField(max_length=100)
+    neurological_exam = models.CharField(max_length=100)
+    neonate = models.ForeignKey(Newborn, on_delete=models.CASCADE, null=True)
