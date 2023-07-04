@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
-from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient
+from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam
 from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
@@ -144,13 +144,16 @@ def print_detail(request, pk):
     return render(request, 'newborn/details.html', context)
 
 def print_care2x(request, pk):
-    newborn = Newborn.objects.get(pk=pk)
+    newborn = Newborn.objects.get(pk=pk) # Retrieve the Newborn object
     mother = newborn.mother  # Access the Mother object associated with the newborn
     antenatal_history = mother.antenatalhistory_set.first() #he Antenatalhistory related to the mother
+    # Retrieve the NewbornExam objects related to the newborn
+    newborn_exams = newborn.newbornexam_set.first()
     context = {
          'newborn': newborn,
          'mother': mother,
          'antenatal_history': antenatal_history,
+         'newborn_exams': newborn_exams,  # Include newborn_exams in the context
     }
     return render(request, 'newborn/patient2.html', context)
 

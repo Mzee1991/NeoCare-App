@@ -34,6 +34,7 @@
                 margin-right: 20mm;
             }
         }
+
     </style>
 </head>
 <body>
@@ -130,6 +131,57 @@
                     </div>
                 </div>
             </div>
+<style>
+    .card {
+        page-break-inside: avoid;
+    }
+</style>
+
+<div class="card mb-4">
+    <div class="card-header text-center">
+        <h3>Clinical Findings</h3>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4 class="mb-0">Measurements and Vitals</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item"><b>Current weight:</b> {{ newborn_exams.weight }}</li>
+                            <li class="list-group-item"><b>Respiratory rate:</b> {{ newborn_exams.respiratory_rate }}</li>
+                            <li class="list-group-item"><b>Heart rate:</b> {{ newborn_exams.heart_rate }}</li>
+                            <li class="list-group-item"><b>Temperature:</b> {{ newborn_exams.temperature }}</li>
+                            <li class="list-group-item"><b>Random Blood Glucose:</b> N/C </li>
+                            <li class="list-group-item"><b>SpO2:</b> N/C </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Physical Examination</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item"><b>Skin Color:</b> {{ newborn_exams.skin_color }}</li>
+                            <li class="list-group-item"><b>General appearance:</b> {{ newborn_exams.general_appearance }}</li>
+                            <li class="list-group-item"><b>Head and neck:</b> {{ newborn_exams.head_and_neck }}</li>
+                            <li class="list-group-item"><b>Chest:</b> {{ newborn_exams.chest }}</li>
+                            <li class="list-group-item"><b>Abdomen:</b> {{ newborn_exams.abdomen }}</li>
+                            <li class="list-group-item"><b>Genetalia:</b> {{ newborn_exams.genitalia }}</li>
+                            <li class="list-group-item"><b>Extremeties:</b> {{ newborn_exams.extremities }}</li>
+                            <li class="list-group-item"><b>Neurological exam:</b> {{ newborn_exams.neurological_exam }}</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
         </div>
 
