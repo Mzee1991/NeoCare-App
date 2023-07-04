@@ -3,7 +3,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient
-from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm
+from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
@@ -64,10 +64,24 @@ def index(request):
             instance = form.save()
             instance.mother = MotherDetails.objects.all().order_by('-id')[0]
             instance.save()
-            return redirect('home-page')
+            return redirect('antenatal-details')
     else:
         form = NewbornForm()
     return render(request, 'newborn/delivery.html', {'form': form})
+
+
+@login_required
+def antenatal_hx(request):
+    if request.method == 'POST':
+        form = AntenatalHistoryForm(request.POST)        
+        if form.is_valid():
+            instance = form.save()
+            instance.mother = MotherDetails.objects.all().order_by('-id')[0]
+            instance.save()
+            return redirect('home-page')
+    else:
+        form = AntenatalHistoryForm()
+    return render(request, 'newborn/antenatal_details.html', {'form': form})
 
 def lab_request(request):
     if request.method == 'POST':
@@ -130,8 +144,13 @@ def print_detail(request, pk):
     return render(request, 'newborn/details.html', context)
 
 def print_care2x(request, pk):
+    newborn = Newborn.objects.get(pk=pk)
+    mother = newborn.mother  # Access the Mother object associated with the newborn
+    antenatal_history = mother.antenatalhistory_set.first() #he Antenatalhistory related to the mother
     context = {
-         'newborn': Newborn.objects.get(pk=pk)
+         'newborn': newborn,
+         'mother': mother,
+         'antenatal_history': antenatal_history,
     }
     return render(request, 'newborn/patient2.html', context)
 

@@ -59,6 +59,20 @@ HEMATOLOGY_CHOICES = [
 	('CBC', 'CBC'),
     ('Blood grouping', 'Blood grouping'),
 ]
+attended_where_choices = [
+        ('Hospital', 'Hospital'),
+        ('Health Centre', 'Health Centre'),
+        ('Private Clinic', 'Private Clinic'),
+]
+conditions_during_pregnancy_choices = [
+        ('Diabetes', 'Diabetes'),
+        ('HTN', 'HTN'),
+        ('Pre-eclampsia', 'Pre-eclampsia'),
+        ('APH', 'APH'),
+        ('Malaria', 'Malaria'),
+        ('Uneventful', 'Uneventful'),
+        ('Other', 'Other'),
+]
 
 class MotherLocation(models.Model):
     country = models.CharField(max_length=100)
@@ -86,6 +100,26 @@ class MotherDetails(models.Model):
     def __str__(self):
         return self.name
 
+
+class AntenatalHistory(models.Model):
+    Yes_No_CHOICES = (
+        ('Yes', 'Yes'),
+        ('No', 'No'),
+    )
+    mother = models.ForeignKey(MotherDetails, on_delete=models.CASCADE, null=True)
+    attended = models.CharField(max_length=100, choices=Yes_No_CHOICES)
+    number_of_times_attended = models.PositiveIntegerField(default=0)
+    attended_where = models.CharField(max_length=20, choices=attended_where_choices)
+    conditions_during_pregnancy = models.CharField(max_length=20, choices=conditions_during_pregnancy_choices)
+    received_tetanus_toxoid = models.CharField(max_length=100, choices=Yes_No_CHOICES)
+    screened_for_syphilis = models.CharField(max_length=100, choices=Yes_No_CHOICES)
+    received_fansidar = models.CharField(max_length=100, choices=Yes_No_CHOICES)
+
+    def __str__(self):
+        return f"Antenatal History of {self.mother}"
+
+
+
 class Newborn(models.Model):
     PLACE_OF_BIRTH_CHOICES = (
         ('Hospital', 'Hospital'),
@@ -98,11 +132,12 @@ class Newborn(models.Model):
         ('C-Section', 'C-Section'),
         ('Assisted Vaginal Delivery', 'Assisted Vaginal Delivery'),
     )
-
+    
     Yes_No_CHOICES = (
         ('Yes', 'Yes'),
         ('No', 'No'),
     )
+
     
     admission_date = models.DateTimeField()
     name = models.CharField(max_length=100)
@@ -126,6 +161,7 @@ class LabInvestigation(models.Model):
     chemistry = MultiSelectField(max_length=100, choices=CHEMISTRY_CHOICES)
     hematology = MultiSelectField(max_length=100, choices=HEMATOLOGY_CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)
+
 
 class Patient(models.Model):
     symptoms = models.TextField(blank=True)

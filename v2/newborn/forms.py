@@ -1,8 +1,26 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam
+from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, AntenatalHistory
 from .models import SEROLOGY_CHOICES, MICROBIOLOGY_CHOICES, CHEMISTRY_CHOICES, HEMATOLOGY_CHOICES
 
+
+class AntenatalHistoryForm(forms.ModelForm):
+    class Meta:
+        model = AntenatalHistory
+        fields = [
+            'attended',
+            'number_of_times_attended',
+            'attended_where',
+            'conditions_during_pregnancy',
+            'received_tetanus_toxoid',
+            'screened_for_syphilis',
+            'received_fansidar',
+        ]
+
+    attended = forms.ChoiceField(choices=AntenatalHistory.Yes_No_CHOICES, widget=forms.RadioSelect)
+    received_tetanus_toxoid = forms.ChoiceField(choices=AntenatalHistory.Yes_No_CHOICES, widget=forms.RadioSelect)
+    screened_for_syphilis = forms.ChoiceField(choices=AntenatalHistory.Yes_No_CHOICES, widget=forms.RadioSelect)
+    received_fansidar = forms.ChoiceField(choices=AntenatalHistory.Yes_No_CHOICES, widget=forms.RadioSelect)
 
 class MotherDetailForm(ModelForm):
     class Meta:
@@ -34,17 +52,34 @@ class MotherLocationForm(ModelForm):
             'nin_no': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
+#class LabInvestigationForm(forms.ModelForm):
+ #   class Meta:
+  #      model = LabInvestigation
+   #     fields = [
+    #        'serology_rpr',
+     #       'serology_rct',
+      #      'serology_bat',
+       #     'microbiology_gram_stain',
+        #    'microbiology_culture',
+         #   'chemistry_serum_electrolytes',
+          #  'chemistry_serum_urea',
+           # 'chemistry_serum_creatinine',
+            #'chemistry_urinalysis',
+            #'hematology_cbc',
+            #'hematology_blood_grouping',
+        #]
+
 
 class LabInvestigationForm(ModelForm):
     class Meta:
         model = LabInvestigation
         fields = ['serology', 'microbiology', 'chemistry', 'hematology']
-        #widgets = {
-         #       'serology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-          #      'microbiology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-           #     'chemistry': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-            #    'hematology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-        #}
+        widgets = {
+                'serology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+                'microbiology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+                'chemistry': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+                'hematology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
+        }
 
 
 
