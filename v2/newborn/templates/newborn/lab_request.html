@@ -70,6 +70,19 @@
                             {% endfor %}
                         </div>
                     </div>
+                    
+                    <!-- Display validation errors -->
+                    {% if form.errors %}
+                    <div class="alert alert-danger mt-3">
+                        <ul class="mb-0">
+                            {% for field_errors in form.errors %}
+                            {% for error in form.errors.field_errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
                 </div>
                 <div class="text-center mt-3">
                     <button type="submit" class="btn btn-info mx-2">Continue and Request Lab Test</button>

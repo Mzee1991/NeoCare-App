@@ -156,11 +156,12 @@ class Newborn(models.Model):
 
 class LabInvestigation(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    serology = MultiSelectField(max_length=100, choices=SEROLOGY_CHOICES)
-    microbiology = MultiSelectField(max_length=100, choices=MICROBIOLOGY_CHOICES)
-    chemistry = MultiSelectField(max_length=100, choices=CHEMISTRY_CHOICES)
-    hematology = MultiSelectField(max_length=100, choices=HEMATOLOGY_CHOICES)
+    serology = MultiSelectField(max_length=100, choices=SEROLOGY_CHOICES, blank=True)
+    microbiology = MultiSelectField(max_length=100, choices=MICROBIOLOGY_CHOICES, blank=True)
+    chemistry = MultiSelectField(max_length=100, choices=CHEMISTRY_CHOICES, blank=True)
+    hematology = MultiSelectField(max_length=100, choices=HEMATOLOGY_CHOICES, blank=True)
     timestamp = models.DateTimeField(auto_now_add=True)
+    neonate = models.ForeignKey(Newborn, on_delete=models.CASCADE, null=True)
 
 
 class Patient(models.Model):

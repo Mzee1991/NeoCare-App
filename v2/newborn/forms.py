@@ -52,25 +52,19 @@ class MotherLocationForm(ModelForm):
             'nin_no': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-#class LabInvestigationForm(forms.ModelForm):
- #   class Meta:
-  #      model = LabInvestigation
-   #     fields = [
-    #        'serology_rpr',
-     #       'serology_rct',
-      #      'serology_bat',
-       #     'microbiology_gram_stain',
-        #    'microbiology_culture',
-         #   'chemistry_serum_electrolytes',
-          #  'chemistry_serum_urea',
-           # 'chemistry_serum_creatinine',
-            #'chemistry_urinalysis',
-            #'hematology_cbc',
-            #'hematology_blood_grouping',
-        #]
-
 
 class LabInvestigationForm(ModelForm):
+    def clean(self):
+        cleaned_data = super().clean()
+        serology = cleaned_data.get('serology')
+        microbiology = cleaned_data.get('microbiology')
+        chemistry = cleaned_data.get('chemistry')
+        hematology = cleaned_data.get('hematology')
+
+        if not any([serology, microbiology, chemistry, hematology]):
+            raise forms.ValidationError("Please select at least one option.")
+
+
     class Meta:
         model = LabInvestigation
         fields = ['serology', 'microbiology', 'chemistry', 'hematology']
