@@ -1,8 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
-from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam
+from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation
 from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
@@ -83,16 +83,24 @@ def antenatal_hx(request):
         form = AntenatalHistoryForm()
     return render(request, 'newborn/antenatal_details.html', {'form': form})
 
-def lab_request(request):
+def lab_request(request, pk):
+    neonate = get_object_or_404(Newborn, pk=pk)
+    try:
+        lab_investigation = LabInvestigation.objects.get(neonate=neonate)
+    except LabInvestigation.DoesNotExist:
+        lab_investigation = None
+
     if request.method == 'POST':
-        form = LabInvestigationForm(request.POST)
+        form = LabInvestigationForm(request.POST, instance=lab_investigation)
         if form.is_valid():
-            instance = form.save()
+            instance = form.save(commit=False)
+            instance.neonate = neonate
             instance.save()
-            return redirect('home-page')
+            return redirect(reverse('clerkship-page', kwargs={'pk': pk}))
     else:
-        form = LabInvestigationForm()
-    return render(request, 'newborn/lab_request.html', {'form': form})
+        form = LabInvestigationForm(instance=lab_investigation)
+
+    return render(request, 'newborn/lab_request2.html', {'form': form})
 
 def home(request):
     return render(request, 'newborn/home.html', {'title': 'Home'})
@@ -149,11 +157,14 @@ def print_care2x(request, pk):
     antenatal_history = mother.antenatalhistory_set.first() #he Antenatalhistory related to the mother
     # Retrieve the NewbornExam objects related to the newborn
     newborn_exams = newborn.newbornexam_set.first()
+    # Retrieve the LabInvestigation objects related to the newborn
+    lab_investigation = newborn.labinvestigation_set.first()
     context = {
          'newborn': newborn,
          'mother': mother,
          'antenatal_history': antenatal_history,
          'newborn_exams': newborn_exams,  # Include newborn_exams in the context
+         'lab_investigation': lab_investigation,
     }
     return render(request, 'newborn/patient2.html', context)
 
@@ -210,17 +221,22 @@ def discharge_form(request, pk):
      #   form = DeliveryForm()
     #return render(request, 'newborn/delivery.html', {'form': form})
 
-
 def newborn_exam_form(request, pk):
+    neonate = get_object_or_404(Newborn, pk=pk)
+    try:
+        exam = NewbornExam.objects.get(neonate=neonate)
+    except NewbornExam.DoesNotExist:
+        exam = None
+
     if request.method == 'POST':
-        form = NewbornExamForm(request.POST)
+        form = NewbornExamForm(request.POST, instance=exam)
         if form.is_valid():
-            instance = form.save()
-            instance.neonate = Newborn.objects.get(pk=pk)
+            instance = form.save(commit=False)
+            instance.neonate = neonate
             instance.save()
-            return redirect(reverse('clerkship-page', kwargs={'pk': pk})) # Replace 'success' with the URL name of your success page
+            return redirect(reverse('clerkship-page', kwargs={'pk': pk}))
     else:
-        form = NewbornExamForm()
+        form = NewbornExamForm(instance=exam)
 
     return render(request, 'newborn/newborn_exam_form.html', {'form': form})
 

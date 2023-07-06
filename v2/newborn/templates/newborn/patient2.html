@@ -173,13 +173,78 @@
                             <li class="list-group-item"><b>Chest:</b> {{ newborn_exams.chest }}</li>
                             <li class="list-group-item"><b>Abdomen:</b> {{ newborn_exams.abdomen }}</li>
                             <li class="list-group-item"><b>Genetalia:</b> {{ newborn_exams.genitalia }}</li>
-                            <li class="list-group-item"><b>Extremeties:</b> {{ newborn_exams.extremities }}</li>
+                            <li class="list-group-item"><b>Extremities:</b> {{ newborn_exams.extremities }}</li>
                             <li class="list-group-item"><b>Neurological exam:</b> {{ newborn_exams.neurological_exam }}</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- Display Lab Investigations -->
+<div class="card mb-4">
+    <div class="card-header text-center">
+        <h3>Lab Investigations</h3>
+    </div>
+    <div class="card-body">
+        {% if lab_investigation %}
+            {% if lab_investigation.serology_rpr or lab_investigation.serology_rct or lab_investigation.serology_bat %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4 class="mb-0">Serology</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if lab_investigation.serology_rpr %}
+                            <p><b>RPR:</b> {{ lab_investigation.serology_rpr }}</p>
+                        {% endif %}
+                        {% if lab_investigation.serology_rct %}
+                            <p><b>RCT:</b> {{ lab_investigation.serology_rct }}</p>
+                        {% endif %}
+                        {% if lab_investigation.serology_bat %}
+                            <p><b>BAT:</b> {{ lab_investigation.serology_bat }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            {% if lab_investigation.microbiology_gram_stain or lab_investigation.microbiology_culture %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4 class="mb-0">Microbiology</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if lab_investigation.microbiology_gram_stain %}
+                            <p><b>Gram stain:</b> {{ lab_investigation.microbiology_gram_stain }}</p>
+                        {% endif %}
+                        {% if lab_investigation.microbiology_culture %}
+                            <p><b>Culture:</b> {{ lab_investigation.microbiology_culture }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+            {% if lab_investigation.chemistry_serum_electrolytes or lab_investigation.chemistry_serum_urea or lab_investigation.chemistry_serum_creatinine or lab_investigation.chemistry_urinalysis %}
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h4 class="mb-0">Chemistry</h4>
+                    </div>
+                    <div class="card-body">
+                        {% if lab_investigation.chemistry_serum_electrolytes %}
+                            <p><b>Serum electrolytes:</b> {{ lab_investigation.chemistry_serum_electrolytes }}</p>
+                        {% endif %}
+                        {% if lab_investigation.chemistry_serum_urea %}
+                            <p><b>Serum Urea:</b> {{ lab_investigation.chemistry_serum_urea }}</p>
+                        {% endif %}
+                        {% if lab_investigation.chemistry_serum_creatinine %}
+                            <p><b>Serum creatinine:</b> {{ lab_investigation.chemistry_serum_creatinine }}</p>
+                        {% endif %}
+                        {% if lab_investigation.chemistry_urinalysis %}
+                            <p><b>Urinalysis:</b> {{ lab_investigation.chemistry_urinalysis }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
     </div>
 </div>
 

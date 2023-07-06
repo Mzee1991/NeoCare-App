@@ -154,12 +154,30 @@ class Newborn(models.Model):
         return f"Delivery to {self.place_of_birth}, {self.mode_of_delivery}"
 
 
+#class LabInvestigation(models.Model):
+ #   author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+  #  serology = MultiSelectField(max_length=100, choices=SEROLOGY_CHOICES, blank=True)
+   # microbiology = MultiSelectField(max_length=100, choices=MICROBIOLOGY_CHOICES, blank=True)
+    #chemistry = MultiSelectField(max_length=100, choices=CHEMISTRY_CHOICES, blank=True)
+    #hematology = MultiSelectField(max_length=100, choices=HEMATOLOGY_CHOICES, blank=True)
+    #timestamp = models.DateTimeField(auto_now_add=True)
+    #neonate = models.ForeignKey(Newborn, on_delete=models.CASCADE, null=True)
+
 class LabInvestigation(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    serology = MultiSelectField(max_length=100, choices=SEROLOGY_CHOICES, blank=True)
-    microbiology = MultiSelectField(max_length=100, choices=MICROBIOLOGY_CHOICES, blank=True)
-    chemistry = MultiSelectField(max_length=100, choices=CHEMISTRY_CHOICES, blank=True)
-    hematology = MultiSelectField(max_length=100, choices=HEMATOLOGY_CHOICES, blank=True)
+
+    serology_rpr = models.BooleanField(verbose_name='RPR', default=False)
+    serology_rct = models.BooleanField(verbose_name='RCT', default=False)
+    serology_bat = models.BooleanField(verbose_name='BAT', default=False)
+
+    microbiology_gram_stain = models.BooleanField(verbose_name='Gram stain', default=False)
+    microbiology_culture = models.BooleanField(verbose_name='Culture', default=False)
+
+    chemistry_serum_electrolytes = models.BooleanField(verbose_name='Serum electrolytes', default=False)
+    chemistry_serum_urea = models.BooleanField(verbose_name='Serum Urea', default=False)
+    chemistry_serum_creatinine = models.BooleanField(verbose_name='Serum creatinine', default=False)
+    chemistry_urinalysis = models.BooleanField(verbose_name='Urinalysis', default=False)
+
     timestamp = models.DateTimeField(auto_now_add=True)
     neonate = models.ForeignKey(Newborn, on_delete=models.CASCADE, null=True)
 
