@@ -67,7 +67,7 @@
          </div>
         <div class="container mt-5 justify-content-center rounded" style="height: 50px; width: 600px; background-color: #191970;">
             <div class="container mt-5 py-1 justify-content-center">
-                <a class="btn btn-info ml-1 mr-2" href="#" role="button">Update</a>
+		    <a class="btn btn-info ml-1 mr-2" href="{% url 'update-details' pk=newborn.id  %}" role="button">Update</a>
                 <a class="btn btn-success mr-2" href="{% url 'discharge' pk=newborn.id %}" role="button">Discharge</a>
                 <a class="btn btn-warning mr-2" href="#" role="button">Refer</a>
                 <a class="btn btn-info" href="{% url 'more-details' newborn.pk %}" role="button">Print Details</a>

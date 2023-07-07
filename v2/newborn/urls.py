@@ -6,6 +6,7 @@ urlpatterns = [
     path('newborn/<int:pk>/', views.newborn_detail),
     path('newborn/discharge/<int:pk>/', views.discharge_form, name='discharge'),
     path('newborn/index/', views.index, name='add-newborn'),
+    path('newborn/update_details/<int:pk>/', views.update_details, name='update-details'),
     path('newborn/antenatal_hx/', views.antenatal_hx, name='antenatal-details'),
     path('newborn/clinical-exam/<int:pk>/', views.newborn_exam_form, name='clinical-exam'),
     #path('newborn/delivery/', views.delivery_view, name='delivery-details'),

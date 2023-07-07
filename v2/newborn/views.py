@@ -240,3 +240,41 @@ def newborn_exam_form(request, pk):
 
     return render(request, 'newborn/newborn_exam_form.html', {'form': form})
 
+
+
+
+def update_details(request, pk):
+    newborn = get_object_or_404(Newborn, pk=pk)
+    mother = newborn.mother
+    location = mother.location
+    antenatal_history = mother.antenatalhistory_set.first()
+
+    if request.method == 'POST':
+        location_form = MotherLocationForm(request.POST, prefix='location', instance=location)
+        detail_form = MotherDetailForm(request.POST, prefix='detail', instance=mother)
+        antenatal_form = AntenatalHistoryForm(request.POST, prefix='antenatal', instance=antenatal_history)
+
+        if (
+            location_form.is_valid()
+            and detail_form.is_valid()
+            and antenatal_form.is_valid()
+        ):
+            location_instance = location_form.save()
+            detail_instance = detail_form.save(commit=False)
+            detail_instance.location = location_instance
+            detail_instance.save()
+            antenatal_instance = antenatal_form.save(commit=False)
+            antenatal_instance.mother = detail_instance
+            antenatal_instance.save()
+
+            return redirect(reverse('clerkship-page', kwargs={'pk': pk}))
+    else:
+        location_form = MotherLocationForm(prefix='location', instance=location)
+        detail_form = MotherDetailForm(prefix='detail', instance=mother)
+        antenatal_form = AntenatalHistoryForm(prefix='antenatal', instance=antenatal_history)
+
+    return render(request, 'newborn/update_details.html', {
+        'location_form': location_form,
+        'detail_form': detail_form,
+        'antenatal_form': antenatal_form,
+    })
