@@ -74,17 +74,57 @@ conditions_during_pregnancy_choices = [
         ('Other', 'Other'),
 ]
 
+#class MotherLocation(models.Model):
+ #   country = models.CharField(max_length=100)
+  #  district = models.CharField(max_length=100)
+   # subcounty = models.CharField(max_length=100)
+    #parish = models.CharField(max_length=100)
+    #village = models.CharField(max_length=100)
+    #nin_no = models.CharField(max_length=100, default='CMX10000000')
+    #contact = models.CharField(max_length=100, default='+256 ')
+
+    #def __str__(self):
+     #   return self.district
+
+class District(models.Model):
+    name = models.CharField(max_length=100)
+    
+    def __str__(self):
+        return self.name
+
+class Subcounty(models.Model):
+    district = models.ForeignKey(District, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Parish(models.Model):
+    subcounty = models.ForeignKey(Subcounty, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
+class Village(models.Model):
+    parish = models.ForeignKey(Parish, on_delete=models.CASCADE, null=True)
+    name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.name
+
 class MotherLocation(models.Model):
     country = models.CharField(max_length=100)
-    district = models.CharField(max_length=100)
-    subcounty = models.CharField(max_length=100)
-    parish = models.CharField(max_length=100)
-    village = models.CharField(max_length=100)
+    district = models.ForeignKey(District, on_delete=models.CASCADE)
+    subcounty = models.ForeignKey(Subcounty, on_delete=models.CASCADE)
+    parish = models.ForeignKey(Parish, on_delete=models.CASCADE)
+    village = models.ForeignKey(Village, on_delete=models.CASCADE)
     nin_no = models.CharField(max_length=100, default='CMX10000000')
     contact = models.CharField(max_length=100, default='+256 ')
 
     def __str__(self):
-        return self.district
+        return self.district.name
+
 
 class MotherDetails(models.Model):
     name = models.CharField(max_length=50)
@@ -204,3 +244,7 @@ class NewbornExam(models.Model):
     extremities = models.CharField(max_length=100)
     neurological_exam = models.CharField(max_length=100)
     neonate = models.ForeignKey(Newborn, on_delete=models.CASCADE, null=True)
+
+
+
+

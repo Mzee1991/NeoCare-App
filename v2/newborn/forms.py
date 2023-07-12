@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, AntenatalHistory
+from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village
 from .models import SEROLOGY_CHOICES, MICROBIOLOGY_CHOICES, CHEMISTRY_CHOICES, HEMATOLOGY_CHOICES
 
 
@@ -37,21 +37,65 @@ class MotherDetailForm(ModelForm):
             'occupation': forms.Select(attrs={'class': 'form-control'}),
         }
 
+class MotherLocationForm(forms.ModelForm):
+    # Fields without initial querysets
+    district = forms.ModelChoiceField(queryset=District.objects.all(), empty_label='---------')
+    subcounty = forms.ModelChoiceField(queryset=Subcounty.objects.none(), empty_label='---------')
+    parish = forms.ModelChoiceField(queryset=Parish.objects.none(), empty_label='---------')
+    village = forms.ModelChoiceField(queryset=Village.objects.none(), empty_label='---------')
 
-class MotherLocationForm(ModelForm):
     class Meta:
         model = MotherLocation
         fields = ['country', 'district', 'subcounty', 'parish', 'village', 'contact', 'nin_no']
         widgets = {
-            'country': forms.TextInput(attrs={'class': 'form-control'}),
-            'district': forms.TextInput(attrs={'class': 'form-control'}),
-            'subcounty': forms.TextInput(attrs={'class': 'form-control'}),
-            'parish': forms.TextInput(attrs={'class': 'form-control'}),
-            'village': forms.TextInput(attrs={'class': 'form-control'}),
-            'contact': forms.TextInput(attrs={'class': 'form-control'}),
-            'nin_no': forms.TextInput(attrs={'class': 'form-control'}),
+            # Widget definitions
         }
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+        print('We are clear')
+        print()
+        #print('Instance:', instance.district)
+        if instance:
+            district = instance.district
+            self.fields['district'].queryset = District.objects.filter(pk=district.pk)
+            print('In the form, the district is', self.fields['district'].queryset)
+            self.fields['subcounty'].queryset = Subcounty.objects.filter(district=district)
+            self.fields['parish'].queryset = Parish.objects.filter(subcounty__district=district)
+            self.fields['village'].queryset = Village.objects.filter(parish__subcounty__district=district)
+        else:
+            print('The else part is working')
+            self.fields['subcounty'].queryset = Subcounty.objects.none()
+            self.fields['parish'].queryset = Parish.objects.none()
+            self.fields['village'].queryset = Village.objects.none()
+
+    def clean(self):
+        cleaned_data = super().clean()
+        district_name = cleaned_data.get('district')
+        subcounty_id = cleaned_data.get('subcounty')
+        parish_id = cleaned_data.get('parish')
+        village_id = cleaned_data.get('village')
+        print('District', district_name)
+        print('Subcounty', subcounty_id)
+
+
+        if district_name and subcounty_id and parish_id and village_id:
+            try:
+                district_obj = District.objects.get(name=district_name)
+                subcounty_obj = Subcounty.objects.get(district=district_obj, id=subcounty_id)
+                parish_obj = Parish.objects.get(subcounty=subcounty_obj, id=parish_id)
+                village_obj = Village.objects.get(parish=parish_obj, id=village_id)
+
+                self.instance.district = district_obj
+                self.instance.subcounty = subcounty_obj
+                self.instance.parish = parish_obj
+                self.instance.village = village_obj
+
+            except (Subcounty.DoesNotExist, Parish.DoesNotExist, Village.DoesNotExist):
+                raise forms.ValidationError("Invalid choice selected.")
+
+        return cleaned_data
 
 class LabInvestigationForm(ModelForm):
     class Meta:

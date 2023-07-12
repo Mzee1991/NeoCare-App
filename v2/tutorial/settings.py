@@ -134,6 +134,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = ("bootstrap3", "bootstrap4", "bootstrap5")
+#CRISPY_TEMPLATE_PACK = 'bootstrap4'
 
 #BOOTSTRAP_DATEPICKER_PLUS = {
 #    "options": {

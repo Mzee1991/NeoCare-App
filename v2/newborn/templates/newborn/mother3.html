@@ -1,17 +1,16 @@
 <!DOCTYPE html>
-{% load crispy_forms_tags %}
-{% load bootstrap4 %}
-{% bootstrap_css %}
-{% bootstrap_javascript jquery='full' %}
-{{ form.media }}
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>Mother Detail Form</title>
+    <meta charset="utf-8">
+    <title>Mother Detail Form</title>
+    {% load bootstrap4 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript jquery='full' %}
+    {{ form.media }}
 </head>
 <body>
-	<div class="container pt-2 my-3">
-        <form action="" method="POST">
+<div class="container pt-2 my-3">
+	<form id="my-form" action="{% url 'mother-details' %}" method="POST">
             {% csrf_token %}
 		<div class="card mb-3">
 			<div class="card-header bg-info text-light">
@@ -48,6 +47,109 @@
          </form>
 	</div>
 
+<script>
+$(document).ready(function() {
+  // District select change event
+  $('#id_district').change(function() {
+    var districtId = $(this).val();
+    if (districtId) {
+      // Fetch subcounties based on the selected district
+      $.ajax({
+        url: '/fetch-subcounties/' + districtId + '/',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          // Populate subcounty select options
+          $('#id_subcounty').empty().append('<option value="">---------</option>');
+          $.each(data.subcounties, function(key, value) {
+            $('#id_subcounty').append('<option value="' + key + '">' + value + '</option>');
+          });
+        }
+      });
+    } else {
+      // Empty subcounty and parish select options if no district is selected
+      $('#id_subcounty').empty().append('<option value="">---------</option>');
+      $('#id_parish').empty().append('<option value="">---------</option>');
+      $('#id_village').empty().append('<option value="">---------</option>');
+    }
+  });
+
+  // Subcounty select change event
+  $('#id_subcounty').change(function() {
+    var subcountyId = $(this).val();
+    if (subcountyId) {
+      // Fetch parishes based on the selected subcounty
+      $.ajax({
+        url: '/fetch-parishes/' + subcountyId + '/',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          // Populate parish select options
+          $('#id_parish').empty().append('<option value="">---------</option>');
+          $.each(data.parishes, function(key, value) {
+            $('#id_parish').append('<option value="' + key + '">' + value + '</option>');
+          });
+        }
+      });
+    } else {
+      // Empty parish and village select options if no subcounty is selected
+      $('#id_parish').empty().append('<option value="">---------</option>');
+      $('#id_village').empty().append('<option value="">---------</option>');
+    }
+  });
+
+  // Parish select change event
+  $('#id_parish').change(function() {
+    var parishId = $(this).val();
+    if (parishId) {
+      // Fetch villages based on the selected parish
+      $.ajax({
+        url: '/fetch-villages/' + parishId + '/',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          // Populate village select options
+          $('#id_village').empty().append('<option value="">---------</option>');
+          $.each(data.villages, function(key, value) {
+            $('#id_village').append('<option value="' + key + '">' + value + '</option>');
+          });
+        }
+      });
+    } else {
+      // Empty village select options if no parish is selected
+      $('#id_village').empty().append('<option value="">---------</option>');
+    }
+  });
+
+  // Form submission event
+  $('#your-form-id').submit(function(event) {
+    event.preventDefault(); // Prevent the default form submission
+
+    // Convert JSON data to form-encoded data
+    var jsonData = {
+      subcounty: $('#id_subcounty').val(),
+      parish: $('#id_parish').val(),
+      village: $('#id_village').val()
+    };
+    var formData = $.param(jsonData);
+
+    // Submit the form with the form-encoded data
+    $.ajax({
+      url: $(this).attr('action'),
+      type: $(this).attr('method'),
+      data: formData,
+      success: function(response) {
+        // Handle the success response
+        // ...
+      },
+      error: function(xhr, textStatus, errorThrown) {
+        // Handle the error response
+        // ...
+      }
+    });
+  });
+});
+</script>
+
 </body>
 </html>
-

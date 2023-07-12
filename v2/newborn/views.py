@@ -1,8 +1,9 @@
+from django.core import serializers
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
-from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation
+from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation, Subcounty, Parish, Village
 from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
@@ -126,19 +127,26 @@ def newborn_search(request):
 def mother(request):
     if request.method == 'POST':
         location_form = MotherLocationForm(request.POST)
-        if location_form.is_valid():
-            location_form.save()
-            detail_form = MotherDetailForm(request.POST)
-            if detail_form.is_valid():
-                instance = detail_form.save()
-                instance.location = MotherLocation.objects.all().order_by('-id')[0]
-                instance.save()
-                return redirect('add-newborn')
+        detail_form = MotherDetailForm(request.POST)
+
+        if location_form.is_valid() and detail_form.is_valid():
+            location_instance = location_form.save(commit=False)
+            location_instance.save()  # Save the instance to obtain an ID
+
+            detail_instance = detail_form.save(commit=False)
+            detail_instance.location = location_instance
+            detail_instance.save()
+
+            return redirect('add-newborn')
     else:
         detail_form = MotherDetailForm()
         location_form = MotherLocationForm()
-        context = {'detail_form': detail_form, 'location_form': location_form}
-    return render(request, 'newborn/mother3.html/', context)
+
+    context = {
+        'detail_form': detail_form,
+        'location_form': location_form,
+    }
+    return render(request, 'newborn/mother3.html', context)
 
 def print_detail(request, pk):
     newborn = Newborn.objects.get(pk=pk)
@@ -278,3 +286,18 @@ def update_details(request, pk):
         'detail_form': detail_form,
         'antenatal_form': antenatal_form,
     })
+
+def fetch_subcounties(request, district_id):
+    subcounties = Subcounty.objects.filter(district_id=district_id).values('id', 'name')
+    data = {'subcounties': {subcounty['id']: subcounty['name'] for subcounty in subcounties}}
+    return JsonResponse(data)
+
+def fetch_parishes(request, subcounty_id):
+    parishes = Parish.objects.filter(subcounty_id=subcounty_id).values('id', 'name')
+    data = {'parishes': {parish['id']: parish['name'] for parish in parishes}}
+    return JsonResponse(data)
+
+def fetch_villages(request, parish_id):
+    villages = Village.objects.filter(parish_id=parish_id).values('id', 'name')
+    data = {'villages': {village['id']: village['name'] for village in villages}}
+    return JsonResponse(data)

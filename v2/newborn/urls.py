@@ -1,5 +1,6 @@
 from django.urls import path
 from newborn import views
+from .views import fetch_subcounties, fetch_parishes, fetch_villages
 
 urlpatterns = [
     path('newborn/', views.newborn_list),
@@ -20,4 +21,7 @@ urlpatterns = [
    #path('', views.home, name='newborn-home'),
     path('', views.newborn_table, name='home-page'),
     path('newborn/search/', views.newborn_search, name='search-newborn'),
+    path('fetch-subcounties/<int:district_id>/', fetch_subcounties, name='fetch_subcounties'),
+    path('fetch-parishes/<int:subcounty_id>/', fetch_parishes, name='fetch_parishes'),
+    path('fetch-villages/<int:parish_id>/', fetch_villages, name='fetch_villages'),
 ]
