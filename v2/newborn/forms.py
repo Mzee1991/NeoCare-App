@@ -37,8 +37,7 @@ class MotherDetailForm(ModelForm):
             'occupation': forms.Select(attrs={'class': 'form-control'}),
         }
 
-class MotherLocationForm(forms.ModelForm):
-    # Fields without initial querysets
+class MotherLocationForm(ModelForm):
     district = forms.ModelChoiceField(queryset=District.objects.all(), empty_label='---------')
     subcounty = forms.ModelChoiceField(queryset=Subcounty.objects.none(), empty_label='---------')
     parish = forms.ModelChoiceField(queryset=Parish.objects.none(), empty_label='---------')
@@ -48,52 +47,74 @@ class MotherLocationForm(forms.ModelForm):
         model = MotherLocation
         fields = ['country', 'district', 'subcounty', 'parish', 'village', 'contact', 'nin_no']
         widgets = {
-            # Widget definitions
+                 'country': forms.TextInput(attrs={'class': 'form-control'}),
+                 'district': forms.Select(attrs={'class': 'form-control'}),
+                 'subcounty': forms.Select(attrs={'class': 'form-control'}),
+                 'parish': forms.Select(attrs={'class': 'form-control'}),
+                 'village': forms.Select(attrs={'class': 'form-control'}),
+                 'contact': forms.TextInput(attrs={'class': 'form-control'}),
+                 'nin_no': forms.TextInput(attrs={'class': 'form-control'}),
         }
+
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        instance = kwargs.get('instance')
-        print('We are clear')
-        print()
-        #print('Instance:', instance.district)
-        if instance:
-            district = instance.district
-            self.fields['district'].queryset = District.objects.filter(pk=district.pk)
-            print('In the form, the district is', self.fields['district'].queryset)
-            self.fields['subcounty'].queryset = Subcounty.objects.filter(district=district)
-            self.fields['parish'].queryset = Parish.objects.filter(subcounty__district=district)
-            self.fields['village'].queryset = Village.objects.filter(parish__subcounty__district=district)
-        else:
-            print('The else part is working')
-            self.fields['subcounty'].queryset = Subcounty.objects.none()
-            self.fields['parish'].queryset = Parish.objects.none()
-            self.fields['village'].queryset = Village.objects.none()
+        if 'district' in self.data:
+            try:
+                district_id = int(self.data.get('district'))
+                self.fields['subcounty'].queryset = Subcounty.objects.filter(district_id=district_id)
+            except (ValueError, TypeError):
+                pass
+        if 'subcounty' in self.data:
+            try:
+                subcounty_id = int(self.data.get('subcounty'))
+                self.fields['parish'].queryset = Parish.objects.filter(subcounty_id=subcounty_id)
+            except (ValueError, TypeError):
+                pass
+        if 'parish' in self.data:
+            try:
+                parish_id = int(self.data.get('parish'))
+                self.fields['village'].queryset = Village.objects.filter(parish_id=parish_id)
+            except (ValueError, TypeError):
+                pass
+        self.fields['district'].queryset = District.objects.all()
+
 
     def clean(self):
         cleaned_data = super().clean()
-        district_name = cleaned_data.get('district')
-        subcounty_id = cleaned_data.get('subcounty')
-        parish_id = cleaned_data.get('parish')
-        village_id = cleaned_data.get('village')
-        print('District', district_name)
-        print('Subcounty', subcounty_id)
+        district = cleaned_data.get('district')
+        subcounty = cleaned_data.get('subcounty')
+        print('District_clean', district)
+        print('Subcounty_clean', subcounty)
+        parish = cleaned_data.get('parish')
+        village = cleaned_data.get('village')
 
+        if not district:
+            raise forms.ValidationError("Please select a district.")
+        if not subcounty:
+            raise forms.ValidationError("Please select a subcounty.")
+        if not parish:
+            raise forms.ValidationError("Please select a parish.")
+        if not village:
+            raise forms.ValidationError("Please select a village.")
 
-        if district_name and subcounty_id and parish_id and village_id:
-            try:
-                district_obj = District.objects.get(name=district_name)
-                subcounty_obj = Subcounty.objects.get(district=district_obj, id=subcounty_id)
-                parish_obj = Parish.objects.get(subcounty=subcounty_obj, id=parish_id)
-                village_obj = Village.objects.get(parish=parish_obj, id=village_id)
+        try:
+            subcounty_obj = Subcounty.objects.get(district=district, id=subcounty.id)
+        except Subcounty.DoesNotExist:
+            raise forms.ValidationError("Invalid subcounty selected.")
+        try:
+            parish_obj = Parish.objects.get(subcounty=subcounty_obj, id=parish.id)
+        except Parish.DoesNotExist:
+            raise forms.ValidationError("Invalid parish selected.")
+        try:
+            village_obj = Village.objects.get(parish=parish_obj, id=village.id)
+        except Village.DoesNotExist:
+            raise forms.ValidationError("Invalid village selected.")
 
-                self.instance.district = district_obj
-                self.instance.subcounty = subcounty_obj
-                self.instance.parish = parish_obj
-                self.instance.village = village_obj
-
-            except (Subcounty.DoesNotExist, Parish.DoesNotExist, Village.DoesNotExist):
-                raise forms.ValidationError("Invalid choice selected.")
+        self.instance.district = district
+        self.instance.subcounty = subcounty_obj
+        self.instance.parish = parish_obj
+        self.instance.village = village_obj
 
         return cleaned_data
 

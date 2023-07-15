@@ -128,16 +128,38 @@ def mother(request):
     if request.method == 'POST':
         location_form = MotherLocationForm(request.POST)
         detail_form = MotherDetailForm(request.POST)
-
+        
+        district_id = request.POST.get('district')
+        subcounty_id = request.POST.get('subcounty')
+        parish_id = request.POST.get('parish')
+        village_id = request.POST.get('village')
+        country_id = request.POST.get('country')
+        contact_id = request.POST.get('contact')
+        nin_id = request.POST.get('nin_no')
+        
+        print('District ', district_id)
+        print('Subcounty ', subcounty_id)
+        print('District via instance: ', location_form.data.get('district'))
+        #print('Cleaned District via instance: ', location_form.cleaned_data.get('district'))
+        
         if location_form.is_valid() and detail_form.is_valid():
             location_instance = location_form.save(commit=False)
-            location_instance.save()  # Save the instance to obtain an ID
+            location_instance.save()
 
             detail_instance = detail_form.save(commit=False)
             detail_instance.location = location_instance
             detail_instance.save()
-
+            
+            # Rest of your code to save the instances and redirect
             return redirect('add-newborn')
+            
+        else:
+            print('Form data is invalid')
+            print('District:', district_id)
+            print('Subcounty:', subcounty_id)
+            print('Parish:', parish_id)
+            print('Village:', village_id)
+    
     else:
         detail_form = MotherDetailForm()
         location_form = MotherLocationForm()
@@ -146,7 +168,9 @@ def mother(request):
         'detail_form': detail_form,
         'location_form': location_form,
     }
+
     return render(request, 'newborn/mother3.html', context)
+
 
 def print_detail(request, pk):
     newborn = Newborn.objects.get(pk=pk)
@@ -289,15 +313,15 @@ def update_details(request, pk):
 
 def fetch_subcounties(request, district_id):
     subcounties = Subcounty.objects.filter(district_id=district_id).values('id', 'name')
-    data = {'subcounties': {subcounty['id']: subcounty['name'] for subcounty in subcounties}}
+    data = {'subcounties': list(subcounties)}
     return JsonResponse(data)
 
 def fetch_parishes(request, subcounty_id):
     parishes = Parish.objects.filter(subcounty_id=subcounty_id).values('id', 'name')
-    data = {'parishes': {parish['id']: parish['name'] for parish in parishes}}
+    data = {'parishes': list(parishes)}
     return JsonResponse(data)
 
 def fetch_villages(request, parish_id):
     villages = Village.objects.filter(parish_id=parish_id).values('id', 'name')
-    data = {'villages': {village['id']: village['name'] for village in villages}}
+    data = {'villages': list(villages)}
     return JsonResponse(data)

@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="container pt-2 my-3">
-	<form id="my-form" action="{% url 'mother-details' %}" method="POST">
+        <form id="my-form" action="" method="POST">
             {% csrf_token %}
 		<div class="card mb-3">
 			<div class="card-header bg-info text-light">
@@ -60,17 +60,16 @@ $(document).ready(function() {
         dataType: 'json',
         success: function(data) {
           // Populate subcounty select options
-          $('#id_subcounty').empty().append('<option value="">---------</option>');
-          $.each(data.subcounties, function(key, value) {
-            $('#id_subcounty').append('<option value="' + key + '">' + value + '</option>');
+          var subcountySelect = $('#id_subcounty');
+          subcountySelect.empty().append('<option value="">---------</option>');
+          $.each(data.subcounties, function(index, subcounty) {
+            subcountySelect.append('<option value="' + subcounty.id + '">' + subcounty.name + '</option>');
           });
         }
       });
     } else {
-      // Empty subcounty and parish select options if no district is selected
+      // Empty subcounty select options if no district is selected
       $('#id_subcounty').empty().append('<option value="">---------</option>');
-      $('#id_parish').empty().append('<option value="">---------</option>');
-      $('#id_village').empty().append('<option value="">---------</option>');
     }
   });
 
@@ -85,16 +84,16 @@ $(document).ready(function() {
         dataType: 'json',
         success: function(data) {
           // Populate parish select options
-          $('#id_parish').empty().append('<option value="">---------</option>');
-          $.each(data.parishes, function(key, value) {
-            $('#id_parish').append('<option value="' + key + '">' + value + '</option>');
+          var parishSelect = $('#id_parish');
+          parishSelect.empty().append('<option value="">---------</option>');
+          $.each(data.parishes, function(index, parish) {
+            parishSelect.append('<option value="' + parish.id + '">' + parish.name + '</option>');
           });
         }
       });
     } else {
-      // Empty parish and village select options if no subcounty is selected
+      // Empty parish select options if no subcounty is selected
       $('#id_parish').empty().append('<option value="">---------</option>');
-      $('#id_village').empty().append('<option value="">---------</option>');
     }
   });
 
@@ -109,9 +108,10 @@ $(document).ready(function() {
         dataType: 'json',
         success: function(data) {
           // Populate village select options
-          $('#id_village').empty().append('<option value="">---------</option>');
-          $.each(data.villages, function(key, value) {
-            $('#id_village').append('<option value="' + key + '">' + value + '</option>');
+          var villageSelect = $('#id_village');
+          villageSelect.empty().append('<option value="">---------</option>');
+          $.each(data.villages, function(index, village) {
+            villageSelect.append('<option value="' + village.id + '">' + village.name + '</option>');
           });
         }
       });
@@ -119,34 +119,6 @@ $(document).ready(function() {
       // Empty village select options if no parish is selected
       $('#id_village').empty().append('<option value="">---------</option>');
     }
-  });
-
-  // Form submission event
-  $('#your-form-id').submit(function(event) {
-    event.preventDefault(); // Prevent the default form submission
-
-    // Convert JSON data to form-encoded data
-    var jsonData = {
-      subcounty: $('#id_subcounty').val(),
-      parish: $('#id_parish').val(),
-      village: $('#id_village').val()
-    };
-    var formData = $.param(jsonData);
-
-    // Submit the form with the form-encoded data
-    $.ajax({
-      url: $(this).attr('action'),
-      type: $(this).attr('method'),
-      data: formData,
-      success: function(response) {
-        // Handle the success response
-        // ...
-      },
-      error: function(xhr, textStatus, errorThrown) {
-        // Handle the error response
-        // ...
-      }
-    });
   });
 });
 </script>
