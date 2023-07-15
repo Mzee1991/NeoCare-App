@@ -129,17 +129,17 @@ def mother(request):
         location_form = MotherLocationForm(request.POST)
         detail_form = MotherDetailForm(request.POST)
         
-        district_id = request.POST.get('district')
-        subcounty_id = request.POST.get('subcounty')
-        parish_id = request.POST.get('parish')
-        village_id = request.POST.get('village')
-        country_id = request.POST.get('country')
-        contact_id = request.POST.get('contact')
-        nin_id = request.POST.get('nin_no')
+        #district_id = request.POST.get('district')
+        #subcounty_id = request.POST.get('subcounty')
+        #parish_id = request.POST.get('parish')
+        #village_id = request.POST.get('village')
+        #country_id = request.POST.get('country')
+        #contact_id = request.POST.get('contact')
+        #nin_id = request.POST.get('nin_no')
         
-        print('District ', district_id)
-        print('Subcounty ', subcounty_id)
-        print('District via instance: ', location_form.data.get('district'))
+        #print('District ', district_id)
+        #print('Subcounty ', subcounty_id)
+        #print('District via instance: ', location_form.data.get('district'))
         #print('Cleaned District via instance: ', location_form.cleaned_data.get('district'))
         
         if location_form.is_valid() and detail_form.is_valid():
@@ -153,16 +153,9 @@ def mother(request):
             # Rest of your code to save the instances and redirect
             return redirect('add-newborn')
             
-        else:
-            print('Form data is invalid')
-            print('District:', district_id)
-            print('Subcounty:', subcounty_id)
-            print('Parish:', parish_id)
-            print('Village:', village_id)
-    
     else:
         detail_form = MotherDetailForm()
-        location_form = MotherLocationForm()
+        location_form = MotherLocationForm(is_update=False)
 
     context = {
         'detail_form': detail_form,
@@ -282,9 +275,10 @@ def update_details(request, pk):
     antenatal_history = mother.antenatalhistory_set.first()
 
     if request.method == 'POST':
-        location_form = MotherLocationForm(request.POST, prefix='location', instance=location)
+        location_form = MotherLocationForm(request.POST, prefix='location', instance=location, is_update=True)
         detail_form = MotherDetailForm(request.POST, prefix='detail', instance=mother)
         antenatal_form = AntenatalHistoryForm(request.POST, prefix='antenatal', instance=antenatal_history)
+        #print(location_form)
 
         if (
             location_form.is_valid()
@@ -301,7 +295,7 @@ def update_details(request, pk):
 
             return redirect(reverse('clerkship-page', kwargs={'pk': pk}))
     else:
-        location_form = MotherLocationForm(prefix='location', instance=location)
+        location_form = MotherLocationForm(prefix='location', instance=location, is_update=True)
         detail_form = MotherDetailForm(prefix='detail', instance=mother)
         antenatal_form = AntenatalHistoryForm(prefix='antenatal', instance=antenatal_history)
 
