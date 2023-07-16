@@ -60,21 +60,22 @@ class MotherLocationForm(ModelForm):
         is_update = kwargs.pop('is_update', False)
         super().__init__(*args, **kwargs)
 
-        if is_update:
-            instance = kwargs.get('instance')
-            if self.instance and self.instance.district_id:
-                print("We are here in update")
-                district_id = int(self.instance.district_id)
+        instance = kwargs.get('instance')
+        if is_update and instance:
+            self.fields['district'].disabled = True  # Disable the district field to prevent changes
+            self.fields['subcounty'].disabled = True
+            self.fields['parish'].disabled = True
+            self.fields['village'].disabled = True
+            self.fields['country'].disabled = True
+            if instance.district:
+                district_id = instance.district_id
                 self.fields['subcounty'].queryset = Subcounty.objects.filter(district_id=district_id)
-                if self.instance and self.instance.subcounty_id:
-                    subcounty_id = int(self.instance.subcounty_id)
-                    print("Sub in the update: ", subcounty_id)
+                if instance.subcounty:
+                    subcounty_id = instance.subcounty_id
                     self.fields['parish'].queryset = Parish.objects.filter(subcounty_id=subcounty_id)
-                    if self.instance and self.instance.parish_id:
-                        parish_id = int(self.instance.parish_id)
+                    if instance.parish:
+                        parish_id = instance.parish_id
                         self.fields['village'].queryset = Village.objects.filter(parish_id=parish_id)
-            
-            self.fields['district'].queryset = District.objects.all()
         else:
             if 'district' in self.data:
                 try:
@@ -94,7 +95,7 @@ class MotherLocationForm(ModelForm):
                     self.fields['village'].queryset = Village.objects.filter(parish_id=parish_id)
                 except (ValueError, TypeError):
                     pass
-            self.fields['district'].queryset = District.objects.all()
+        self.fields['district'].queryset = District.objects.all()
 
     def clean(self):
         cleaned_data = super().clean()

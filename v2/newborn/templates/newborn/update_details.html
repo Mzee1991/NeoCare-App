@@ -11,7 +11,7 @@
 </head>
 <body>
    <div class="container">
-      <div class="row justify-content-center mt-5">
+      <div class="row justify-content-center mt-5 mb-3">
          <div class="col-md-8">
             <div class="card">
                <div class="card-header">
@@ -71,78 +71,80 @@
          </div>
       </div>
    </div>
-
    <script>
-   $(document).ready(function() {
-      // Function to fetch subcounties based on the selected district
-      function fetchSubcounties(districtId) {
-         $.ajax({
-            url: `/fetch-subcounties/${districtId}/`,
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-               var subcountySelect = $('#id_subcounty');
-               subcountySelect.empty();
-               subcountySelect.append($('<option>', {value: '', text: '---------'}));
-               $.each(data.subcounties, function(index, subcounty) {
-                  subcountySelect.append($('<option>', {value: subcounty.id, text: subcounty.name}));
-               });
-            }
-         });
-      }
-
-      // Function to fetch parishes based on the selected subcounty
-      function fetchParishes(subcountyId) {
-         $.ajax({
-            url: `/fetch-parishes/${subcountyId}/`,
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-               var parishSelect = $('#id_parish');
-               parishSelect.empty();
-               parishSelect.append($('<option>', {value: '', text: '---------'}));
-               $.each(data.parishes, function(index, parish) {
-                  parishSelect.append($('<option>', {value: parish.id, text: parish.name}));
-               });
-            }
-         });
-      }
-
-      // Function to fetch villages based on the selected parish
-      function fetchVillages(parishId) {
-         $.ajax({
-            url: `/fetch-villages/${parishId}/`,
-            type: 'GET',
-            dataType: 'json',
-            success: function(data) {
-               var villageSelect = $('#id_village');
-               villageSelect.empty();
-               villageSelect.append($('<option>', {value: '', text: '---------'}));
-               $.each(data.villages, function(index, village) {
-                  villageSelect.append($('<option>', {value: village.id, text: village.name}));
-               });
-            }
-         });
-      }
-
-      // Event listener for district field change
+    $(document).ready(function() {
+      // District select change event
       $('#id_district').change(function() {
-         var selectedDistrictId = $(this).val();
-         fetchSubcounties(selectedDistrictId);
+        var districtId = $(this).val();
+        if (districtId) {
+          // Fetch subcounties based on the selected district
+          $.ajax({
+            url: '/fetch-subcounties/' + districtId + '/',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+              // Populate subcounty select options
+              var subcountySelect = $('#id_subcounty');
+              subcountySelect.empty().append('<option value="">---------</option>');
+              $.each(data.subcounties, function(index, subcounty) {
+                subcountySelect.append('<option value="' + subcounty.id + '">' + subcounty.name + '</option>');
+              });
+            }
+          });
+        } else {
+          // Empty subcounty select options if no district is selected
+          $('#id_subcounty').empty().append('<option value="">---------</option>');
+        }
       });
 
-      // Event listener for subcounty field change
+      // Subcounty select change event
       $('#id_subcounty').change(function() {
-         var selectedSubcountyId = $(this).val();
-         fetchParishes(selectedSubcountyId);
+        var subcountyId = $(this).val();
+        if (subcountyId) {
+          // Fetch parishes based on the selected subcounty
+          $.ajax({
+            url: '/fetch-parishes/' + subcountyId + '/',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+              // Populate parish select options
+              var parishSelect = $('#id_parish');
+              parishSelect.empty().append('<option value="">---------</option>');
+              $.each(data.parishes, function(index, parish) {
+                parishSelect.append('<option value="' + parish.id + '">' + parish.name + '</option>');
+              });
+            }
+          });
+        } else {
+          // Empty parish select options if no subcounty is selected
+          $('#id_parish').empty().append('<option value="">---------</option>');
+        }
       });
 
-      // Event listener for parish field change
+      // Parish select change event
       $('#id_parish').change(function() {
-         var selectedParishId = $(this).val();
-         fetchVillages(selectedParishId);
+        var parishId = $(this).val();
+        if (parishId) {
+          // Fetch villages based on the selected parish
+          $.ajax({
+            url: '/fetch-villages/' + parishId + '/',
+            type: 'GET',
+            dataType: 'json',
+            success: function(data) {
+              // Populate village select options
+              var villageSelect = $('#id_village');
+              villageSelect.empty().append('<option value="">---------</option>');
+              $.each(data.villages, function(index, village) {
+                villageSelect.append('<option value="' + village.id + '">' + village.name + '</option>');
+              });
+            }
+          });
+        } else {
+          // Empty village select options if no parish is selected
+          $('#id_village').empty().append('<option value="">---------</option>');
+        }
       });
-   });
-   </script>
+    });
+  </script>
 </body>
 </html>
