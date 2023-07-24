@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village
+from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village, CountyMunicipality
 from .models import SEROLOGY_CHOICES, MICROBIOLOGY_CHOICES, CHEMISTRY_CHOICES, HEMATOLOGY_CHOICES
 
 
@@ -39,16 +39,18 @@ class MotherDetailForm(ModelForm):
 
 class MotherLocationForm(ModelForm):
     district = forms.ModelChoiceField(queryset=District.objects.all(), empty_label='---------')
+    county_municipality = forms.ModelChoiceField(queryset=CountyMunicipality.objects.none(), empty_label='---------')
     subcounty = forms.ModelChoiceField(queryset=Subcounty.objects.none(), empty_label='---------')
     parish = forms.ModelChoiceField(queryset=Parish.objects.none(), empty_label='---------')
     village = forms.ModelChoiceField(queryset=Village.objects.none(), empty_label='---------')
 
     class Meta:
         model = MotherLocation
-        fields = ['country', 'district', 'subcounty', 'parish', 'village', 'contact', 'nin_no']
+        fields = ['country', 'district', 'county_municipality', 'subcounty', 'parish', 'village', 'contact', 'nin_no']
         widgets = {
             'country': forms.TextInput(attrs={'class': 'form-control'}),
             'district': forms.Select(attrs={'class': 'form-control'}),
+            'county_municipality': forms.Select(attrs={'class': 'form-control'}),
             'subcounty': forms.Select(attrs={'class': 'form-control'}),
             'parish': forms.Select(attrs={'class': 'form-control'}),
             'village': forms.Select(attrs={'class': 'form-control'}),
@@ -63,24 +65,29 @@ class MotherLocationForm(ModelForm):
         instance = kwargs.get('instance')
         if is_update and instance:
             self.fields['district'].disabled = True  # Disable the district field to prevent changes
-            self.fields['subcounty'].disabled = True
-            self.fields['parish'].disabled = True
-            self.fields['village'].disabled = True
-            self.fields['country'].disabled = True
             if instance.district:
                 district_id = instance.district_id
-                self.fields['subcounty'].queryset = Subcounty.objects.filter(district_id=district_id)
-                if instance.subcounty:
-                    subcounty_id = instance.subcounty_id
-                    self.fields['parish'].queryset = Parish.objects.filter(subcounty_id=subcounty_id)
-                    if instance.parish:
-                        parish_id = instance.parish_id
-                        self.fields['village'].queryset = Village.objects.filter(parish_id=parish_id)
+                self.fields['county_municipality'].queryset = CountyMunicipality.objects.filter(district_id=district_id)
+                if instance.county_municipality:
+                    county_municipality_id = instance.county_municipality_id
+                    self.fields['subcounty'].queryset = Subcounty.objects.filter(county_municipality_id=county_municipality_id)
+                    if instance.subcounty:
+                        subcounty_id = instance.subcounty_id
+                        self.fields['parish'].queryset = Parish.objects.filter(subcounty_id=subcounty_id)
+                        if instance.parish:
+                            parish_id = instance.parish_id
+                            self.fields['village'].queryset = Village.objects.filter(parish_id=parish_id)
         else:
             if 'district' in self.data:
                 try:
                     district_id = int(self.data.get('district'))
-                    self.fields['subcounty'].queryset = Subcounty.objects.filter(district_id=district_id)
+                    self.fields['county_municipality'].queryset = CountyMunicipality.objects.filter(district_id=district_id)
+                except (ValueError, TypeError):
+                    pass
+            if 'county_municipality' in self.data:
+                try:
+                    county_municipality_id = int(self.data.get('county_municipality'))
+                    self.fields['subcounty'].queryset = Subcounty.objects.filter(county_municipality_id=county_municipality_id)
                 except (ValueError, TypeError):
                     pass
             if 'subcounty' in self.data:
@@ -95,18 +102,20 @@ class MotherLocationForm(ModelForm):
                     self.fields['village'].queryset = Village.objects.filter(parish_id=parish_id)
                 except (ValueError, TypeError):
                     pass
-        self.fields['district'].queryset = District.objects.all()
+            self.fields['district'].queryset = District.objects.all()
 
     def clean(self):
         cleaned_data = super().clean()
         district = cleaned_data.get('district')
+        county_municipality = cleaned_data.get('county_municipality')
         subcounty = cleaned_data.get('subcounty')
-        print("Sub: ", subcounty)
         parish = cleaned_data.get('parish')
         village = cleaned_data.get('village')
 
         if not district:
             raise forms.ValidationError("Please select a district.")
+        if not county_municipality:
+            raise forms.ValidationError("Please select a county/municipality.")
         if not subcounty:
             raise forms.ValidationError("Please select a subcounty.")
         if not parish:

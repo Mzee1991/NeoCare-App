@@ -48,14 +48,38 @@
 	</div>
 
 <script>
-$(document).ready(function() {
+	$(document).ready(function() {
   // District select change event
   $('#id_district').change(function() {
     var districtId = $(this).val();
     if (districtId) {
-      // Fetch subcounties based on the selected district
+      // Fetch county/municipalities based on the selected district
       $.ajax({
-        url: '/fetch-subcounties/' + districtId + '/',
+        url: '/fetch-county-municipalities/' + districtId + '/',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          // Populate county/municipality select options
+          var countyMunicipalitySelect = $('#id_county_municipality');
+          countyMunicipalitySelect.empty().append('<option value="">---------</option>');
+          $.each(data.county_municipalities, function(index, countyMunicipality) {
+            countyMunicipalitySelect.append('<option value="' + countyMunicipality.id + '">' + countyMunicipality.name + '</option>');
+          });
+        }
+      });
+    } else {
+      // Empty county/municipality select options if no district is selected
+      $('#id_county_municipality').empty().append('<option value="">---------</option>');
+    }
+  });
+
+  // County/Municipality select change event
+  $('#id_county_municipality').change(function() {
+    var countyMunicipalityId = $(this).val();
+    if (countyMunicipalityId) {
+      // Fetch subcounties based on the selected county/municipality
+      $.ajax({
+        url: '/fetch-subcounties/' + countyMunicipalityId + '/',
         type: 'GET',
         dataType: 'json',
         success: function(data) {
@@ -68,7 +92,7 @@ $(document).ready(function() {
         }
       });
     } else {
-      // Empty subcounty select options if no district is selected
+      // Empty subcounty select options if no county/municipality is selected
       $('#id_subcounty').empty().append('<option value="">---------</option>');
     }
   });

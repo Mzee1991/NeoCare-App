@@ -3,16 +3,17 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
-from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation, Subcounty, Parish, Village
+from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation, Subcounty, Parish, Village, CountyMunicipality
 from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
 from django.views.generic import ListView, CreateView
 from django.contrib.auth.decorators import login_required
-from django.db.models import Avg, Count
+from django.db.models import Avg, Count, Q
 from datetime import date, timedelta
 import json
+from django_tables2 import RequestConfig
 
 def newborn_list(request):
     """
@@ -113,13 +114,17 @@ def newborn_table(request):
 
 @login_required
 def newborn_search(request):
-    if request.method == 'GET':
-        searched = request.GET.get('searched', False)
-        newborns = NewbornTable(Newborn.objects.filter(name__contains=searched))
-        return render(request, 'newborn/search.html', {'searched': searched, 'newborns': newborns})
-    else:
-        return render(request, 'newborn/search.html', {})
+    searched = request.GET.get('searched', '')
+    newborns = None
 
+    if searched.isdigit():
+        newborns = NewbornTable(Newborn.objects.filter(Q(pk=int(searched))))
+    else:
+        newborns = NewbornTable(Newborn.objects.filter(Q(name__contains=searched)))
+
+    RequestConfig(request).configure(newborns)
+
+    return render(request, 'newborn/search.html', {'searched': searched, 'newborns': newborns})
 ########
 #more
 
@@ -305,8 +310,14 @@ def update_details(request, pk):
         'antenatal_form': antenatal_form,
     })
 
-def fetch_subcounties(request, district_id):
-    subcounties = Subcounty.objects.filter(district_id=district_id).values('id', 'name')
+
+def fetch_county_municipalities(request, district_id):
+    county_municipalities = CountyMunicipality.objects.filter(district_id=district_id).values('id', 'name')
+    data = {'county_municipalities': list(county_municipalities)}
+    return JsonResponse(data)
+
+def fetch_subcounties(request, county_municipality_id):
+    subcounties = Subcounty.objects.filter(county_municipality_id=county_municipality_id).values('id', 'name')
     data = {'subcounties': list(subcounties)}
     return JsonResponse(data)
 
