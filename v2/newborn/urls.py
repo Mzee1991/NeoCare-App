@@ -9,6 +9,7 @@ urlpatterns = [
     path('newborn/index/', views.index, name='add-newborn'),
     path('newborn/update_details/<int:pk>/', views.update_details, name='update-details'),
     path('newborn/antenatal_hx/', views.antenatal_hx, name='antenatal-details'),
+    path('newborn/mothers_antenatal_details/<int:pk>/', views.mothers_antenatal_details, name='mothers_antenatal_details'),
     path('newborn/clinical-exam/<int:pk>/', views.newborn_exam_form, name='clinical-exam'),
     #path('newborn/delivery/', views.delivery_view, name='delivery-details'),
     path('newborn/lab_request/<int:pk>/', views.lab_request, name='lab-request'),

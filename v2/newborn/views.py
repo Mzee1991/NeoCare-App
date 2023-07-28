@@ -4,7 +4,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation, Subcounty, Parish, Village, CountyMunicipality
-from newborn.forms import NewbornForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
+from newborn.forms import NewbornForm, MothersAntenatalDetailsForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
@@ -66,7 +66,7 @@ def index(request):
             instance = form.save()
             instance.mother = MotherDetails.objects.all().order_by('-id')[0]
             instance.save()
-            return redirect('antenatal-details')
+            return redirect('home-page')
     else:
         form = NewbornForm()
     return render(request, 'newborn/delivery.html', {'form': form})
@@ -134,19 +134,6 @@ def mother(request):
         location_form = MotherLocationForm(request.POST)
         detail_form = MotherDetailForm(request.POST)
         
-        #district_id = request.POST.get('district')
-        #subcounty_id = request.POST.get('subcounty')
-        #parish_id = request.POST.get('parish')
-        #village_id = request.POST.get('village')
-        #country_id = request.POST.get('country')
-        #contact_id = request.POST.get('contact')
-        #nin_id = request.POST.get('nin_no')
-        
-        #print('District ', district_id)
-        #print('Subcounty ', subcounty_id)
-        #print('District via instance: ', location_form.data.get('district'))
-        #print('Cleaned District via instance: ', location_form.cleaned_data.get('district'))
-        
         if location_form.is_valid() and detail_form.is_valid():
             location_instance = location_form.save(commit=False)
             location_instance.save()
@@ -184,7 +171,7 @@ def print_detail(request, pk):
 def print_care2x(request, pk):
     newborn = Newborn.objects.get(pk=pk) # Retrieve the Newborn object
     mother = newborn.mother  # Access the Mother object associated with the newborn
-    antenatal_history = mother.antenatalhistory_set.first() #he Antenatalhistory related to the mother
+    antenatal_history = mother.mothersantenataldetails_set.first() #he Antenatalhistory related to the mother
     # Retrieve the NewbornExam objects related to the newborn
     newborn_exams = newborn.newbornexam_set.first()
     # Retrieve the LabInvestigation objects related to the newborn
@@ -277,12 +264,12 @@ def update_details(request, pk):
     newborn = get_object_or_404(Newborn, pk=pk)
     mother = newborn.mother
     location = mother.location
-    antenatal_history = mother.antenatalhistory_set.first()
+    antenatal_history = mother.mothersantenataldetails_set.first()
 
     if request.method == 'POST':
         location_form = MotherLocationForm(request.POST, prefix='location', instance=location, is_update=True)
         detail_form = MotherDetailForm(request.POST, prefix='detail', instance=mother)
-        antenatal_form = AntenatalHistoryForm(request.POST, prefix='antenatal', instance=antenatal_history)
+        antenatal_form = MothersAntenatalDetailsForm(request.POST, prefix='antenatal', instance=antenatal_history)
         #print(location_form)
 
         if (
@@ -302,7 +289,7 @@ def update_details(request, pk):
     else:
         location_form = MotherLocationForm(prefix='location', instance=location, is_update=True)
         detail_form = MotherDetailForm(prefix='detail', instance=mother)
-        antenatal_form = AntenatalHistoryForm(prefix='antenatal', instance=antenatal_history)
+        antenatal_form = MothersAntenatalDetailsForm(prefix='antenatal', instance=antenatal_history)
 
     return render(request, 'newborn/update_details.html', {
         'location_form': location_form,
@@ -330,3 +317,23 @@ def fetch_villages(request, parish_id):
     villages = Village.objects.filter(parish_id=parish_id).values('id', 'name')
     data = {'villages': list(villages)}
     return JsonResponse(data)
+
+
+def mothers_antenatal_details(request, pk):
+    # Get the newborn object using the provided primary key (pk)
+    newborn = get_object_or_404(Newborn, pk=pk)
+
+    if request.method == 'POST':
+        form = MothersAntenatalDetailsForm(request.POST)
+        print(form)
+        if form.is_valid():
+            # Save the form data to the mother's antenatal details
+            antenatal_details = form.save(commit=False)  # Create an object from the form data, but don't save it yet
+            antenatal_details.mother = newborn.mother  # Associate the mother object with the newborn's mother
+            antenatal_details.save()  # Now save the antenatal details with the associated mother
+
+            return redirect('home-page')  # Redirect to a success page
+    else:
+        form = MothersAntenatalDetailsForm()
+
+    return render(request, 'newborn/newborn_admission_form.html', {'form': form})

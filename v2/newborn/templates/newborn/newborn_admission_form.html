@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Mother's Antenatal Details</title>
+  <!-- Add Bootstrap CSS link -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+  <!-- Add Bootstrap JS and jQuery links for dynamic functionality -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+  <style>
+    body {
+      background-color: #f7f7f7;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h4 class="card-title mb-0">Mother's Antenatal Details</h4>
+          </div>
+          <div class="card-body">
+            <form method="post">
+              {% csrf_token %}
+
+              <!-- Selection Field -->
+              <div class="form-group">
+                <label for="{{ form.attended.id_for_label }}">Attended:</label>
+                {{ form.attended }}
+              </div>
+
+              <!-- Stepwise Inner Flow for Dynamically Displayed Fields -->
+              <div id="stepwiseFlow" {% if form.attended.value != 'Yes' %}style="display: none;"{% endif %}>
+                <div class="card">
+                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#attendedDetailsSection">
+                    <h5 class="mb-0">Step 1: Attended Details</h5>
+                  </div>
+                  <div id="attendedDetailsSection" class="collapse {% if form.attended.value == 'Yes' %}show{% endif %}">
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="{{ form.number_attended.id_for_label }}">Number of times attended:</label>
+                        {{ form.number_attended }}
+                      </div>
+                      <div class="form-group">
+                        <label for="{{ form.attended_from.id_for_label }}">Attended from:</label>
+                        {{ form.attended_from }}
+                      </div>
+                      <div class="form-group">
+                        <label for="{{ form.facility_name.id_for_label }}">Facility Name:</label>
+                        {{ form.facility_name }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 2: Conditions during pregnancy -->
+                <div class="card mt-3">
+                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#conditionsPregnancySection">
+                    <h5 class="mb-0">Step 2: Conditions during pregnancy</h5>
+                  </div>
+                  <div id="conditionsPregnancySection" class="collapse">
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="{{ form.conditions_during_pregnancy.id_for_label }}">Conditions during pregnancy:</label>
+                        {{ form.conditions_during_pregnancy }}
+                      </div>
+                      <div id="otherConditionsField" {% if form.conditions_during_pregnancy.value == 'Others' %}style="display: none;"{% endif %}>
+                        <div class="form-group">
+                          <label for="{{ form.other_conditions.id_for_label }}">Specify other condition:</label>
+                          {{ form.other_conditions }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 3: Received T.T -->
+                <div class="card mt-3">
+                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#receivedTTSection">
+                    <h5 class="mb-0">Step 3: Received T.T</h5>
+                  </div>
+                  <div id="receivedTTSection" class="collapse">
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="{{ form.received_tt.id_for_label }}">Received T.T:</label>
+                        {{ form.received_tt }}
+                      </div>
+                      <div id="ttReceivedDetails" {% if form.received_tt.value != 'Yes' %}style="display: none;"{% endif %}>
+                        <div class="form-group">
+                          <label for="{{ form.number_tt_received.id_for_label }}">Number of times T.T received:</label>
+                          {{ form.number_tt_received }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 4: Received IPT -->
+                <div class="card mt-3">
+                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#receivedIPTSection">
+                    <h5 class="mb-0">Step 4: Received IPT</h5>
+                  </div>
+                  <div id="receivedIPTSection" class="collapse">
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="{{ form.received_ipt.id_for_label }}">Received IPT:</label>
+                        {{ form.received_ipt }}
+                      </div>
+                      <div id="iptReceivedDetails" {% if form.received_ipt.value != 'Yes' %}style="display: none;"{% endif %}>
+                        <div class="form-group">
+                          <label for="{{ form.number_ipt_received.id_for_label }}">Number of times IPT received:</label>
+                          {{ form.number_ipt_received }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 5: Screened for HIV & Is Mother on ART -->
+                <div class="card mt-3">
+                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#screenedHIVSection">
+                    <h5 class="mb-0">Step 5: Screened for HIV & Is Mother on ART</h5>
+                  </div>
+                  <div id="screenedHIVSection" class="collapse">
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="{{ form.screened_for_hiv.id_for_label }}">Screened for HIV:</label>
+                        {{ form.screened_for_hiv }}
+                      </div>
+                      <div id="hivTestResultField" {% if form.screened_for_hiv.value != 'Yes' %}style="display: none;"{% endif %}>
+                        <div class="form-group">
+                          <label for="{{ form.hiv_test_result.id_for_label }}">HIV Test result:</label>
+                          {{ form.hiv_test_result }}
+                        </div>
+                      </div>
+                      <div id="onARTField" {% if form.hiv_test_result.value != 'Positive' %}style="display: none;"{% endif %}>
+                        <div class="form-group">
+                          <label for="{{ form.on_art.id_for_label }}">Is Mother on ART:</label>
+                          {{ form.on_art }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Step 6: Screened for Syphilis & Did Mother receive Treatment -->
+                <div class="card mt-3">
+                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#screenedSyphilisSection">
+                    <h5 class="mb-0">Step 6: Screened for Syphilis & Did Mother receive Treatment</h5>
+                  </div>
+                  <div id="screenedSyphilisSection" class="collapse">
+                    <div class="card-body">
+                      <div class="form-group">
+                        <label for="{{ form.screened_for_syphilis.id_for_label }}">Screened for Syphilis:</label>
+                        {{ form.screened_for_syphilis }}
+                      </div>
+                      <div id="syphilisTestResultField" {% if form.screened_for_syphilis.value != 'Yes' %}style="display: none;"{% endif %}>
+                        <div class="form-group">
+                          <label for="{{ form.syphilis_test_result.id_for_label }}">Syphilis Test result:</label>
+                          {{ form.syphilis_test_result }}
+                        </div>
+                      </div>
+                      <div id="treatmentReceivedField" {% if form.syphilis_test_result.value != 'Positive' %}style="display: none;"{% endif %}>
+                        <div class="form-group">
+                          <label for="{{ form.received_treatment.id_for_label }}">Did Mother receive Treatment:</label>
+                          {{ form.received_treatment }}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Add more steps for other fields if needed -->
+              </div>
+
+              <button type="submit" class="btn btn-primary mt-3">Submit</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      function handleDynamicFields() {
+        // JavaScript code to show/hide fields based on the selected values
+        if ($("#id_attended").val() === "Yes") {
+          $("#stepwiseFlow").show();
+          $("#attendedDetailsSection").addClass('show');
+        } else {
+          $("#stepwiseFlow").hide();
+          $("#attendedDetailsSection").removeClass('show');
+        }
+
+        if ($("#id_conditions_during_pregnancy").val() === "Others") {
+          $("#otherConditionsField").show();
+        } else {
+          $("#otherConditionsField").hide();
+        }
+
+        // Add more similar logic for other fields
+        if ($("#id_received_tt").val() === "Yes") {
+          $("#ttReceivedDetails").show();
+        } else {
+          $("#ttReceivedDetails").hide();
+        }
+
+        if ($("#id_received_ipt").val() === "Yes") {
+          $("#iptReceivedDetails").show();
+        } else {
+          $("#iptReceivedDetails").hide();
+        }
+
+        if ($("#id_screened_for_hiv").val() === "Yes") {
+          $("#hivTestResultField").show();
+        } else {
+          $("#hivTestResultField").hide();
+        }
+
+        if ($("#id_hiv_test_result").val() === "Positive") {
+          $("#onARTField").show();
+        } else {
+          $("#onARTField").hide();
+        }
+
+        if ($("#id_screened_for_syphilis").val() === "Yes") {
+          $("#syphilisTestResultField").show();
+        } else {
+          $("#syphilisTestResultField").hide();
+        }
+
+        if ($("#id_syphilis_test_result").val() === "Positive") {
+          $("#treatmentReceivedField").show();
+        } else {
+          $("#treatmentReceivedField").hide();
+        }
+      }
+
+      // Trigger dynamic field display on initial page load
+      handleDynamicFields();
+
+      // Trigger dynamic field display on any change to the fields with the class "dynamic-field-trigger"
+      $(".dynamic-field-trigger").change(function() {
+        handleDynamicFields();
+      });
+    });
+  </script>
+</body>
+</html>

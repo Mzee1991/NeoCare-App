@@ -33,6 +33,9 @@
             <nav class="col-md-2 d-none d-md-block bg-light sidebar">
                 <div class="sidebar-sticky">
                     <ul class="nav flex-column">
+ 			<li class="nav-item">
+                            <a class="nav-link" href="{% url 'mothers_antenatal_details' pk=newborn.id %}"><span data-feather="file"></span>Antenatal Details</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'clinical-exam' pk=newborn.id %}"><span data-feather="file"></span>Clinical Exam</a>
                         </li>

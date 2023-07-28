@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village, CountyMunicipality
+from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village, CountyMunicipality, MothersAntenatalDetails
 from .models import SEROLOGY_CHOICES, MICROBIOLOGY_CHOICES, CHEMISTRY_CHOICES, HEMATOLOGY_CHOICES
 
 
@@ -140,43 +140,6 @@ class LabInvestigationForm(ModelForm):
             'chemistry_urinalysis',
         ]
 
-#class LabInvestigationForm(ModelForm):
- #   def clean(self):
-  #      cleaned_data = super().clean()
-   #     serology = cleaned_data.get('serology')
-    #    microbiology = cleaned_data.get('microbiology')
-     #   chemistry = cleaned_data.get('chemistry')
-      #  hematology = cleaned_data.get('hematology')
-#
- #       if not any([serology, microbiology, chemistry, hematology]):
-  #          raise forms.ValidationError("Please select at least one option.")
-#
-#
-   # class Meta:
- #       model = LabInvestigation
-  #      fields = ['serology', 'microbiology', 'chemistry', 'hematology']
-   #     widgets = {
-    #            'serology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-     #           'microbiology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-      #          'chemistry': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-       #         'hematology': forms.CheckboxSelectMultiple(attrs={'class': 'form-check-input'}),
-        #}
-
-
-
-#class BirthRecordForm(forms.ModelForm):
- #   class Meta:
-  #      model = BirthRecord
-   #     fields = ['place_of_birth', 'name_of_health_facility', 'location_of_health_facility', 'mode_of_delivery',
-    #              'indication_for_csection', 'time_btn_cs_and_delivery', 'resuscitation', 'length_of_resuscitation',
-     #             'was_ox_connected', 'referral', 'reason_for_referral', 'date_and_time_of_referral', 'mean_of_transport']
-      #  widgets = {
-       #     'place_of_birth': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
-        #    'mode_of_delivery': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
-         #   'resuscitation': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
-          #  'referral': forms.Select(attrs={'class': 'form-control', 'onchange': 'showHideFields()'}),
-        #}
-
 
 class PatientForm(forms.ModelForm):
     symptoms = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}), required=False)
@@ -226,3 +189,95 @@ class NewbornExamForm(forms.ModelForm):
             'extremities',
             'neurological_exam',
         ]
+
+
+class MothersAntenatalDetailsForm(forms.ModelForm):
+    class Meta:
+        model = MothersAntenatalDetails
+        exclude = ('mother',) 
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        self.fields['number_attended'].required = False
+        self.fields['attended_from'].required = False
+        self.fields['facility_name'].required = False
+        self.fields['other_conditions'].required = False
+        self.fields['number_tt_received'].required = False
+        self.fields['number_ipt_received'].required = False
+        self.fields['hiv_test_result'].required = False
+        self.fields['on_art'].required = False
+        self.fields['syphilis_test_result'].required = False
+        self.fields['received_treatment'].required = False # Add the form-control class for consistent styling
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+
+        # Add JavaScript classes to the fields for event handling
+        self.fields['attended'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['conditions_during_pregnancy'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['received_tt'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['received_ipt'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['screened_for_hiv'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['hiv_test_result'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['screened_for_syphilis'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['syphilis_test_result'].widget.attrs['class'] += ' dynamic-field-trigger'
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Step 1: Check 'Attended' fields and related fields
+        attended = cleaned_data.get('attended')
+        print("Check attended", attended)
+        if attended == 'Yes':
+            number_attended = cleaned_data.get('number_attended')
+            attended_from = cleaned_data.get('attended_from')
+            facility_name = cleaned_data.get('facility_name')
+
+            if not number_attended:
+                self.add_error('number_attended', "If 'Attended' is 'Yes', 'Number of times attended' must be provided.")
+            if not attended_from:
+                self.add_error('attended_from', "If 'Attended' is 'Yes', 'Attended from' must be provided.")
+            if not facility_name:
+                self.add_error('facility_name', "If 'Attended' is 'Yes', 'Facility Name' must be provided.")
+
+        # Step 2: Check 'Conditions during pregnancy' and 'Other conditions'
+        conditions_during_pregnancy = cleaned_data.get('conditions_during_pregnancy')
+        other_conditions = cleaned_data.get('other_conditions')
+        if conditions_during_pregnancy == 'Others' and not other_conditions:
+            self.add_error('other_conditions', "If 'Conditions during pregnancy' is 'Others', 'Specify other condition' must be provided.")
+
+        # Step 3: Check 'Received T.T' and 'Number of times T.T received'
+        received_tt = cleaned_data.get('received_tt')
+        print("TT recived", received_tt)
+        number_tt_received = cleaned_data.get('number_tt_received')
+        if received_tt == 'Yes' and not number_tt_received:
+            self.add_error('number_tt_received', "If 'Received T.T' is 'Yes', 'Number of times T.T received' must be provided.")
+
+        # Step 4: Check 'Received IPT' and 'Number of times IPT received'
+        received_ipt = cleaned_data.get('received_ipt')
+        number_ipt_received = cleaned_data.get('number_ipt_received')
+        if received_ipt == 'Yes' and not number_ipt_received:
+            self.add_error('number_ipt_received', "If 'Received IPT' is 'Yes', 'Number of times IPT received' must be provided.")
+
+        # Step 5: Check 'Screened for HIV' and related fields
+        screened_for_hiv = cleaned_data.get('screened_for_hiv')
+        hiv_test_result = cleaned_data.get('hiv_test_result')
+        if screened_for_hiv == 'Yes' and not hiv_test_result:
+            self.add_error('hiv_test_result', "If 'Screened for HIV' is 'Yes', 'HIV Test result' must be provided.")
+        
+        if hiv_test_result == 'Positive':
+            on_art = cleaned_data.get('on_art')
+            if not on_art:
+                self.add_error('on_art', "If 'HIV Test result' is 'Positive', 'Is Mother on ART' must be provided.")
+
+        # Step 6: Check 'Screened for Syphilis' and related fields
+        screened_for_syphilis = cleaned_data.get('screened_for_syphilis')
+        syphilis_test_result = cleaned_data.get('syphilis_test_result')
+        if screened_for_syphilis == 'Yes' and not syphilis_test_result:
+            self.add_error('syphilis_test_result', "If 'Screened for Syphilis' is 'Yes', 'Syphilis Test result' must be provided.")
+        
+        if syphilis_test_result == 'Positive':
+            received_treatment = cleaned_data.get('received_treatment')
+            if not received_treatment:
+                self.add_error('received_treatment', "If 'Syphilis Test result' is 'Positive', 'Did Mother receive Treatment' must be provided.")
+
+        return cleaned_data

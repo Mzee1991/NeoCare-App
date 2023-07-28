@@ -244,4 +244,52 @@ class NewbornExam(models.Model):
 
 
 
+class MothersAntenatalDetails(models.Model):
+    ATTENDED_CHOICES = [
+        ('Yes', 'Yes'),
+        ('No', 'No'),
+    ]
 
+    FACILITY_CHOICES = [
+        ('Hospital', 'Hospital'),
+        ('Health Centre', 'Health Centre'),
+        ('Private Clinic', 'Private Clinic'),
+    ]
+
+    CONDITIONS_CHOICES = [
+        ('HTN', 'HTN'),
+        ('Pre-eclampsia', 'Pre-eclampsia'),
+        ('Diabetes', 'Diabetes'),
+        ('Others', 'Others'),
+    ]
+
+    HIV_TEST_RESULT_CHOICES = [
+        ('Positive', 'Positive'),
+        ('Negative', 'Negative'),
+    ]
+
+    YES_NO_CHOICES = [
+        ('Yes', 'Yes'),
+        ('No', 'No'),
+    ]
+
+    attended = models.CharField(max_length=3, choices=ATTENDED_CHOICES)
+    number_attended = models.PositiveIntegerField(blank=True, null=True)
+    attended_from = models.CharField(max_length=50, choices=FACILITY_CHOICES, blank=True, null=True)
+    facility_name = models.CharField(max_length=100, null=True, blank=True)
+    conditions_during_pregnancy = models.CharField(max_length=20, choices=CONDITIONS_CHOICES)
+    other_conditions = models.TextField(blank=True, null=True)
+    received_tt = models.CharField(max_length=3, choices=YES_NO_CHOICES)
+    number_tt_received = models.PositiveIntegerField(blank=True, null=True)
+    received_ipt = models.CharField(max_length=3, choices=YES_NO_CHOICES)
+    number_ipt_received = models.PositiveIntegerField(blank=True, null=True)
+    screened_for_hiv = models.CharField(max_length=3, choices=YES_NO_CHOICES)
+    hiv_test_result = models.CharField(max_length=8, choices=HIV_TEST_RESULT_CHOICES, blank=True, null=True)
+    on_art = models.CharField(max_length=3, choices=YES_NO_CHOICES, blank=True, null=True)
+    screened_for_syphilis = models.CharField(max_length=3, choices=YES_NO_CHOICES)
+    syphilis_test_result = models.CharField(max_length=8, choices=HIV_TEST_RESULT_CHOICES, blank=True, null=True)
+    received_treatment = models.CharField(max_length=3, choices=YES_NO_CHOICES, blank=True, null=True)
+    mother = models.ForeignKey(MotherDetails, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return f"{self.attended} - {self.conditions_during_pregnancy}"
