@@ -317,6 +317,16 @@ class NewbornAdmission(models.Model):
         ('No', 'No'),
     ]
 
+    SEX = [
+        ('M', 'M'),
+        ('F', 'F'),
+    ]
+
+    admission_date = models.DateTimeField()
+    name = models.CharField(max_length=100)
+    sex = models.CharField(max_length=100, choices=SEX)
+    birth_weight = models.DecimalField(max_digits=2, decimal_places=1)
+    delivery_date = models.DateTimeField()
     place_of_birth = models.CharField(max_length=20, choices=PLACE_OF_BIRTH_CHOICES)
     hospital_name = models.CharField(max_length=100, blank=True, null=True)
     mode_of_delivery = models.CharField(max_length=3, choices=MODE_OF_DELIVERY_CHOICES)
@@ -327,7 +337,7 @@ class NewbornAdmission(models.Model):
     referred_in = models.CharField(max_length=3, choices=YES_NO_CHOICES)
     facility_name = models.CharField(max_length=100, blank=True, null=True)
     referral_date_time = models.DateTimeField(blank=True, null=True)
-    reason_for_referral = models.TextField(blank=True, null=True)
+    reason_for_referral = models.CharField(max_length=100, blank=True, null=True)
     means_of_transport = models.CharField(max_length=20, choices=MEANS_OF_TRANSPORT_CHOICES, blank=True, null=True)
     oxygen_transport = models.CharField(max_length=3, choices=YES_NO_CHOICES, blank=True, null=True)
 

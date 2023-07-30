@@ -7,156 +7,213 @@
 </head>
 <body>
   <div class="container mt-4">
-    <h2>Newborn Admission Form</h2>
-    <form method="post">
-      {% csrf_token %}
-      <div class="form-group">
-        {{ form.place_of_birth.label_tag }}
-        {{ form.place_of_birth }}
+    <div class="card mb-4">
+      <div class="card-header">
+        <h2>Newborn Admission Details</h2>
       </div>
+      <div class="card-body">
+	<form method="post">
+          {% csrf_token %}
+<div class="form-group">
+          {{ form.admission_date.label_tag }}
+          {{ form.admission_date }}
+        </div>
 
-      <div class="form-group" id="hospitalNameField" style="display:none;">
-        {{ form.hospital_name.label_tag }}
-        {{ form.hospital_name }}
-      </div>
-
-      <div class="form-group">
-        {{ form.mode_of_delivery.label_tag }}
-        {{ form.mode_of_delivery }}
-      </div>
-
-      <div class="form-group" id="indicationField" style="display:none;">
-        {{ form.indication.label_tag }}
-        {{ form.indication }}
-      </div>
-
-      <div class="form-group">
-        {{ form.resuscitation_done.label_tag }}
-        {{ form.resuscitation_done }}
-      </div>
-
-      <div id="resuscitationDetails" style="display:none;">
-        <div class="form-group">
-          <label>Resuscitation Choices:</label>
-          <div class="form-check">
-            {{ form.resuscitation_choices_1 }}
-            <label class="form-check-label" for="{{ form.resuscitation_choices_1.id_for_label }}">Bag & Mask</label>
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3>Newborn Biodata</h3>
           </div>
-          <div class="form-check">
-            {{ form.resuscitation_choices_2 }}
-            <label class="form-check-label" for="{{ form.resuscitation_choices_2.id_for_label }}">Oxygen</label>
+          <div class="card-body">
+            <div class="form-group">
+              {{ form.name.label_tag }}
+              {{ form.name }}
+            </div>
+
+            <div class="form-group">
+              {{ form.sex.label_tag }}
+              {{ form.sex }}
+            </div>
+
+            <div class="form-group">
+              {{ form.birth_weight.label_tag }}
+              {{ form.birth_weight }}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div class="form-group">
-        {{ form.referred_in.label_tag }}
-        {{ form.referred_in }}
-      </div>
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3>Delivery details</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              {{ form.delivery_date.label_tag }}
+              {{ form.delivery_date }}
+            </div>
 
-      <!-- Fields related to "Referred In" selection -->
-      <div id="referralDetails">
-        <div class="form-group" id="facilityNameField" style="display:none;">
-          {{ form.facility_name.label_tag }}
-          {{ form.facility_name }}
-        </div>
+            <div class="form-group">
+              {{ form.place_of_birth.label_tag }}
+              {{ form.place_of_birth }}
+            </div>
 
-        <div class="form-group" id="referralDateField" style="display:none;">
-          {{ form.referral_date_time.label_tag }}
-          {{ form.referral_date_time }}
-        </div>
+            <div class="form-group" id="hospitalNameField" style="display:none;">
+              {{ form.hospital_name.label_tag }}
+              {{ form.hospital_name }}
+            </div>
 
-        <div class="form-group" id="reasonForReferralField" style="display:none;">
-          {{ form.reason_for_referral.label_tag }}
-          {{ form.reason_for_referral }}
-        </div>
+            <div class="form-group">
+              {{ form.mode_of_delivery.label_tag }}
+              {{ form.mode_of_delivery }}
+            </div>
 
-        <div class="form-group" id="meansOfTransportField" style="display:none;">
-          {{ form.means_of_transport.label_tag }}
-          {{ form.means_of_transport }}
-        </div>
+            <div class="form-group" id="indicationField" style="display:none;">
+              {{ form.indication.label_tag }}
+              {{ form.indication }}
+            </div>
 
-        <div id="oxygenTransportField" style="display:none;">
-          <div class="form-group">
-            {{ form.oxygen_transport.label_tag }}
-            {{ form.oxygen_transport }}
+            <div class="form-group">
+              {{ form.resuscitation_done.label_tag }}
+              {{ form.resuscitation_done }}
+            </div>
+
+            <div id="resuscitationDetails" style="display:none;">
+              <div class="form-group">
+                <label>Resuscitation Choices:</label>
+                <div class="form-check">
+                  {{ form.resuscitation_choices_1 }}
+                  <label class="form-check-label" for="{{ form.resuscitation_choices_1.id_for_label }}">Bag & Mask</label>
+                </div>
+                <div class="form-check">
+                  {{ form.resuscitation_choices_2 }}
+                  <label class="form-check-label" for="{{ form.resuscitation_choices_2.id_for_label }}">Oxygen</label>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3>Referral details</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-group">
+              {{ form.referred_in.label_tag }}
+              {{ form.referred_in }}
+            </div>
+
+            <!-- Fields related to "Referred In" selection -->
+            <div id="referralDetails">
+              <div class="form-group" id="facilityNameField" style="display:none;">
+                {{ form.facility_name.label_tag }}
+                {{ form.facility_name }}
+              </div>
+
+              <div class="form-group" id="referralDateField" style="display:none;">
+                {{ form.referral_date_time.label_tag }}
+                {{ form.referral_date_time }}
+              </div>
+
+              <div class="form-group" id="reasonForReferralField" style="display:none;">
+                {{ form.reason_for_referral.label_tag }}
+                {{ form.reason_for_referral }}
+              </div>
+
+              <div class="form-group" id="meansOfTransportField" style="display:none;">
+                {{ form.means_of_transport.label_tag }}
+                {{ form.means_of_transport }}
+              </div>
+
+              <div id="oxygenTransportField" style="display:none;">
+                <div class="form-group">
+                  {{ form.oxygen_transport.label_tag }}
+                  {{ form.oxygen_transport }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+	</form>
       </div>
-      
-      <button type="submit" class="btn btn-primary">Submit</button>
-    </form>
+    </div>
   </div>
 
-<!-- Add Bootstrap JS and jQuery links for dynamic functionality -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <!-- Add Bootstrap JS and jQuery links for dynamic functionality -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<script>
-  // JavaScript code to show/hide fields based on the selected values
+  
+  
+  <script>
+    // JavaScript code to show/hide fields based on the selected values
 
-  $(document).ready(function() {
-    // Show/hide "Hospital Name" field based on "Place of Birth" selection
-    $("#id_place_of_birth").change(function() {
-      if ($(this).val() === "Hospital") {
-        $("#hospitalNameField").show();
-      } else {
-        $("#hospitalNameField").hide();
+    $(document).ready(function() {
+      // Show/hide "Hospital Name" field based on "Place of Birth" selection
+      $("#id_place_of_birth").change(function() {
+        if ($(this).val() === "Hospital") {
+          $("#hospitalNameField").show();
+        } else {
+          $("#hospitalNameField").hide();
+        }
+      });
+
+      // Show/hide "Indication" field based on "Mode of Delivery" selection
+      $("#id_mode_of_delivery").change(function() {
+        if ($(this).val() === "C/S") {
+          $("#indicationField").show();
+        } else {
+          $("#indicationField").hide();
+        }
+      });
+
+      // Show/hide "Resuscitation Choices" based on "Resuscitation done" selection
+      $("#id_resuscitation_done").change(function() {
+        if ($(this).val() === "Yes") {
+          $("#resuscitationDetails").show();
+        } else {
+          $("#resuscitationDetails").hide();
+        }
+      });
+
+      // Show/hide referral details fields based on "Referred In" selection
+      function toggleReferralDetailsFields() {
+        var isReferredIn = $("#id_referred_in").val() === "Yes";
+        $("#facilityNameField").toggle(isReferredIn);
+        $("#referralDateField").toggle(isReferredIn);
+        $("#reasonForReferralField").toggle(isReferredIn);
+        $("#meansOfTransportField").toggle(isReferredIn);
+
+        // Check if "Ambulance" is selected for "Means of Transport"
+        var isAmbulanceSelected = $("#id_means_of_transport").val() === "Ambulance";
+        // Show/hide "Was the child transported on Oxygen" field based on "Means of Transport" selection and "Referred In" selection
+        $("#oxygenTransportField").toggle(isReferredIn && isAmbulanceSelected);
+
+        // Toggle the "required" attribute for the referral_date_time field based on the value of referred_in
+        $("#id_referral_date_time").prop("required", isReferredIn);
+
+        // Toggle the "required" attribute for the admission_date field based on the value of referred_in
+        $("#id_admission_date").prop("required", !isReferredIn);
       }
-    });
 
-    // Show/hide "Indication" field based on "Mode of Delivery" selection
-    $("#id_mode_of_delivery").change(function() {
-      if ($(this).val() === "C/S") {
-        $("#indicationField").show();
-      } else {
-        $("#indicationField").hide();
-      }
-    });
-
-    // Show/hide "Resuscitation Choices" based on "Resuscitation done" selection
-    $("#id_resuscitation_done").change(function() {
-      if ($(this).val() === "Yes") {
-        $("#resuscitationDetails").show();
-      } else {
-        $("#resuscitationDetails").hide();
-      }
-    });
-
-    // Show/hide referral details fields based on "Referred In" selection
-    function toggleReferralDetailsFields() {
-      var isReferredIn = $("#id_referred_in").val() === "Yes";
-      $("#facilityNameField").toggle(isReferredIn);
-      $("#referralDateField").toggle(isReferredIn);
-      $("#reasonForReferralField").toggle(isReferredIn);
-      $("#meansOfTransportField").toggle(isReferredIn);
-
-      // Check if "Ambulance" is selected for "Means of Transport"
-      var isAmbulanceSelected = $("#id_means_of_transport").val() === "Ambulance";
-      // Show/hide "Was the child transported on Oxygen" field based on "Means of Transport" selection and "Referred In" selection
-      $("#oxygenTransportField").toggle(isReferredIn && isAmbulanceSelected);
-
-      // Toggle the "required" attribute for the referral_date_time field based on the value of referred_in
-      $("#id_referral_date_time").prop("required", isReferredIn);
-    }
-
-    // Initial toggle of referral details fields
-    toggleReferralDetailsFields();
-
-    // Show/hide referral details fields on "Referred In" change
-    $("#id_referred_in").change(function() {
+      // Initial toggle of referral details fields
       toggleReferralDetailsFields();
-    });
 
-    // Show/hide "Was the child transported on Oxygen" field based on "Means of Transport" selection
-    $("#id_means_of_transport").change(function() {
-      var isReferredIn = $("#id_referred_in").val() === "Yes";
-      var isAmbulanceSelected = $(this).val() === "Ambulance";
-      // Show/hide "Was the child transported on Oxygen" field based on "Means of Transport" selection and "Referred In" selection
-      $("#oxygenTransportField").toggle(isReferredIn && isAmbulanceSelected);
+      // Show/hide referral details fields on "Referred In" change
+      $("#id_referred_in").change(function() {
+        toggleReferralDetailsFields();
+      });
+
+      // Show/hide "Was the child transported on Oxygen" field based on "Means of Transport" selection
+      $("#id_means_of_transport").change(function() {
+        var isReferredIn = $("#id_referred_in").val() === "Yes";
+        var isAmbulanceSelected = $(this).val() === "Ambulance";
+        // Show/hide "Was the child transported on Oxygen" field based on "Means of Transport" selection and "Referred In" selection
+        $("#oxygenTransportField").toggle(isReferredIn && isAmbulanceSelected);
+      });
     });
-  });
-</script>
+  </script>
 </body>
 </html>

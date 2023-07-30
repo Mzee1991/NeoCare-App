@@ -170,7 +170,9 @@ class NewbornForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['delivery_date'].input_formats = ('%Y-%m-%dT%H:%M',)  # set input format for datetime-local widget
         self.fields['admission_date'].input_formats = ('%Y-%m-%dT%H:%M',)  # set input format for datetime-local widget
-        mother_name = self.instance.mother.name if self.instance.mother else ""
+
+        # Set the initial value for the 'name' field
+        mother_name = self.initial['mother'].name if 'mother' in self.initial else ""
         self.fields['name'].initial = f"B/O {mother_name}"
 
 
@@ -293,13 +295,15 @@ class NewbornAdmissionForm(forms.ModelForm):
     resuscitation_choices_1 = forms.BooleanField(label='Bag & Mask',required=False,widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     resuscitation_choices_2 = forms.BooleanField(label='Oxygen',required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     referral_date_time = forms.DateTimeField(widget=forms.TextInput(attrs={'type': 'datetime-local', 'placeholder': 'YYYY-MM-DD HH:MM'}), required=False)
+    admission_date = forms.DateTimeField(widget=forms.TextInput(attrs={'type': 'datetime-local', 'placeholder': 'YYYY-MM-DD HH:MM'}))
+    delivery_date = forms.DateTimeField(widget=forms.TextInput(attrs={'type': 'datetime-local', 'placeholder': 'YYYY-MM-DD HH:MM'}))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Add the form-control class for consistent styling
         for field_name, field in self.fields.items():
-            if field_name not in ('resuscitation_choices_1', 'resuscitation_choices_2', 'referral_date_time'):
+            if field_name not in ('resuscitation_choices_1', 'resuscitation_choices_2', 'referral_date_time', 'admission_date', 'delivery_date'):
                 field.widget.attrs['class'] = 'form-control'
 
         # Add JavaScript classes to the fields for event handling

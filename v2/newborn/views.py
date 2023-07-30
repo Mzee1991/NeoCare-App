@@ -60,15 +60,17 @@ def newborn_detail(request, pk):
 
 @login_required
 def index(request):
+    latest_mother = MotherDetails.objects.all().order_by('-id').first()
+    
     if request.method == 'POST':
-        form = NewbornForm(request.POST)        
+        form = NewbornForm(request.POST, initial={'mother': latest_mother})
         if form.is_valid():
-            instance = form.save()
-            instance.mother = MotherDetails.objects.all().order_by('-id')[0]
+            instance = form.save(commit=False)
+            instance.mother = latest_mother
             instance.save()
             return redirect('home-page')
     else:
-        form = NewbornForm()
+        form = NewbornForm(initial={'mother': latest_mother})
     return render(request, 'newborn/delivery.html', {'form': form})
 
 
@@ -342,7 +344,7 @@ def mothers_antenatal_details(request, pk):
 def newborn_admission(request):
     if request.method == 'POST':
         form = NewbornAdmissionForm(request.POST)
-        print(form)
+        print(form.errors)
         if form.is_valid():
             form.save()
             return redirect('home-page')  # Redirect to a success page
