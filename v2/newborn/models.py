@@ -293,3 +293,43 @@ class MothersAntenatalDetails(models.Model):
 
     def __str__(self):
         return f"{self.attended} - {self.conditions_during_pregnancy}"
+
+
+class NewbornAdmission(models.Model):
+    PLACE_OF_BIRTH_CHOICES = [
+        ('Hospital', 'Hospital'),
+        ('Along the road', 'Along the road'),
+        ('Home', 'Home'),
+    ]
+
+    MODE_OF_DELIVERY_CHOICES = [
+        ('SVD', 'SVD (Spontaneous Vaginal Delivery)'),
+        ('C/S', 'C/S (Caesarean Section)'),
+    ]
+
+    MEANS_OF_TRANSPORT_CHOICES = [
+        ('Ambulance', 'Ambulance'),
+        ('Public means', 'Public means'),
+    ]
+
+    YES_NO_CHOICES = [
+        ('Yes', 'Yes'),
+        ('No', 'No'),
+    ]
+
+    place_of_birth = models.CharField(max_length=20, choices=PLACE_OF_BIRTH_CHOICES)
+    hospital_name = models.CharField(max_length=100, blank=True, null=True)
+    mode_of_delivery = models.CharField(max_length=3, choices=MODE_OF_DELIVERY_CHOICES)
+    indication = models.CharField(max_length=100, blank=True, null=True)
+    resuscitation_done = models.CharField(max_length=3, choices=YES_NO_CHOICES)
+    resuscitation_choices_1 = models.BooleanField(verbose_name='Bag&Mask', default=False, blank=True)
+    resuscitation_choices_2 = models.BooleanField(verbose_name='Oxygen', default=False, blank=True)
+    referred_in = models.CharField(max_length=3, choices=YES_NO_CHOICES)
+    facility_name = models.CharField(max_length=100, blank=True, null=True)
+    referral_date_time = models.DateTimeField(blank=True, null=True)
+    reason_for_referral = models.TextField(blank=True, null=True)
+    means_of_transport = models.CharField(max_length=20, choices=MEANS_OF_TRANSPORT_CHOICES, blank=True, null=True)
+    oxygen_transport = models.CharField(max_length=3, choices=YES_NO_CHOICES, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.place_of_birth} - {self.mode_of_delivery}"

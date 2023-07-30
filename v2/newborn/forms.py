@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village, CountyMunicipality, MothersAntenatalDetails
+from .models import Newborn, NewbornAdmission, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village, CountyMunicipality, MothersAntenatalDetails
 from .models import SEROLOGY_CHOICES, MICROBIOLOGY_CHOICES, CHEMISTRY_CHOICES, HEMATOLOGY_CHOICES
 
 
@@ -170,6 +170,8 @@ class NewbornForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         self.fields['delivery_date'].input_formats = ('%Y-%m-%dT%H:%M',)  # set input format for datetime-local widget
         self.fields['admission_date'].input_formats = ('%Y-%m-%dT%H:%M',)  # set input format for datetime-local widget
+        mother_name = self.instance.mother.name if self.instance.mother else ""
+        self.fields['name'].initial = f"B/O {mother_name}"
 
 
 class NewbornExamForm(forms.ModelForm):
@@ -279,5 +281,57 @@ class MothersAntenatalDetailsForm(forms.ModelForm):
             received_treatment = cleaned_data.get('received_treatment')
             if not received_treatment:
                 self.add_error('received_treatment', "If 'Syphilis Test result' is 'Positive', 'Did Mother receive Treatment' must be provided.")
+
+        return cleaned_data
+
+
+class NewbornAdmissionForm(forms.ModelForm):
+    class Meta:
+        model = NewbornAdmission
+        fields = '__all__'
+
+    resuscitation_choices_1 = forms.BooleanField(label='Bag & Mask',required=False,widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+    resuscitation_choices_2 = forms.BooleanField(label='Oxygen',required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
+    referral_date_time = forms.DateTimeField(widget=forms.TextInput(attrs={'type': 'datetime-local', 'placeholder': 'YYYY-MM-DD HH:MM'}), required=False)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Add the form-control class for consistent styling
+        for field_name, field in self.fields.items():
+            if field_name not in ('resuscitation_choices_1', 'resuscitation_choices_2', 'referral_date_time'):
+                field.widget.attrs['class'] = 'form-control'
+
+        # Add JavaScript classes to the fields for event handling
+        self.fields['place_of_birth'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['mode_of_delivery'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['resuscitation_done'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['referred_in'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['means_of_transport'].widget.attrs['class'] += ' dynamic-field-trigger'
+        self.fields['oxygen_transport'].widget.attrs['class'] += ' dynamic-field-trigger'
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Perform cross-field validation here
+        referred_in = cleaned_data.get('referred_in')
+        means_of_transport = cleaned_data.get('means_of_transport')
+        resuscitation_done = cleaned_data.get('resuscitation_done')
+        print("Referral", referred_in)
+
+        if referred_in == 'No':
+            # If the baby was not referred, make sure referral_date_time is None
+            cleaned_data['referral_date_time'] = None
+
+        if means_of_transport == 'Public means':
+            # If the transport means is "Public means," make sure oxygen_transport is None
+            cleaned_data['oxygen_transport'] = None
+
+        if resuscitation_done == 'No':
+            # If resuscitation was not done, set both resuscitation_choices to False
+            cleaned_data['resuscitation_choices_1'] = False
+            cleaned_data['resuscitation_choices_2'] = False
+
+        # Add more cross-field validation checks as needed
 
         return cleaned_data

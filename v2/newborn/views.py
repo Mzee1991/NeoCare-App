@@ -4,7 +4,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation, Subcounty, Parish, Village, CountyMunicipality
-from newborn.forms import NewbornForm, MothersAntenatalDetailsForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
+from newborn.forms import NewbornForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
@@ -337,3 +337,15 @@ def mothers_antenatal_details(request, pk):
         form = MothersAntenatalDetailsForm()
 
     return render(request, 'newborn/newborn_admission_form.html', {'form': form})
+
+
+def newborn_admission(request):
+    if request.method == 'POST':
+        form = NewbornAdmissionForm(request.POST)
+        print(form)
+        if form.is_valid():
+            form.save()
+            return redirect('home-page')  # Redirect to a success page
+    else:
+        form = NewbornAdmissionForm()
+    return render(request, 'newborn/newborn_delivery_notes.html', {'form': form})
