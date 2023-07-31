@@ -290,7 +290,7 @@ class MothersAntenatalDetailsForm(forms.ModelForm):
 class NewbornAdmissionForm(forms.ModelForm):
     class Meta:
         model = NewbornAdmission
-        fields = '__all__'
+        exclude = ('mother',)
 
     resuscitation_choices_1 = forms.BooleanField(label='Bag & Mask',required=False,widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
     resuscitation_choices_2 = forms.BooleanField(label='Oxygen',required=False, widget=forms.CheckboxInput(attrs={'class': 'form-check-input'}))
@@ -313,6 +313,10 @@ class NewbornAdmissionForm(forms.ModelForm):
         self.fields['referred_in'].widget.attrs['class'] += ' dynamic-field-trigger'
         self.fields['means_of_transport'].widget.attrs['class'] += ' dynamic-field-trigger'
         self.fields['oxygen_transport'].widget.attrs['class'] += ' dynamic-field-trigger'
+
+        # Set the initial value for the 'name' field
+        mother_name = self.initial['mother'].name if 'mother' in self.initial else ""
+        self.fields['name'].initial = f"B/O {mother_name}"
 
     def clean(self):
         cleaned_data = super().clean()

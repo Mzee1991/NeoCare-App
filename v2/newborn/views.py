@@ -1,9 +1,10 @@
 from django.core import serializers
+from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
-from newborn.models import Newborn, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation, Subcounty, Parish, Village, CountyMunicipality
+from newborn.models import Newborn, NewbornAdmission, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation, Subcounty, Parish, Village, CountyMunicipality
 from newborn.forms import NewbornForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
@@ -87,8 +88,10 @@ def antenatal_hx(request):
         form = AntenatalHistoryForm()
     return render(request, 'newborn/antenatal_details.html', {'form': form})
 
+
+@login_required
 def lab_request(request, pk):
-    neonate = get_object_or_404(Newborn, pk=pk)
+    neonate = get_object_or_404(NewbornAdmission, pk=pk)
     try:
         lab_investigation = LabInvestigation.objects.get(neonate=neonate)
     except LabInvestigation.DoesNotExist:
@@ -99,6 +102,13 @@ def lab_request(request, pk):
         if form.is_valid():
             instance = form.save(commit=False)
             instance.neonate = neonate
+
+            # Set the author as the currently logged-in user (assuming you have implemented authentication)
+            instance.author = request.user
+
+            # Set the timestamp to the current date and time
+            instance.timestamp = timezone.now()
+
             instance.save()
             return redirect(reverse('clerkship-page', kwargs={'pk': pk}))
     else:
@@ -110,7 +120,7 @@ def home(request):
     return render(request, 'newborn/home.html', {'title': 'Home'})
 
 def newborn_table(request):
-    table = NewbornTable(Newborn.objects.all().order_by('-id')[:4])
+    table = NewbornTable(NewbornAdmission.objects.all().order_by('-id')[:4])
 
     return render(request, 'newborn/home.html', {'table': table})
 
@@ -120,9 +130,9 @@ def newborn_search(request):
     newborns = None
 
     if searched.isdigit():
-        newborns = NewbornTable(Newborn.objects.filter(Q(pk=int(searched))))
+        newborns = NewbornTable(NewbornAdmission.objects.filter(Q(pk=int(searched))))
     else:
-        newborns = NewbornTable(Newborn.objects.filter(Q(name__contains=searched)))
+        newborns = NewbornTable(NewbornAdmission.objects.filter(Q(name__contains=searched)))
 
     RequestConfig(request).configure(newborns)
 
@@ -145,7 +155,7 @@ def mother(request):
             detail_instance.save()
             
             # Rest of your code to save the instances and redirect
-            return redirect('add-newborn')
+            return redirect('newborn-delivery')
             
     else:
         detail_form = MotherDetailForm()
@@ -160,7 +170,7 @@ def mother(request):
 
 
 def print_detail(request, pk):
-    newborn = Newborn.objects.get(pk=pk)
+    newborn = NewbornAdmission.objects.get(pk=pk)
     age_delta = newborn.admission_date.date() - newborn.delivery_date.date()
     age_days = age_delta.days
     context = {
@@ -171,7 +181,12 @@ def print_detail(request, pk):
     return render(request, 'newborn/details.html', context)
 
 def print_care2x(request, pk):
-    newborn = Newborn.objects.get(pk=pk) # Retrieve the Newborn object
+    newborn = NewbornAdmission.objects.get(pk=pk) # Retrieve the Newborn object
+    age_delta = newborn.admission_date - newborn.referral_date_time
+    age_days = age_delta.days
+    age_hours, remainder_seconds = divmod(age_delta.seconds, 3600)
+    age_minutes, _ = divmod(remainder_seconds, 60)
+
     mother = newborn.mother  # Access the Mother object associated with the newborn
     antenatal_history = mother.mothersantenataldetails_set.first() #he Antenatalhistory related to the mother
     # Retrieve the NewbornExam objects related to the newborn
@@ -184,26 +199,29 @@ def print_care2x(request, pk):
          'antenatal_history': antenatal_history,
          'newborn_exams': newborn_exams,  # Include newborn_exams in the context
          'lab_investigation': lab_investigation,
+         'age_days': age_days,
+         'age_hours': age_hours,
+         'age_minutes': age_minutes,
     }
     return render(request, 'newborn/patient2.html', context)
 
 def print_clerkship(request):
     context = {
-          'newborn': Newborn.objects.all().order_by('-id')[0]
+          'newborn': NewbornAdmission.objects.all().order_by('-id')[0]
     }
     return render(request, 'newborn/clerkship.html', context)
 
 
 def dashboard(request):
     # Retrieve data for charts
-    sex_data = Newborn.objects.values('sex')\
+    sex_data = NewbornAdmission.objects.values('sex')\
                              .annotate(num_sex=Count('id'))
 
-    diagnosis_data = Newborn.objects.values('diagnosis')\
+    diagnosis_data = NewbornAdmission.objects.values('diagnosis')\
                                     .annotate(num_dx=Count('id'))
 
     # Retrieve data for lists
-    new_admissions = Newborn.objects.filter(admission_date=date.today())
+    new_admissions = NewbornAdmission.objects.filter(admission_date=date.today())
 
     # Render template with data
     return render(request, 'newborn/dashboard3.html', {
@@ -241,7 +259,7 @@ def discharge_form(request, pk):
     #return render(request, 'newborn/delivery.html', {'form': form})
 
 def newborn_exam_form(request, pk):
-    neonate = get_object_or_404(Newborn, pk=pk)
+    neonate = get_object_or_404(NewbornAdmission, pk=pk)
     try:
         exam = NewbornExam.objects.get(neonate=neonate)
     except NewbornExam.DoesNotExist:
@@ -263,7 +281,7 @@ def newborn_exam_form(request, pk):
 
 
 def update_details(request, pk):
-    newborn = get_object_or_404(Newborn, pk=pk)
+    newborn = get_object_or_404(NewbornAdmission, pk=pk)
     mother = newborn.mother
     location = mother.location
     antenatal_history = mother.mothersantenataldetails_set.first()
@@ -323,7 +341,7 @@ def fetch_villages(request, parish_id):
 
 def mothers_antenatal_details(request, pk):
     # Get the newborn object using the provided primary key (pk)
-    newborn = get_object_or_404(Newborn, pk=pk)
+    newborn = get_object_or_404(NewbornAdmission, pk=pk)
 
     if request.method == 'POST':
         form = MothersAntenatalDetailsForm(request.POST)
@@ -334,7 +352,7 @@ def mothers_antenatal_details(request, pk):
             antenatal_details.mother = newborn.mother  # Associate the mother object with the newborn's mother
             antenatal_details.save()  # Now save the antenatal details with the associated mother
 
-            return redirect('home-page')  # Redirect to a success page
+            return redirect(reverse('clerkship-page', kwargs={'pk': pk}))
     else:
         form = MothersAntenatalDetailsForm()
 
@@ -342,12 +360,17 @@ def mothers_antenatal_details(request, pk):
 
 
 def newborn_admission(request):
+    latest_mother = MotherDetails.objects.all().order_by('-id').first()
+
     if request.method == 'POST':
-        form = NewbornAdmissionForm(request.POST)
+        form = NewbornAdmissionForm(request.POST, initial={'mother': latest_mother})
         print(form.errors)
         if form.is_valid():
-            form.save()
+            instance = form.save(commit=False)
+            instance.mother = latest_mother
+            instance.save()
+            
             return redirect('home-page')  # Redirect to a success page
     else:
-        form = NewbornAdmissionForm()
+        form = NewbornAdmissionForm(initial={'mother': latest_mother})
     return render(request, 'newborn/newborn_delivery_notes.html', {'form': form})
