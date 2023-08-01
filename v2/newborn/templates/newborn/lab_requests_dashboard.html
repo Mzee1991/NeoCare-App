@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Lab Requests Table</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style type="text/css">
+        /* Add custom styles here */
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">Lab Requests Table</h1>
+    <table class="table table-striped mt-3">
+        <thead>
+        <tr>
+            <th>Date</th>
+            <th>Time</th>
+	    <th>Patient Name</th>
+            <th>Patient PK</th>
+            <th>Age</th>
+            <th>Sex</th>
+	    <th>Time Passed</th>
+            <th>View</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for lab_request in lab_requests %}
+            <tr>
+                <td>{{ lab_request.timestamp|date:"Y-m-d" }}</td>
+                <td>{{ lab_request.timestamp|time:"H:i:s" }}</td>
+		<td>{{ lab_request.neonate.name }}</td>
+                <td>{{ lab_request.neonate.pk }}</td>
+                <td>{{ lab_request.neonate.age }}</td>
+                <td>{{ lab_request.neonate.sex }}</td>
+		<td>{{ lab_request.timestamp|timesince }}</td>
+                <td>
+                    <a href="{% url 'lab_request_details' lab_request.neonate.pk %}" class="btn btn-primary">View</a>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Optional JavaScript; choose one of the two! -->
+
+<!-- Option 1: Bootstrap Bundle with Popper -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

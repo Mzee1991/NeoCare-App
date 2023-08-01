@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 from newborn.models import Newborn, NewbornAdmission, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation, Subcounty, Parish, Village, CountyMunicipality
-from newborn.forms import NewbornForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
+from newborn.forms import NewbornForm, LabInvestigationResultForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
@@ -180,15 +180,23 @@ def print_detail(request, pk):
 
     return render(request, 'newborn/details.html', context)
 
+
 def print_care2x(request, pk):
-    newborn = NewbornAdmission.objects.get(pk=pk) # Retrieve the Newborn object
-    age_delta = newborn.admission_date - newborn.referral_date_time
+    newborn = NewbornAdmission.objects.get(pk=pk)  # Retrieve the Newborn object
+
+    # Check if the referral_date_time is not None
+    if newborn.referral_date_time:
+        age_delta = newborn.admission_date - newborn.referral_date_time
+    else:
+        # Set age_delta to a default value if referral_date_time is None
+        age_delta = timedelta(days=0, seconds=0)
+
     age_days = age_delta.days
     age_hours, remainder_seconds = divmod(age_delta.seconds, 3600)
     age_minutes, _ = divmod(remainder_seconds, 60)
 
     mother = newborn.mother  # Access the Mother object associated with the newborn
-    antenatal_history = mother.mothersantenataldetails_set.first() #he Antenatalhistory related to the mother
+    antenatal_history = mother.mothersantenataldetails_set.first()  # The Antenatalhistory related to the mother
     # Retrieve the NewbornExam objects related to the newborn
     newborn_exams = newborn.newbornexam_set.first()
     # Retrieve the LabInvestigation objects related to the newborn
@@ -204,6 +212,7 @@ def print_care2x(request, pk):
          'age_minutes': age_minutes,
     }
     return render(request, 'newborn/patient2.html', context)
+
 
 def print_clerkship(request):
     context = {
@@ -374,3 +383,71 @@ def newborn_admission(request):
     else:
         form = NewbornAdmissionForm(initial={'mother': latest_mother})
     return render(request, 'newborn/newborn_delivery_notes.html', {'form': form})
+
+
+def lab_requests_dashboard(request):
+    lab_requests = LabInvestigation.objects.all()
+
+    if request.method == 'POST':
+        form = LabInvestigationResultForm(request.POST)
+        if form.is_valid():
+            lab_investigation = form.save(commit=False)
+            lab_investigation.author = request.user
+            lab_investigation.save()
+            return redirect('lab-requests-dashboard')  # Redirect to the same page to avoid form resubmission
+
+    else:
+        form = LabInvestigationResultForm()
+
+    # Remove patients whose lab tests are complete from the dashboard
+    complete_lab_requests = [lab_request for lab_request in lab_requests if lab_request.is_complete()]
+    lab_requests = [lab_request for lab_request in lab_requests if not lab_request.is_complete()]
+
+    return render(request, 'newborn/lab_requests_dashboard.html', {'lab_requests': lab_requests, 'complete_lab_requests': complete_lab_requests, 'form': form})
+
+def lab_request_details(request, patient_pk):
+    lab_request = get_object_or_404(LabInvestigation, neonate__pk=patient_pk)
+
+    if request.method == 'POST':
+        result_form = LabInvestigationResultForm(request.POST, instance=lab_request)
+        if result_form.is_valid():
+            result_form.save()
+            return redirect('lab_request_details', patient_pk=patient_pk)
+    else:
+        # Check the requested test and display only that specific test form
+        requested_test = request.GET.get('test', None)
+        if requested_test and hasattr(lab_request, requested_test) and not getattr(lab_request, f"{requested_test}_result"):
+            result_form = LabInvestigationResultForm(instance=lab_request, prefix=requested_test)
+        else:
+            result_form = None
+
+    return render(request, 'newborn/lab_request_details.html', {
+        'lab_request': lab_request,
+        'result_form': result_form,
+        'requested_test': requested_test,
+    })
+
+def lab_save_result(request, patient_pk):
+    if request.method == 'POST' and request.is_ajax():
+        lab_request = get_object_or_404(LabInvestigation, neonate__pk=patient_pk)
+        form = LabInvestigationResultForm(request.POST, instance=lab_request)
+        if form.is_valid():
+            form.save()
+
+            # Create a dictionary containing all lab test result fields and their values
+            lab_test_results = {
+                'serology_rpr_result': lab_request.serology_rpr_result,
+                'serology_rct_result': lab_request.serology_rct_result,
+                'serology_bat_result': lab_request.serology_bat_result,
+                'microbiology_gram_stain_result': lab_request.microbiology_gram_stain_result,
+                'microbiology_culture_result': lab_request.microbiology_culture_result,
+                'chemistry_serum_electrolytes_result': lab_request.chemistry_serum_electrolytes_result,
+                'chemistry_serum_urea_result': lab_request.chemistry_serum_urea_result,
+                'chemistry_serum_creatinine_result': lab_request.chemistry_serum_creatinine_result,
+                'chemistry_urinalysis_result': lab_request.chemistry_urinalysis_result,
+            }
+
+            return JsonResponse({'success': True, 'results': lab_test_results})
+        else:
+            return JsonResponse({'success': False, 'errors': form.errors})
+    return JsonResponse({'error': 'Invalid request'})

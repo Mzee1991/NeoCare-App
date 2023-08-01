@@ -242,15 +242,6 @@ class NewbornAdmission(models.Model):
         return f"{self.place_of_birth} - {self.mode_of_delivery}"
 
 
-#class LabInvestigation(models.Model):
- #   author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-  #  serology = MultiSelectField(max_length=100, choices=SEROLOGY_CHOICES, blank=True)
-   # microbiology = MultiSelectField(max_length=100, choices=MICROBIOLOGY_CHOICES, blank=True)
-    #chemistry = MultiSelectField(max_length=100, choices=CHEMISTRY_CHOICES, blank=True)
-    #hematology = MultiSelectField(max_length=100, choices=HEMATOLOGY_CHOICES, blank=True)
-    #timestamp = models.DateTimeField(auto_now_add=True)
-    #neonate = models.ForeignKey(Newborn, on_delete=models.CASCADE, null=True)
-
 class LabInvestigation(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
@@ -266,8 +257,43 @@ class LabInvestigation(models.Model):
     chemistry_serum_creatinine = models.BooleanField(verbose_name='Serum creatinine', default=False)
     chemistry_urinalysis = models.BooleanField(verbose_name='Urinalysis', default=False)
 
+    serology_rpr_result = models.CharField(max_length=100, blank=True, null=True)
+    serology_rct_result = models.CharField(max_length=100, blank=True, null=True)
+    serology_bat_result = models.CharField(max_length=100, blank=True, null=True)
+
+    microbiology_gram_stain_result = models.CharField(max_length=100, blank=True, null=True)
+    microbiology_culture_result = models.CharField(max_length=100, blank=True, null=True)
+
+    chemistry_serum_electrolytes_result = models.CharField(max_length=100, blank=True, null=True)
+    chemistry_serum_urea_result = models.CharField(max_length=100, blank=True, null=True)
+    chemistry_serum_creatinine_result = models.CharField(max_length=100, blank=True, null=True)
+    chemistry_urinalysis_result = models.CharField(max_length=100, blank=True, null=True)
+	
     timestamp = models.DateTimeField(auto_now_add=True)
     neonate = models.ForeignKey(NewbornAdmission, on_delete=models.CASCADE, null=True)
+
+    def get_fields_with_result(self):
+        # Get a list of test fields with associated results
+        return [field for field in self._meta.get_fields()
+            if field.name.endswith('_result')]
+
+    def get_field_result(self, field_name):
+        # Get the result for a specific test field
+        return getattr(self, f"{field_name}_result")
+    
+    def is_complete(self):
+        # Check if all test result fields are filled in
+        if (self.serology_rpr and not self.serology_rpr_result) or \
+                (self.serology_rct and not self.serology_rct_result) or \
+                (self.serology_bat and not self.serology_bat_result) or \
+                (self.microbiology_gram_stain and not self.microbiology_gram_stain_result) or \
+                (self.microbiology_culture and not self.microbiology_culture_result) or \
+                (self.chemistry_serum_electrolytes and not self.chemistry_serum_electrolytes_result) or \
+                (self.chemistry_serum_urea and not self.chemistry_serum_urea_result) or \
+                (self.chemistry_serum_creatinine and not self.chemistry_serum_creatinine_result) or \
+                (self.chemistry_urinalysis and not self.chemistry_urinalysis_result):
+            return False
+        return True
 
 
 class Patient(models.Model):

@@ -141,6 +141,23 @@ class LabInvestigationForm(ModelForm):
         ]
 
 
+class LabInvestigationResultForm(forms.ModelForm):
+    class Meta:
+        model = LabInvestigation
+        fields = [
+            # Include all the fields you want the lab technician to edit here
+            'serology_rpr_result',
+            'serology_rct_result',
+            'serology_bat_result',
+            'microbiology_gram_stain_result',
+            'microbiology_culture_result',
+            'chemistry_serum_electrolytes_result',
+            'chemistry_serum_urea_result',
+            'chemistry_serum_creatinine_result',
+            'chemistry_urinalysis_result',
+        ]
+
+
 class PatientForm(forms.ModelForm):
     symptoms = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}), required=False)
 

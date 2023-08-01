@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <title>Lab Requests for Patient {{ lab_request.neonate.name }} ({{ lab_request.neonate.pk }})</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+</head>
+<body>
+
+<div class="container">
+    <h1 class="mt-5">Lab Requests for Patient {{ lab_request.neonate.name }} ({{ lab_request.neonate.pk }})</h1>
+    {% if result_form %}
+        <form method="post" action="{% url 'lab_request_details' lab_request.neonate.pk %}">
+            {% csrf_token %}
+            {{ result_form }}
+            <button type="submit" class="btn btn-primary">Save</button>
+        </form>
+    {% else %}
+        {% if requested_test %}
+            <p>The test "{{ requested_test }}" is either not available or already has a result.</p>
+        {% else %}
+            <p>No pending test available for update.</p>
+        {% endif %}
+    {% endif %}
+    <a href="{% url 'lab-requests-dashboard' %}" class="btn btn-primary mt-3">Done</a>
+</div>
+<!-- Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function editResult(labRequestId, fieldName) {
+        const form = document.getElementById(`form-${fieldName}-${labRequestId}`);
+        const resultSpan = form.previousElementSibling;
+        resultSpan.classList.add('hidden');
+        form.classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>
