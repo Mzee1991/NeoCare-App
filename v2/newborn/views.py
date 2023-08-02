@@ -456,6 +456,7 @@ def lab_request_details(request, patient_pk):
     })
 
 
+
 def lab_save_result(request, patient_pk):
     if request.method == 'POST' and request.is_ajax():
         lab_request = get_object_or_404(LabInvestigation, neonate__pk=patient_pk)
