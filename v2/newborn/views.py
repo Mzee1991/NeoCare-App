@@ -405,43 +405,56 @@ def lab_requests_dashboard(request):
 
     return render(request, 'newborn/lab_requests_dashboard.html', {'lab_requests': lab_requests, 'complete_lab_requests': complete_lab_requests, 'form': form})
 
+
 def lab_request_details(request, patient_pk):
     lab_request = get_object_or_404(LabInvestigation, neonate__pk=patient_pk)
+    requested_test = request.GET.get('test', None)
     lab_tests = []
+
+    if requested_test:
+        lab_tests = [requested_test]
+        if requested_test in LabTestRequestForm.Meta.fields:
+            result_form = LabTestRequestForm(instance=lab_request, prefix='test_request')
+        elif requested_test in LabTestResultForm.Meta.fields:
+            result_form = LabTestResultForm(instance=lab_request, prefix=requested_test)
+        else:
+            result_form = None
+    else:
+        lab_tests = [field for field in LabTestRequestForm.Meta.fields if getattr(lab_request, field)]
+        if not lab_tests:
+            result_form = None
+        else:
+            # If there are pending tests, show all test result forms
+            result_forms = {
+                test: LabTestResultForm(instance=lab_request, prefix=test, requested_test=test)
+                for test in lab_tests
+            }
+            result_form = None  # By default, display the first test's form
+            if len(lab_tests) > 0:
+                result_form = result_forms[lab_tests[0]]
 
     if request.method == 'POST':
         # Check if the 'test_request' parameter is present in the request
         if 'test_request' in request.POST:
             result_form = LabTestRequestForm(request.POST, instance=lab_request)
         else:
-            result_form = LabTestResultForm(request.POST, instance=lab_request)
-
-        if result_form.is_valid():
-            result_form.save()
-            return redirect('lab_request_details', patient_pk=patient_pk)
-    else:
-        requested_test = request.GET.get('test', None)
-        if requested_test:
-            lab_tests = [requested_test]
-            if requested_test in LabTestRequestForm.Meta.fields:
-                # Show lab test request form for the specific test
-                result_form = LabTestRequestForm(instance=lab_request, prefix='test_request')
-            elif requested_test in LabTestResultForm.Meta.fields:
-                # Show lab test result form for the specific test
-                result_form = LabTestResultForm(instance=lab_request, prefix=requested_test)
-            else:
-                result_form = None
-        else:
-            # No test requested in the URL, display all pending tests
-            lab_tests = [field for field in LabTestRequestForm.Meta.fields if getattr(lab_request, field)]
-            result_form = None
+            # Find the corresponding form to process the submitted data
+            for test in lab_tests:
+                if f'test_{test}' in request.POST:
+                    result_form = LabTestResultForm(request.POST, instance=lab_request, requested_test=test)
+                    if result_form.is_valid():
+                        result_form.save()
+                        return redirect('lab_request_details', patient_pk=patient_pk)
+                    break
 
     return render(request, 'newborn/lab_request_details.html', {
         'lab_request': lab_request,
         'result_form': result_form,
+        'result_forms': result_forms,  # Pass all result forms to the template
         'requested_test': requested_test,
         'lab_tests': lab_tests,
     })
+
 
 def lab_save_result(request, patient_pk):
     if request.method == 'POST' and request.is_ajax():

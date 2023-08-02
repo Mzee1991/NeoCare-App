@@ -141,21 +141,40 @@ class LabTestRequestForm(ModelForm):
         ]
 
 
+#class LabTestResultForm(forms.ModelForm):
+ #   class Meta:
+  #      model = LabInvestigation
+   #     fields = '__all__'  # Include all fields by default
+
+    #def __init__(self, *args, **kwargs):
+     #   requested_test = kwargs.pop('requested_test', None)
+      #  super().__init__(*args, **kwargs)
+
+       # if requested_test:
+            # Only include the requested test's field and exclude others
+        #    exclude_fields = [field for field in self.fields if field != requested_test]
+         #   for field in exclude_fields:
+          #      self.fields.pop(field)
+
+
 class LabTestResultForm(forms.ModelForm):
     class Meta:
         model = LabInvestigation
-        fields = [
-            # Include all the fields you want the lab technician to edit here
-            'serology_rpr_result',
-            'serology_rct_result',
-            'serology_bat_result',
-            'microbiology_gram_stain_result',
-            'microbiology_culture_result',
-            'chemistry_serum_electrolytes_result',
-            'chemistry_serum_urea_result',
-            'chemistry_serum_creatinine_result',
-            'chemistry_urinalysis_result',
-        ]
+        fields = []  # Empty fields list, we'll populate it dynamically
+
+    def __init__(self, *args, **kwargs):
+        requested_test = kwargs.pop('requested_test', None)
+        super().__init__(*args, **kwargs)
+
+        if requested_test:
+            result_field = f"{requested_test}_result"
+            if hasattr(self.instance, result_field):
+                self.fields[result_field] = forms.CharField(
+                    label=f"{requested_test} Result",
+                    max_length=100,
+                    required=False,
+                    widget=forms.TextInput(attrs={'placeholder': f'Enter {requested_test} result'})
+                )
 
 
 class PatientForm(forms.ModelForm):
