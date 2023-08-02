@@ -13,6 +13,7 @@ urlpatterns = [
     path('newborn/newborn_delivery_notes/', views.newborn_admission, name='newborn-delivery'),
     path('lab_requests/', views.lab_requests_dashboard, name='lab-requests-dashboard'),
     path('lab_details/<int:patient_pk>/', views.lab_request_details, name='lab_request_details'),
+    path('lab_details/<int:patient_pk>/', views.lab_request_details, name='lab_request_details_with_test'),
     path('lab_save_result/<int:patient_pk>/', views.lab_save_result, name='lab_save_result'),
     path('newborn/clinical-exam/<int:pk>/', views.newborn_exam_form, name='clinical-exam'),
     #path('newborn/delivery/', views.delivery_view, name='delivery-details'),

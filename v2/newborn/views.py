@@ -5,7 +5,7 @@ from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
 from newborn.models import Newborn, NewbornAdmission, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation, Subcounty, Parish, Village, CountyMunicipality
-from newborn.forms import NewbornForm, LabInvestigationResultForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, LabInvestigationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
+from newborn.forms import NewbornForm, LabTestRequestForm, LabTestResultForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
@@ -98,7 +98,7 @@ def lab_request(request, pk):
         lab_investigation = None
 
     if request.method == 'POST':
-        form = LabInvestigationForm(request.POST, instance=lab_investigation)
+        form = LabTestRequestForm(request.POST, instance=lab_investigation)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.neonate = neonate
@@ -112,7 +112,7 @@ def lab_request(request, pk):
             instance.save()
             return redirect(reverse('clerkship-page', kwargs={'pk': pk}))
     else:
-        form = LabInvestigationForm(instance=lab_investigation)
+        form = LabTestRequestForm(instance=lab_investigation)
 
     return render(request, 'newborn/lab_request2.html', {'form': form})
 
@@ -389,7 +389,7 @@ def lab_requests_dashboard(request):
     lab_requests = LabInvestigation.objects.all()
 
     if request.method == 'POST':
-        form = LabInvestigationResultForm(request.POST)
+        form = LabTestResultForm(request.POST)
         if form.is_valid():
             lab_investigation = form.save(commit=False)
             lab_investigation.author = request.user
@@ -397,7 +397,7 @@ def lab_requests_dashboard(request):
             return redirect('lab-requests-dashboard')  # Redirect to the same page to avoid form resubmission
 
     else:
-        form = LabInvestigationResultForm()
+        form = LabTestResultForm()
 
     # Remove patients whose lab tests are complete from the dashboard
     complete_lab_requests = [lab_request for lab_request in lab_requests if lab_request.is_complete()]
@@ -407,30 +407,46 @@ def lab_requests_dashboard(request):
 
 def lab_request_details(request, patient_pk):
     lab_request = get_object_or_404(LabInvestigation, neonate__pk=patient_pk)
+    lab_tests = []
 
     if request.method == 'POST':
-        result_form = LabInvestigationResultForm(request.POST, instance=lab_request)
+        # Check if the 'test_request' parameter is present in the request
+        if 'test_request' in request.POST:
+            result_form = LabTestRequestForm(request.POST, instance=lab_request)
+        else:
+            result_form = LabTestResultForm(request.POST, instance=lab_request)
+
         if result_form.is_valid():
             result_form.save()
             return redirect('lab_request_details', patient_pk=patient_pk)
     else:
-        # Check the requested test and display only that specific test form
         requested_test = request.GET.get('test', None)
-        if requested_test and hasattr(lab_request, requested_test) and not getattr(lab_request, f"{requested_test}_result"):
-            result_form = LabInvestigationResultForm(instance=lab_request, prefix=requested_test)
+        if requested_test:
+            lab_tests = [requested_test]
+            if requested_test in LabTestRequestForm.Meta.fields:
+                # Show lab test request form for the specific test
+                result_form = LabTestRequestForm(instance=lab_request, prefix='test_request')
+            elif requested_test in LabTestResultForm.Meta.fields:
+                # Show lab test result form for the specific test
+                result_form = LabTestResultForm(instance=lab_request, prefix=requested_test)
+            else:
+                result_form = None
         else:
+            # No test requested in the URL, display all pending tests
+            lab_tests = [field for field in LabTestRequestForm.Meta.fields if getattr(lab_request, field)]
             result_form = None
 
     return render(request, 'newborn/lab_request_details.html', {
         'lab_request': lab_request,
         'result_form': result_form,
         'requested_test': requested_test,
+        'lab_tests': lab_tests,
     })
 
 def lab_save_result(request, patient_pk):
     if request.method == 'POST' and request.is_ajax():
         lab_request = get_object_or_404(LabInvestigation, neonate__pk=patient_pk)
-        form = LabInvestigationResultForm(request.POST, instance=lab_request)
+        form = LabTestResultForm(request.POST, instance=lab_request)
         if form.is_valid():
             form.save()
 

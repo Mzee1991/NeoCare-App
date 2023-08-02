@@ -125,7 +125,7 @@ class MotherLocationForm(ModelForm):
 
         return cleaned_data
 
-class LabInvestigationForm(ModelForm):
+class LabTestRequestForm(ModelForm):
     class Meta:
         model = LabInvestigation
         fields = [
@@ -141,7 +141,7 @@ class LabInvestigationForm(ModelForm):
         ]
 
 
-class LabInvestigationResultForm(forms.ModelForm):
+class LabTestResultForm(forms.ModelForm):
     class Meta:
         model = LabInvestigation
         fields = [
