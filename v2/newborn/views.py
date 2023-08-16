@@ -4,15 +4,15 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
-from newborn.models import Newborn, NewbornAdmission, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, LabInvestigation, Subcounty, Parish, Village, CountyMunicipality
-from newborn.forms import NewbornForm, LabTestRequestForm, LabTestResultForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
+from newborn.models import Newborn, NewbornAdmission, MotherDetails, MotherLocation, LabRequest, LabResult, Patient, NewbornExam,Subcounty, Parish, Village, CountyMunicipality
+from newborn.forms import NewbornForm, LabTestRequestForm, LabResultForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
 from django.views.generic import ListView, CreateView
 from django.contrib.auth.decorators import login_required
 from django.db.models import Avg, Count, Q
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 import json
 from django_tables2 import RequestConfig
 
@@ -92,29 +92,33 @@ def antenatal_hx(request):
 @login_required
 def lab_request(request, pk):
     neonate = get_object_or_404(NewbornAdmission, pk=pk)
-    try:
-        lab_investigation = LabInvestigation.objects.get(neonate=neonate)
-    except LabInvestigation.DoesNotExist:
-        lab_investigation = None
 
     if request.method == 'POST':
-        form = LabTestRequestForm(request.POST, instance=lab_investigation)
+        form = LabTestRequestForm(request.POST)
         if form.is_valid():
             instance = form.save(commit=False)
             instance.neonate = neonate
-
-            # Set the author as the currently logged-in user (assuming you have implemented authentication)
             instance.author = request.user
-
-            # Set the timestamp to the current date and time
             instance.timestamp = timezone.now()
+
+            # Set the specific test fields to True based on user selection
+            instance.serology_rpr_requested = form.cleaned_data['serology_rpr_requested']
+            instance.serology_rct_requested = form.cleaned_data['serology_rct_requested']
+            instance.serology_bat_requested = form.cleaned_data['serology_bat_requested']
+            instance.microbiology_gram_stain_requested = form.cleaned_data['microbiology_gram_stain_requested']
+            instance.microbiology_culture_requested = form.cleaned_data['microbiology_culture_requested']
+            instance.chemistry_serum_electrolytes_requested = form.cleaned_data['chemistry_serum_electrolytes_requested']
+            instance.chemistry_serum_urea_requested = form.cleaned_data['chemistry_serum_urea_requested']
+            instance.chemistry_serum_creatinine_requested = form.cleaned_data['chemistry_serum_creatinine_requested']
+            instance.chemistry_urinalysis_requested = form.cleaned_data['chemistry_urinalysis_requested']
 
             instance.save()
             return redirect(reverse('clerkship-page', kwargs={'pk': pk}))
     else:
-        form = LabTestRequestForm(instance=lab_investigation)
+        form = LabTestRequestForm()
 
     return render(request, 'newborn/lab_request2.html', {'form': form})
+
 
 def home(request):
     return render(request, 'newborn/home.html', {'title': 'Home'})
@@ -182,34 +186,31 @@ def print_detail(request, pk):
 
 
 def print_care2x(request, pk):
-    newborn = NewbornAdmission.objects.get(pk=pk)  # Retrieve the Newborn object
+    newborn = get_object_or_404(NewbornAdmission, pk=pk)  # Retrieve the Newborn object
 
-    # Check if the referral_date_time is not None
+    # Calculate age_delta as before
     if newborn.referral_date_time:
         age_delta = newborn.admission_date - newborn.referral_date_time
     else:
-        # Set age_delta to a default value if referral_date_time is None
         age_delta = timedelta(days=0, seconds=0)
 
     age_days = age_delta.days
     age_hours, remainder_seconds = divmod(age_delta.seconds, 3600)
     age_minutes, _ = divmod(remainder_seconds, 60)
 
-    mother = newborn.mother  # Access the Mother object associated with the newborn
-    antenatal_history = mother.mothersantenataldetails_set.first()  # The Antenatalhistory related to the mother
-    # Retrieve the NewbornExam objects related to the newborn
-    newborn_exams = newborn.newbornexam_set.first()
-    # Retrieve the LabInvestigation objects related to the newborn
-    lab_investigation = newborn.labinvestigation_set.first()
+    # Retrieve LabResults associated with this neonate
+    lab_results = LabResult.objects.filter(neonate=newborn)
+
+    # Retrieve LabRequests for pending tests
+    pending_lab_requests = LabRequest.objects.filter(neonate=newborn, labresult__isnull=True)
+
     context = {
-         'newborn': newborn,
-         'mother': mother,
-         'antenatal_history': antenatal_history,
-         'newborn_exams': newborn_exams,  # Include newborn_exams in the context
-         'lab_investigation': lab_investigation,
-         'age_days': age_days,
-         'age_hours': age_hours,
-         'age_minutes': age_minutes,
+        'newborn': newborn,
+        'age_days': age_days,
+        'age_hours': age_hours,
+        'age_minutes': age_minutes,
+        'lab_results': lab_results,
+        'pending_lab_requests': pending_lab_requests,
     }
     return render(request, 'newborn/patient2.html', context)
 
@@ -251,21 +252,9 @@ def create_birth_record(request):
     return render(request, 'newborn/create_birth_record6.html', {'form': form})
 
 def discharge_form(request, pk):
-    newborn = Newborn.objects.get(pk=pk)
+    newborn = NewbornAdmission.objects.get(pk=pk)
     return render(request, 'newborn/discharge_form.html', {'newborn': newborn})
 
-
-#def delivery_view(request):
- #   if request.method == 'POST':
-  #      form = DeliveryForm(request.POST)
-   #     if form.is_valid():
-    #        delivery = form.save()
-     #       delivery.save()
-      #      return redirect('home-page')
-       
-    #else:
-     #   form = DeliveryForm()
-    #return render(request, 'newborn/delivery.html', {'form': form})
 
 def newborn_exam_form(request, pk):
     neonate = get_object_or_404(NewbornAdmission, pk=pk)
@@ -386,98 +375,99 @@ def newborn_admission(request):
 
 
 def lab_requests_dashboard(request):
-    lab_requests = LabInvestigation.objects.all()
+    # Retrieve neonates with pending lab results
+    neonates_with_pending_results = []
+    lab_requests = LabRequest.objects.all()
+
+    for lab_request in lab_requests:
+        # Get the neonate associated with the lab request
+        neonate = lab_request.neonate
+        # Set the labrequest attribute
+        neonate.labrequest = lab_request
+
+        # Calculate age in days
+        age_delta = neonate.admission_date.date() - neonate.delivery_date.date()
+        age_days = age_delta.days
+
+        # Calculate time elapsed as timedelta
+        time_elapsed = timezone.now() - lab_request.timestamp
+
+        # Convert time_elapsed to a datetime object
+        time_elapsed_datetime = timezone.now() - time_elapsed
+
+        # Count the number of tests requested for this lab request
+        num_tests_requested = sum([
+            lab_request.serology_rpr_requested,
+            lab_request.serology_rct_requested,
+            lab_request.serology_bat_requested,
+            lab_request.microbiology_gram_stain_requested,
+            lab_request.microbiology_culture_requested,
+            lab_request.chemistry_serum_electrolytes_requested,
+            lab_request.chemistry_serum_urea_requested,
+            lab_request.chemistry_serum_creatinine_requested,
+            lab_request.chemistry_urinalysis_requested,
+        ])
+
+        # Check if any lab test was requested for this lab request
+        if num_tests_requested > 0:
+            neonate.age_days = age_days
+            neonate.time_elapsed = time_elapsed_datetime
+            neonate.num_tests_requested = num_tests_requested
+            neonates_with_pending_results.append(neonate)
+
+    context = {
+        'neonates_with_pending_results': neonates_with_pending_results,
+    }
+    return render(request, 'newborn/lab_requests_dashboard.html', context)
+
+
+def input_lab_results(request, neonate_pk, lab_request_pk):
+    neonate = get_object_or_404(NewbornAdmission, pk=neonate_pk)
+    lab_request = get_object_or_404(LabRequest, pk=lab_request_pk, neonate=neonate)
 
     if request.method == 'POST':
-        form = LabTestResultForm(request.POST)
+        form = LabResultForm(request.POST, lab_request=lab_request)
         if form.is_valid():
-            lab_investigation = form.save(commit=False)
-            lab_investigation.author = request.user
-            lab_investigation.save()
-            return redirect('lab-requests-dashboard')  # Redirect to the same page to avoid form resubmission
+            lab_result = form.save(commit=False)
+            lab_result.lab_request = lab_request
+            lab_result.neonate = neonate  # Set the neonate
+            lab_result.author = request.user  # Set the author
 
+            lab_result.save()
+
+            # Mark the specific test fields as completed
+            if lab_result.serology_rpr_result:
+                lab_request.serology_rpr_requested = False
+            if lab_result.serology_rct_result:
+                lab_request.serology_rct_requested = False
+            if lab_result.serology_bat_result:
+                lab_request.serology_bat_requested = False
+            if lab_result.microbiology_gram_stain_result:
+                lab_request.microbiology_gram_stain_requested = False
+            if lab_result.microbiology_culture_result:
+                lab_request.microbiology_culture_requested = False
+            if lab_result.chemistry_serum_electrolytes_result:
+                lab_request.chemistry_serum_electrolytes_requested = False
+            if lab_result.chemistry_serum_urea_result:
+                lab_request.chemistry_serum_urea_requested = False
+            if lab_result.chemistry_serum_creatinine_result:
+                lab_request.chemistry_serum_creatinine_requested = False
+            if lab_result.chemistry_urinalysis_result:
+                lab_request.chemistry_urinalysis_requested = False
+
+            lab_request.save()
+
+            # Generate the URL for the lab requests dashboard view
+            dashboard_url = reverse('lab-requests-dashboard')
+
+            # Redirect back to the dashboard
+            return redirect(dashboard_url)
     else:
-        form = LabTestResultForm()
+        form = LabResultForm(lab_request=lab_request)
 
-    # Remove patients whose lab tests are complete from the dashboard
-    complete_lab_requests = [lab_request for lab_request in lab_requests if lab_request.is_complete()]
-    lab_requests = [lab_request for lab_request in lab_requests if not lab_request.is_complete()]
-
-    return render(request, 'newborn/lab_requests_dashboard.html', {'lab_requests': lab_requests, 'complete_lab_requests': complete_lab_requests, 'form': form})
-
-
-def lab_request_details(request, patient_pk):
-    lab_request = get_object_or_404(LabInvestigation, neonate__pk=patient_pk)
-    requested_test = request.GET.get('test', None)
-    lab_tests = []
-
-    if requested_test:
-        lab_tests = [requested_test]
-        if requested_test in LabTestRequestForm.Meta.fields:
-            result_form = LabTestRequestForm(instance=lab_request, prefix='test_request')
-        elif requested_test in LabTestResultForm.Meta.fields:
-            result_form = LabTestResultForm(instance=lab_request, prefix=requested_test)
-        else:
-            result_form = None
-    else:
-        lab_tests = [field for field in LabTestRequestForm.Meta.fields if getattr(lab_request, field)]
-        if not lab_tests:
-            result_form = None
-        else:
-            # If there are pending tests, show all test result forms
-            result_forms = {
-                test: LabTestResultForm(instance=lab_request, prefix=test, requested_test=test)
-                for test in lab_tests
-            }
-            result_form = None  # By default, display the first test's form
-            if len(lab_tests) > 0:
-                result_form = result_forms[lab_tests[0]]
-
-    if request.method == 'POST':
-        # Check if the 'test_request' parameter is present in the request
-        if 'test_request' in request.POST:
-            result_form = LabTestRequestForm(request.POST, instance=lab_request)
-        else:
-            # Find the corresponding form to process the submitted data
-            for test in lab_tests:
-                if f'test_{test}' in request.POST:
-                    result_form = LabTestResultForm(request.POST, instance=lab_request, requested_test=test)
-                    if result_form.is_valid():
-                        result_form.save()
-                        return redirect('lab_request_details', patient_pk=patient_pk)
-                    break
-
-    return render(request, 'newborn/lab_request_details.html', {
+    return render(request, 'newborn/input_lab_results.html', {
+        'neonate': neonate,
         'lab_request': lab_request,
-        'result_form': result_form,
-        'result_forms': result_forms,  # Pass all result forms to the template
-        'requested_test': requested_test,
-        'lab_tests': lab_tests,
+        'lab_request_pk': lab_request_pk,
+        'form': form,
     })
-
-
-
-def lab_save_result(request, patient_pk):
-    if request.method == 'POST' and request.is_ajax():
-        lab_request = get_object_or_404(LabInvestigation, neonate__pk=patient_pk)
-        form = LabTestResultForm(request.POST, instance=lab_request)
-        if form.is_valid():
-            form.save()
-
-            # Create a dictionary containing all lab test result fields and their values
-            lab_test_results = {
-                'serology_rpr_result': lab_request.serology_rpr_result,
-                'serology_rct_result': lab_request.serology_rct_result,
-                'serology_bat_result': lab_request.serology_bat_result,
-                'microbiology_gram_stain_result': lab_request.microbiology_gram_stain_result,
-                'microbiology_culture_result': lab_request.microbiology_culture_result,
-                'chemistry_serum_electrolytes_result': lab_request.chemistry_serum_electrolytes_result,
-                'chemistry_serum_urea_result': lab_request.chemistry_serum_urea_result,
-                'chemistry_serum_creatinine_result': lab_request.chemistry_serum_creatinine_result,
-                'chemistry_urinalysis_result': lab_request.chemistry_urinalysis_result,
-            }
-
-            return JsonResponse({'success': True, 'results': lab_test_results})
-        else:
-            return JsonResponse({'success': False, 'errors': form.errors})
-    return JsonResponse({'error': 'Invalid request'})

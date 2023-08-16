@@ -1,53 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
-    <title>Lab Requests for Patient {{ lab_request.neonate.name }} ({{ lab_request.neonate.pk }})</title>
-
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
+    <!-- Your HTML head content here -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
 
-<div class="container">
-    <h1 class="mt-5">Lab Requests for Patient {{ lab_request.neonate.name }} ({{ lab_request.neonate.pk }})</h1>
+<div class="container mt-5">
+    <h1>Lab Requests for Patient {{ lab_request.neonate.name }} ({{ lab_request.neonate.pk }})</h1>
     {% if lab_tests %}
         <p>Click on a specific lab test to enter its result:</p>
-        <ul>
+        <ul class="list-group">
             {% for lab_test in lab_tests %}
-                <li>
-                    <a href="{% url 'lab_request_details' patient_pk=lab_request.neonate.pk %}?test={{ lab_test }}">
+                <li class="list-group-item">
+                    <a href="{% url 'lab_request_details' patient_pk=lab_request.neonate.pk %}?test={{ lab_test }}" class="btn btn-link">
                         {{ lab_test }}
                     </a>
                 </li>
             {% endfor %}
         </ul>
-        {% if result_forms %}
-            {% for test, form in result_forms.items %}
-                <form method="post" action="{% url 'lab_request_details' patient_pk=lab_request.neonate.pk %}?test={{ test }}">
+        <a href="{% url 'lab-requests-dashboard' %}" class="btn btn-primary mt-3">Back to Dashboard</a>
+        {% if requested_test %}
+            {% if result_form %}
+                <form method="post" action="{% url 'lab_request_details' patient_pk=lab_request.neonate.pk %}?test={{ requested_test }}" class="mt-3">
                     {% csrf_token %}
-                    {% for field in form %}
-                        {% if field.name|slice:'-7:' == '_result' %} {# Check if the field name ends with '_result' #}
-                            <div class="form-group">
-                                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                                <input type="text" class="form-control" id="{{ field.id_for_label }}" name="{{ field.html_name }}" value="{{ field.value|default_if_none:'' }}">
-                            </div>
-                        {% endif %}
+                    <h3>{{ requested_test }} Result:</h3>
+                    {{ result_form.non_field_errors }}
+                    {% for field in result_form.visible_fields %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                            {{ field }}
+                            {{ field.errors }}
+                        </div>
                     {% endfor %}
-                    <button type="submit" class="btn btn-primary">Save Test Result</button>
+                    <button type="submit" class="btn btn-primary">Save {{ requested_test }} Result</button>
                 </form>
-            {% endfor %}
+            {% else %}
+                <p>No pending test available for update.</p>
+            {% endif %}
         {% else %}
-            <p>No pending test available for update.</p>
+            <p>No specific test selected.</p>
         {% endif %}
     {% else %}
         <p>No pending test available for update.</p>
     {% endif %}
-    <a href="{% url 'lab-requests-dashboard' %}" class="btn btn-primary mt-3">Done</a>
 </div>
 
 <!-- Bootstrap JS -->
@@ -59,8 +55,8 @@
     function editResult(labRequestId, fieldName) {
         const form = document.getElementById(`form-${fieldName}-${labRequestId}`);
         const resultSpan = form.previousElementSibling;
-        resultSpan.classList.add('hidden');
-        form.classList.remove('hidden');
+        resultSpan.classList.add('d-none');
+        form.classList.remove('d-none');
     }
 </script>
 

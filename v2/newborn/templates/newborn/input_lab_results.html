@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Input Lab Results</title>
+  <!-- Include Bootstrap CSS (make sure the path is correct) -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-4">
+  <h2>Input Lab Results for {{ neonate.name }}</h2>
+  <form method="post" action="{% url 'input_lab_results' neonate_pk=neonate.pk lab_request_pk=lab_request_pk %}" class="mt-3">
+    {% csrf_token %}
+    <fieldset>
+      <legend>Lab Results</legend>
+      {{ form.non_field_errors }}
+      
+      {% if lab_request.serology_rpr_requested %}
+      <div class="form-group">
+        <label for="{{ form.serology_rpr_result.id_for_label }}">RPR Result</label>
+        <input type="text" class="form-control" id="{{ form.serology_rpr_result.id_for_label }}" name="{{ form.serology_rpr_result.name }}" value="{{ form.serology_rpr_result.value }}">
+      </div>
+      {% endif %}
+      
+      {% if lab_request.serology_rct_requested %}
+      <div class="form-group">
+        <label for="{{ form.serology_rct_result.id_for_label }}">RCT Result</label>
+        <input type="text" class="form-control" id="{{ form.serology_rct_result.id_for_label }}" name="{{ form.serology_rct_result.name }}" value="{{ form.serology_rct_result.value }}">
+      </div>
+      {% endif %}
+      
+      {% if lab_request.serology_bat_requested %}
+      <div class="form-group">
+        <label for="{{ form.serology_bat_result.id_for_label }}">BAT Result</label>
+        <input type="text" class="form-control" id="{{ form.serology_bat_result.id_for_label }}" name="{{ form.serology_bat_result.name }}" value="{{ form.serology_bat_result.value }}">
+      </div>
+      {% endif %}
+      
+      {% if lab_request.microbiology_gram_stain_requested %}
+      <div class="form-group">
+        <label for="{{ form.microbiology_gram_stain_result.id_for_label }}">Gram Stain Result</label>
+        <input type="text" class="form-control" id="{{ form.microbiology_gram_stain_result.id_for_label }}" name="{{ form.microbiology_gram_stain_result.name }}" value="{{ form.microbiology_gram_stain_result.value }}">
+      </div>
+      {% endif %}
+      
+      {% if lab_request.microbiology_culture_requested %}
+      <div class="form-group">
+        <label for="{{ form.microbiology_culture_result.id_for_label }}">Culture Result</label>
+        <input type="text" class="form-control" id="{{ form.microbiology_culture_result.id_for_label }}" name="{{ form.microbiology_culture_result.name }}" value="{{ form.microbiology_culture_result.value }}">
+      </div>
+      {% endif %}
+      
+      {% if lab_request.chemistry_serum_electrolytes_requested %}
+      <div class="form-group">
+        <label for="{{ form.chemistry_serum_electrolytes_result.id_for_label }}">Serum Electrolytes Result</label>
+        <input type="text" class="form-control" id="{{ form.chemistry_serum_electrolytes_result.id_for_label }}" name="{{ form.chemistry_serum_electrolytes_result.name }}" value="{{ form.chemistry_serum_electrolytes_result.value }}">
+      </div>
+      {% endif %}
+      
+      {% if lab_request.chemistry_serum_urea_requested %}
+      <div class="form-group">
+        <label for="{{ form.chemistry_serum_urea_result.id_for_label }}">Serum Urea Result</label>
+        <input type="text" class="form-control" id="{{ form.chemistry_serum_urea_result.id_for_label }}" name="{{ form.chemistry_serum_urea_result.name }}" value="{{ form.chemistry_serum_urea_result.value }}">
+      </div>
+      {% endif %}
+      
+      {% if lab_request.chemistry_serum_creatinine_requested %}
+      <div class="form-group">
+        <label for="{{ form.chemistry_serum_creatinine_result.id_for_label }}">Serum Creatinine Result</label>
+        <input type="text" class="form-control" id="{{ form.chemistry_serum_creatinine_result.id_for_label }}" name="{{ form.chemistry_serum_creatinine_result.name }}" value="{{ form.chemistry_serum_creatinine_result.value }}">
+      </div>
+      {% endif %}
+      
+      {% if lab_request.chemistry_urinalysis_requested %}
+      <div class="form-group">
+        <label for="{{ form.chemistry_urinalysis_result.id_for_label }}">Urinalysis Result</label>
+        <input type="text" class="form-control" id="{{ form.chemistry_urinalysis_result.id_for_label }}" name="{{ form.chemistry_urinalysis_result.name }}" value="{{ form.chemistry_urinalysis_result.value }}">
+      </div>
+      {% endif %}
+      
+    </fieldset>
+    <button type="submit" class="btn btn-primary mt-3">Submit Lab Results</button>
+  </form>
+</div>
+
+<!-- Include Bootstrap JS (optional, for enhanced features) -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

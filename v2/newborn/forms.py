@@ -1,6 +1,6 @@
 from django.forms import ModelForm
 from django import forms
-from .models import Newborn, NewbornAdmission, MotherDetails, MotherLocation, LabInvestigation, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village, CountyMunicipality, MothersAntenatalDetails
+from .models import Newborn, NewbornAdmission, MotherDetails, MotherLocation, LabRequest, LabResult, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village, CountyMunicipality, MothersAntenatalDetails
 from .models import SEROLOGY_CHOICES, MICROBIOLOGY_CHOICES, CHEMISTRY_CHOICES, HEMATOLOGY_CHOICES
 
 
@@ -127,54 +127,58 @@ class MotherLocationForm(ModelForm):
 
 class LabTestRequestForm(ModelForm):
     class Meta:
-        model = LabInvestigation
+        model = LabRequest
         fields = [
-            'serology_rpr',
-            'serology_rct',
-            'serology_bat',
-            'microbiology_gram_stain',
-            'microbiology_culture',
-            'chemistry_serum_electrolytes',
-            'chemistry_serum_urea',
-            'chemistry_serum_creatinine',
-            'chemistry_urinalysis',
+            'serology_rpr_requested',
+            'serology_rct_requested',
+            'serology_bat_requested',
+            'microbiology_gram_stain_requested',
+            'microbiology_culture_requested',
+            'chemistry_serum_electrolytes_requested',
+            'chemistry_serum_urea_requested',
+            'chemistry_serum_creatinine_requested',
+            'chemistry_urinalysis_requested',
         ]
 
 
-#class LabTestResultForm(forms.ModelForm):
- #   class Meta:
-  #      model = LabInvestigation
-   #     fields = '__all__'  # Include all fields by default
-
-    #def __init__(self, *args, **kwargs):
-     #   requested_test = kwargs.pop('requested_test', None)
-      #  super().__init__(*args, **kwargs)
-
-       # if requested_test:
-            # Only include the requested test's field and exclude others
-        #    exclude_fields = [field for field in self.fields if field != requested_test]
-         #   for field in exclude_fields:
-          #      self.fields.pop(field)
-
-
-class LabTestResultForm(forms.ModelForm):
-    class Meta:
-        model = LabInvestigation
-        fields = []  # Empty fields list, we'll populate it dynamically
-
+class LabResultForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        requested_test = kwargs.pop('requested_test', None)
+        # Get the lab_request instance passed as a keyword argument
+        lab_request = kwargs.pop('lab_request', None)
         super().__init__(*args, **kwargs)
 
-        if requested_test:
-            result_field = f"{requested_test}_result"
-            if hasattr(self.instance, result_field):
-                self.fields[result_field] = forms.CharField(
-                    label=f"{requested_test} Result",
-                    max_length=100,
-                    required=False,
-                    widget=forms.TextInput(attrs={'placeholder': f'Enter {requested_test} result'})
-                )
+        # Get the requested tests from the lab_request
+        requested_tests = []
+        if lab_request:
+            requested_tests.extend([
+                'serology_rpr_result',
+                'serology_rct_result',
+                'serology_bat_result',
+                'microbiology_gram_stain_result',
+                'microbiology_culture_result',
+                'chemistry_serum_electrolytes_result',
+                'chemistry_serum_urea_result',
+                'chemistry_serum_creatinine_result',
+                'chemistry_urinalysis_result',
+            ])
+            # Remove fields that were not requested
+            for field in self.fields.copy():
+                if field not in requested_tests:
+                    del self.fields[field]
+
+    class Meta:
+        model = LabResult
+        fields = [
+            'serology_rpr_result',
+            'serology_rct_result',
+            'serology_bat_result',
+            'microbiology_gram_stain_result',
+            'microbiology_culture_result',
+            'chemistry_serum_electrolytes_result',
+            'chemistry_serum_urea_result',
+            'chemistry_serum_creatinine_result',
+            'chemistry_urinalysis_result',
+        ]
 
 
 class PatientForm(forms.ModelForm):
