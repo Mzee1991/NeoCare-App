@@ -38,7 +38,7 @@
                 <td>{{ neonate.time_elapsed|timesince }}</td>
                 <td>{{ neonate.num_tests_requested }}</td>
                 <td>
-                    <a href="{% url 'input_lab_results' neonate_pk=neonate.pk lab_request_pk=neonate.labrequest.pk %}" class="btn btn-primary">Input Results</a>
+			<a href="{% url 'pending-lab-tests' neonate_pk=neonate.pk lab_request_pk=neonate.labrequest.pk %}" class="btn btn-primary">Input Results</a>
                 </td>
             </tr>
         {% endfor %}

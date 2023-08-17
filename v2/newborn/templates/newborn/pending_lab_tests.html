@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Pending Lab Tests</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-5">Pending Lab Tests for {{ neonate.name }}</h1>
+    <ul class="list-group mt-3">
+        <li class="list-group-item">
+            <h4>{{ lab_request.timestamp|date:"Y-m-d H:i" }}</h4>
+            <p>Test Requests:</p>
+            <ul>
+                {% if lab_request.serology_rpr_requested %}
+                    <li><a href="{% url 'input-lab-result' neonate_pk=neonate.pk lab_request_pk=lab_request.pk test_name='serology_rpr' %}">RPR Test</a></li>
+                {% endif %}
+                {% if lab_request.serology_rct_requested %}
+                    <li><a href="{% url 'input-lab-result' neonate_pk=neonate.pk lab_request_pk=lab_request.pk test_name='serology_rct' %}">RCT Test</a></li>
+                {% endif %}
+                {% if lab_request.serology_bat_requested %}
+                    <li><a href="{% url 'input-lab-result' neonate_pk=neonate.pk lab_request_pk=lab_request.pk test_name='serology_bat' %}">BAT Test</a></li>
+                {% endif %}
+                {% if lab_request.microbiology_gram_stain_requested %}
+                    <li><a href="{% url 'input-lab-result' neonate_pk=neonate.pk lab_request_pk=lab_request.pk test_name='microbiology_gram_stain' %}">Gram Stain Test</a></li>
+                {% endif %}
+                {% if lab_request.microbiology_culture_requested %}
+                    <li><a href="{% url 'input-lab-result' neonate_pk=neonate.pk lab_request_pk=lab_request.pk test_name='microbiology_culture' %}">Culture Test</a></li>
+                {% endif %}
+                {% if lab_request.chemistry_serum_electrolytes_requested %}
+                    <li><a href="{% url 'input-lab-result' neonate_pk=neonate.pk lab_request_pk=lab_request.pk test_name='chemistry_serum_electrolytes' %}">Serum Electrolytes Test</a></li>
+                {% endif %}
+                {% if lab_request.chemistry_serum_urea_requested %}
+                    <li><a href="{% url 'input-lab-result' neonate_pk=neonate.pk lab_request_pk=lab_request.pk test_name='chemistry_serum_urea' %}">Serum Urea Test</a></li>
+                {% endif %}
+                {% if lab_request.chemistry_serum_creatinine_requested %}
+                    <li><a href="{% url 'input-lab-result' neonate_pk=neonate.pk lab_request_pk=lab_request.pk test_name='chemistry_serum_creatinine' %}">Serum Creatinine Test</a></li>
+                {% endif %}
+                {% if lab_request.chemistry_urinalysis_requested %}
+                    <li><a href="{% url 'input-lab-result' neonate_pk=neonate.pk lab_request_pk=lab_request.pk test_name='chemistry_urinalysis' %}">Urinalysis Test</a></li>
+                {% endif %}
+                <!-- Add similar conditional blocks for other test types -->
+            </ul>
+        </li>
+    </ul>
+</div>
+<!-- Optional JavaScript; choose one of the two! -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

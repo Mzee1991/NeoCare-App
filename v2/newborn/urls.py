@@ -28,6 +28,9 @@ urlpatterns = [
     path('fetch-subcounties/<int:county_municipality_id>/', fetch_subcounties, name='fetch_subcounties'),
     path('fetch-parishes/<int:subcounty_id>/', fetch_parishes, name='fetch_parishes'),
     path('fetch-villages/<int:parish_id>/', fetch_villages, name='fetch_villages'),
-    path('neonate/<int:neonate_pk>/lab_request/<int:lab_request_pk>/input_lab_results/', views.input_lab_results, name='input_lab_results'),
+    #path('neonate/<int:neonate_pk>/lab_request/<int:lab_request_pk>/input_lab_results/', views.input_lab_results, name='input_lab_results'),
+    #path('neonate/<int:neonate_pk>/pending-lab-tests/<int:lab_request_pk>/', views.pending_lab_tests, name='pending_lab_tests'),
+    path('neonate/<int:neonate_pk>/pending_lab_tests/<int:lab_request_pk>/', views.pending_lab_tests, name='pending-lab-tests'),
+    path('neonate/<int:neonate_pk>/lab_request/<int:lab_request_pk>/input_lab_result/<str:test_name>/', views.input_lab_result, name='input-lab-result'),
 
 ]

@@ -383,3 +383,31 @@ class NewbornAdmissionForm(forms.ModelForm):
         # Add more cross-field validation checks as needed
 
         return cleaned_data
+
+
+class DynamicLabResultForm(LabResultForm):
+    def __init__(self, *args, test_name=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Remove all fields from the form
+        self.fields.clear()
+
+        # Determine which fields to include based on the selected test_name
+        if test_name == 'serology_rpr':
+            self.fields['serology_rpr_result'] = forms.CharField(max_length=100)
+        elif test_name == 'serology_rct':
+            self.fields['serology_rct_result'] = forms.CharField(max_length=100)
+        elif test_name == 'serology_bat':
+            self.fields['serology_bat_result'] = forms.CharField(max_length=100)
+        elif test_name == 'microbiology_gram_stain':
+            self.fields['microbiology_gram_stain_result'] = forms.CharField(max_length=100)
+        elif test_name == 'microbiology_culture':
+            self.fields['microbiology_culture_result'] = forms.CharField(max_length=100)
+        elif test_name == 'chemistry_serum_electrolytes':
+            self.fields['chemistry_serum_electrolytes_result'] = forms.CharField(max_length=100)
+        elif test_name == 'chemistry_serum_urea':
+            self.fields['chemistry_serum_urea_result'] = forms.CharField(max_length=100)
+        elif test_name == 'chemistry_serum_creatinine':
+            self.fields['chemistry_serum_creatinine_result'] = forms.CharField(max_length=100)
+        elif test_name == 'chemistry_urinalysis':
+            self.fields['chemistry_urinalysis_result'] = forms.CharField(max_length=100)
