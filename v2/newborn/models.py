@@ -265,8 +265,8 @@ class LabResult(models.Model):
     neonate = models.ForeignKey(NewbornAdmission, on_delete=models.CASCADE, null=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     
-    serology_rpr_result = models.CharField(max_length=100, blank=True, null=True)
-    serology_rct_result = models.CharField(max_length=100, blank=True, null=True)
+    serology_rpr_result = models.CharField(verbose_name='RPR', max_length=100, blank=True, null=True)
+    serology_rct_result = models.CharField(verbose_name='RCT', max_length=100, blank=True, null=True)
     serology_bat_result = models.CharField(max_length=100, blank=True, null=True)
     
     microbiology_gram_stain_result = models.CharField(max_length=100, blank=True, null=True)
@@ -352,3 +352,28 @@ class MothersAntenatalDetails(models.Model):
 
     def __str__(self):
         return f"{self.attended} - {self.conditions_during_pregnancy}"
+
+
+class Prescription(models.Model):
+    admission = models.ForeignKey(NewbornAdmission, on_delete=models.CASCADE)
+    name = models.CharField(max_length=100)
+    
+    # Define choices for frequency
+    FREQUENCY_CHOICES = [
+        ('Once Daily', 'Once Daily'),
+        ('Twice Daily', 'Twice Daily'),
+        ('Three Times Daily', 'Three Times Daily'),
+        ('Four Times Daily', 'Four Times Daily'),
+    ]
+    frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES)
+    
+    start_time = models.TimeField()
+    
+    # Fields for prescriber and dispenser
+    prescriber = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='prescriptions_prescribed')
+    dispenser = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='prescriptions_dispensed')
+    
+    # Add other fields for prescription details if needed
+
+    def __str__(self):
+        return self.name

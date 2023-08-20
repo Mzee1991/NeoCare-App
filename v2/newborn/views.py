@@ -4,8 +4,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse
 from rest_framework.parsers import JSONParser
-from newborn.models import Newborn, NewbornAdmission, MotherDetails, MotherLocation, LabRequest, LabResult, Patient, NewbornExam,Subcounty, Parish, Village, CountyMunicipality
-from newborn.forms import NewbornForm, DynamicLabResultForm, LabTestRequestForm, LabResultForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
+from newborn.models import Newborn, NewbornAdmission, Prescription, MothersAntenatalDetails, MotherDetails, MotherLocation, LabRequest, LabResult, Patient, NewbornExam,Subcounty, Parish, Village, CountyMunicipality
+from newborn.forms import NewbornForm, PrescriptionForm, DynamicLabResultForm, LabTestRequestForm, LabResultForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
@@ -204,6 +204,13 @@ def print_care2x(request, pk):
     # Retrieve LabRequests for pending tests
     pending_lab_requests = LabRequest.objects.filter(neonate=newborn, labresult__isnull=True)
 
+    # Retrieve Mother's Antenatal History
+    mother = newborn.mother  # Get the associated mother
+    antenatal_history = MothersAntenatalDetails.objects.filter(mother=mother).first()
+
+    # Retrieve Newborn Examination Details
+    newborn_exams = NewbornExam.objects.filter(neonate=newborn).first()
+
     context = {
         'newborn': newborn,
         'age_days': age_days,
@@ -211,6 +218,8 @@ def print_care2x(request, pk):
         'age_minutes': age_minutes,
         'lab_results': lab_results,
         'pending_lab_requests': pending_lab_requests,
+        'antenatal_history': antenatal_history,
+        'newborn_exams': newborn_exams,
     }
     return render(request, 'newborn/patient2.html', context)
 
@@ -343,7 +352,7 @@ def mothers_antenatal_details(request, pk):
 
     if request.method == 'POST':
         form = MothersAntenatalDetailsForm(request.POST)
-        print(form)
+        #print(form.error)
         if form.is_valid():
             # Save the form data to the mother's antenatal details
             antenatal_details = form.save(commit=False)  # Create an object from the form data, but don't save it yet
@@ -374,6 +383,7 @@ def newborn_admission(request):
     return render(request, 'newborn/newborn_delivery_notes.html', {'form': form})
 
 
+@login_required
 def lab_requests_dashboard(request):
     # Retrieve neonates with pending lab results
     neonates_with_pending_results = []
@@ -390,10 +400,10 @@ def lab_requests_dashboard(request):
         age_days = age_delta.days
 
         # Calculate time elapsed as timedelta
-        time_elapsed = timezone.now() - lab_request.timestamp
+        time_elapsed = (timezone.now() - lab_request.timestamp).total_seconds()
 
         # Convert time_elapsed to a datetime object
-        time_elapsed_datetime = timezone.now() - time_elapsed
+        #time_elapsed_datetime = timezone.now() - time_elapsed
 
         # Count the number of tests requested for this lab request
         num_tests_requested = sum([
@@ -411,7 +421,7 @@ def lab_requests_dashboard(request):
         # Check if any lab test was requested for this lab request
         if num_tests_requested > 0:
             neonate.age_days = age_days
-            neonate.time_elapsed = time_elapsed_datetime
+            neonate.time_elapsed = time_elapsed
             neonate.num_tests_requested = num_tests_requested
             neonates_with_pending_results.append(neonate)
 
@@ -472,3 +482,31 @@ def pending_lab_tests(request, neonate_pk, lab_request_pk):
         'lab_request': lab_request,
     }
     return render(request, 'newborn/pending_lab_tests.html', context)
+
+def landing_page(request):
+    table = NewbornAdmission.objects.all().order_by('-id')[:4]
+
+    return render(request, 'newborn/landing_page.html', {'table': table})
+
+@login_required  # Ensure the user is logged in to access this view
+def patient_treatment_chart(request, admission_id):
+    # Retrieve the admission instance based on admission_id
+    admission = NewbornAdmission.objects.get(id=admission_id)
+
+    # Handle form submission
+    if request.method == 'POST':
+        form = PrescriptionForm(request.POST, user=request.user)  # Pass the logged-in user to the form
+        if form.is_valid():
+            prescription = form.save(commit=False)
+            prescription.admission = admission
+
+            prescription.save()
+            return redirect('patient_treatment_chart', admission_id=admission_id)
+
+    else:
+        form = PrescriptionForm(user=request.user)  # Pass the logged-in user to the form
+
+    # Retrieve prescriptions for the current admission
+    prescriptions = Prescription.objects.filter(admission=admission)
+
+    return render(request, 'newborn/prescription.html', {'admission': admission, 'prescriptions': prescriptions, 'form': form})

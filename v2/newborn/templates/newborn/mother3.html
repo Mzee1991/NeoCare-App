@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,6 +8,7 @@
     {% bootstrap_css %}
     {% bootstrap_javascript jquery='full' %}
     {{ form.media }}
+    <link rel="icon" href="{% static 'newborn/love.png' %}" type="image/png">
 </head>
 <body>
 <div class="container pt-2 my-3">

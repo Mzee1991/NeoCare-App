@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Include Bootstrap CSS here -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Include Font Awesome CSS here -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <style>
+        /* Define custom styles for icons and status */
+        /* (Same as your provided styles) */
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <!-- Patient Information -->
+    <div class="row">
+        <div class="col">
+            <h3>Patient Treatment Chart</h3>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <p><strong>Patient Name:</strong> {{ admission.name }}</p>
+            <p><strong>Age:</strong> {{ admission.age }}</p>
+            <p><strong>Inpatient Number:</strong> {{ admission.inpatient_number }}</p>
+        </div>
+    </div>
+
+    <!-- Treatment Chart Table -->
+    <div class="row mt-3">
+        <div class="col">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Prescription</th>
+                        <th>Time</th>
+                        <th rowspan="2">Day</th>
+                        <!-- Add columns for days on ward -->
+                        <th>Day 1</th>
+                        <th>Day 2</th>
+                        <th>Day 3</th>
+                        <!-- Add more columns as needed -->
+                    </tr>
+                </thead>
+                <tbody id="prescriptionTableBody">
+<!-- Django template logic to populate prescription data -->
+{% for prescription in prescriptions %}
+    <tr>
+        <td rowspan="{% if prescription.frequency == 'Once Daily' %}1{% elif prescription.frequency == 'Twice Daily' %}2{% elif prescription.frequency == 'Three Times Daily' %}3{% elif prescription.frequency == 'Four Times Daily' %}4{% endif %}">
+            {{ prescription.name }}
+        </td>
+        <td>{{ prescription.start_time }}</td>
+        <td class="status-cell">
+            <!-- Status selection and icons (same as your provided HTML/JS) -->
+        </td>
+        <td class="nurse-cell"></td>
+    </tr>
+    <!-- Additional rows for dosing frequency -->
+    {% if prescription.frequency == 'Twice Daily' %}
+        <tr>
+            <td>{{ prescription.start_time }}</td>
+            <td class="status-cell">
+                <!-- Status selection and icons (same as your provided HTML/JS) -->
+            </td>
+            <td class="nurse-cell"></td>
+        </tr>
+    {% elif prescription.frequency == 'Three Times Daily' %}
+        <tr>
+            <td>{{ prescription.start_time }}</td>
+            <td class="status-cell">
+                <!-- Status selection and icons (same as your provided HTML/JS) -->
+            </td>
+            <td class="nurse-cell"></td>
+        </tr>
+        <tr>
+            <td>{{ prescription.start_time }}</td>
+            <td class="status-cell">
+                <!-- Status selection and icons (same as your provided HTML/JS) -->
+            </td>
+            <td class="nurse-cell"></td>
+        </tr>
+    {% elif prescription.frequency == 'Four Times Daily' %}
+        <tr>
+            <td>{{ prescription.start_time }}</td>
+            <td class="status-cell">
+                <!-- Status selection and icons (same as your provided HTML/JS) -->
+            </td>
+            <td class="nurse-cell"></td>
+        </tr>
+        <tr>
+            <td>{{ prescription.start_time }}</td>
+            <td class="status-cell">
+                <!-- Status selection and icons (same as your provided HTML/JS) -->
+            </td>
+            <td class="nurse-cell"></td>
+        </tr>
+        <tr>
+            <td>{{ prescription.start_time }}</td>
+            <td class="status-cell">
+                <!-- Status selection and icons (same as your provided HTML/JS) -->
+            </td>
+            <td class="nurse-cell"></td>
+        </tr>
+    {% endif %}
+{% endfor %}
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Prescription Button -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#prescriptionModal">
+    Add Prescription
+</button>
+
+<!-- Prescription Modal -->
+<div class="modal fade" id="prescriptionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Add/Update Prescription</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="prescriptionForm" method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include Bootstrap JS and jQuery here (optional) -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Include Font Awesome JS here (optional) -->
+<script src="https://kit.fontawesome.com/a076d05399.js"></script>
+
+</body>
+</html>

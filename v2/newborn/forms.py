@@ -1,6 +1,7 @@
+from django.contrib.auth.models import User
 from django.forms import ModelForm
 from django import forms
-from .models import Newborn, NewbornAdmission, MotherDetails, MotherLocation, LabRequest, LabResult, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village, CountyMunicipality, MothersAntenatalDetails
+from .models import Newborn, NewbornAdmission, Prescription, MotherDetails, MotherLocation, LabRequest, LabResult, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village, CountyMunicipality, MothersAntenatalDetails
 from .models import SEROLOGY_CHOICES, MICROBIOLOGY_CHOICES, CHEMISTRY_CHOICES, HEMATOLOGY_CHOICES
 
 
@@ -165,6 +166,10 @@ class LabResultForm(forms.ModelForm):
             for field in self.fields.copy():
                 if field not in requested_tests:
                     del self.fields[field]
+
+            # Add form-control class to input fields
+            for field_name, field in self.fields.items():
+                field.widget.attrs.update({'class': 'form-control'})
 
     class Meta:
         model = LabResult
@@ -394,20 +399,49 @@ class DynamicLabResultForm(LabResultForm):
 
         # Determine which fields to include based on the selected test_name
         if test_name == 'serology_rpr':
-            self.fields['serology_rpr_result'] = forms.CharField(max_length=100)
+            self.fields['serology_rpr_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='RPR Result')
         elif test_name == 'serology_rct':
-            self.fields['serology_rct_result'] = forms.CharField(max_length=100)
+            self.fields['serology_rct_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='RCT Result')
         elif test_name == 'serology_bat':
-            self.fields['serology_bat_result'] = forms.CharField(max_length=100)
+            self.fields['serology_bat_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='BAT Result')
         elif test_name == 'microbiology_gram_stain':
-            self.fields['microbiology_gram_stain_result'] = forms.CharField(max_length=100)
+            self.fields['microbiology_gram_stain_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Gram stain Result')
         elif test_name == 'microbiology_culture':
-            self.fields['microbiology_culture_result'] = forms.CharField(max_length=100)
+            self.fields['microbiology_culture_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Culture Result')
         elif test_name == 'chemistry_serum_electrolytes':
-            self.fields['chemistry_serum_electrolytes_result'] = forms.CharField(max_length=100)
+            self.fields['chemistry_serum_electrolytes_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Serum Electrolytes')
         elif test_name == 'chemistry_serum_urea':
-            self.fields['chemistry_serum_urea_result'] = forms.CharField(max_length=100)
+            self.fields['chemistry_serum_urea_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Serum Urea')
         elif test_name == 'chemistry_serum_creatinine':
-            self.fields['chemistry_serum_creatinine_result'] = forms.CharField(max_length=100)
+            self.fields['chemistry_serum_creatinine_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
         elif test_name == 'chemistry_urinalysis':
-            self.fields['chemistry_urinalysis_result'] = forms.CharField(max_length=100)
+            self.fields['chemistry_urinalysis_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
+
+
+
+class PrescriptionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)  # Get the currently logged-in user from the kwargs
+        super().__init__(*args, **kwargs)
+        
+        # Initialize the prescriber and dispenser fields with the logged-in user
+        if user:
+            self.fields['prescriber'].initial = user
+            self.fields['dispenser'].initial = user
+
+    prescriber = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        label="Prescriber",
+        required=False,
+    )
+
+    dispenser = forms.ModelChoiceField(
+        queryset=User.objects.all(),
+        label="Dispenser",
+        required=False,
+    )
+
+    class Meta:
+        model = Prescription
+        fields = ['name', 'frequency', 'start_time', 'prescriber', 'dispenser']
+        # Add other fields as needed

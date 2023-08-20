@@ -32,5 +32,7 @@ urlpatterns = [
     #path('neonate/<int:neonate_pk>/pending-lab-tests/<int:lab_request_pk>/', views.pending_lab_tests, name='pending_lab_tests'),
     path('neonate/<int:neonate_pk>/pending_lab_tests/<int:lab_request_pk>/', views.pending_lab_tests, name='pending-lab-tests'),
     path('neonate/<int:neonate_pk>/lab_request/<int:lab_request_pk>/input_lab_result/<str:test_name>/', views.input_lab_result, name='input-lab-result'),
+    path('home/', views.landing_page, name='home-page'),
+    path('patient_treatment_chart/<int:admission_id>/', views.patient_treatment_chart, name='patient_treatment_chart'),
 
 ]

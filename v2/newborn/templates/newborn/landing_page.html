@@ -1,0 +1,97 @@
+{% load static %} <!-- Load static files if you have any -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holy Innocents Children's Hospital</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+
+<!-- Top Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-info">
+    <div class="container">
+        <a class="navbar-brand" href="#">Holy Innocents Children's Hospital</a>
+    </div>
+</nav>
+
+<!-- Second Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Dashboards
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item" href="#">Lab Requests</a></li>
+                    <li><a class="dropdown-item" href="#">Pending Discharges</a></li>
+                    <li><a class="dropdown-item" href="#">Admissions</a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Admit Newborn</a>
+            </li>
+        </ul>
+        <form class="d-flex mx-auto">
+            <input class="form-control me-2 mr-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+        <!-- Move Login name and Logout to the far right -->
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="#">Login name</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Logout</a>
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Latest Admissions Card -->
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            Latest Admissions
+        </div>
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Sex</th>
+                        <th>Birth Weight</th>
+                        <th>Delivery Date</th>
+                        <th>Age</th>
+                        <th>Referred In</th>
+                        <th>Mother</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for admission in table %}
+                    <tr>
+                        <td>{{ admission.name }}</td>
+                        <td>{{ admission.sex }}</td>
+                        <td>{{ admission.birth_weight }}</td>
+                        <td>{{ admission.delivery_date }}</td>
+                        <td>{{ age_days }}</td>
+                        <td>{{ admission.referred_in }}</td>
+                        <td>{{ admission.mother }}</td>
+                        <td><a href="#">Details</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Include Bootstrap JS Bundle -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
