@@ -421,27 +421,13 @@ class DynamicLabResultForm(LabResultForm):
 
 class PrescriptionForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)  # Get the currently logged-in user from the kwargs
+        user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
         
-        # Initialize the prescriber and dispenser fields with the logged-in user
         if user:
             self.fields['prescriber'].initial = user
             self.fields['dispenser'].initial = user
 
-    prescriber = forms.ModelChoiceField(
-        queryset=User.objects.all(),
-        label="Prescriber",
-        required=False,
-    )
-
-    dispenser = forms.ModelChoiceField(
-        queryset=User.objects.all(),
-        label="Dispenser",
-        required=False,
-    )
-
     class Meta:
         model = Prescription
-        fields = ['name', 'frequency', 'start_time', 'prescriber', 'dispenser']
-        # Add other fields as needed
+        fields = ['name', 'treatment_status', 'prescriber', 'dispenser']

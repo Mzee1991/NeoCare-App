@@ -130,15 +130,15 @@ def newborn_table(request):
 
 @login_required
 def newborn_search(request):
-    searched = request.GET.get('searched', '')
+    searched = request.GET.get('searched_item', '')
     newborns = None
 
     if searched.isdigit():
-        newborns = NewbornTable(NewbornAdmission.objects.filter(Q(pk=int(searched))))
+        newborns = NewbornAdmission.objects.filter(pk=int(searched))
     else:
-        newborns = NewbornTable(NewbornAdmission.objects.filter(Q(name__contains=searched)))
-
-    RequestConfig(request).configure(newborns)
+        newborns = NewbornAdmission.objects.filter(name__contains=searched)
+    print('Searched:', searched)
+    print("Newborn object", newborns)
 
     return render(request, 'newborn/search.html', {'searched': searched, 'newborns': newborns})
 ########
@@ -488,25 +488,36 @@ def landing_page(request):
 
     return render(request, 'newborn/landing_page.html', {'table': table})
 
-@login_required  # Ensure the user is logged in to access this view
+
+def calculate_frequency_count(frequency):
+    if frequency == 'Once Daily':
+        return 1
+    elif frequency == 'Twice Daily':
+        return 2
+    elif frequency == 'Three Times Daily':
+        return 3
+    elif frequency == 'Four Times Daily':
+        return 4
+    return 0
+
+@login_required
 def patient_treatment_chart(request, admission_id):
-    # Retrieve the admission instance based on admission_id
     admission = NewbornAdmission.objects.get(id=admission_id)
 
-    # Handle form submission
     if request.method == 'POST':
-        form = PrescriptionForm(request.POST, user=request.user)  # Pass the logged-in user to the form
+        form = PrescriptionForm(request.POST, user=request.user)
         if form.is_valid():
             prescription = form.save(commit=False)
             prescription.admission = admission
-
+            prescription.dispenser = request.user
             prescription.save()
             return redirect('patient_treatment_chart', admission_id=admission_id)
-
     else:
-        form = PrescriptionForm(user=request.user)  # Pass the logged-in user to the form
+        form = PrescriptionForm(user=request.user)
 
-    # Retrieve prescriptions for the current admission
     prescriptions = Prescription.objects.filter(admission=admission)
+    # Calculate and set frequency count for each prescription
+    for prescription in prescriptions:
+        prescription.frequency_count = calculate_frequency_count(prescription.frequency)
 
     return render(request, 'newborn/prescription.html', {'admission': admission, 'prescriptions': prescriptions, 'form': form})

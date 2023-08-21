@@ -6,8 +6,27 @@
     <!-- Include Font Awesome CSS here -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
     <style>
-        /* Define custom styles for icons and status */
-        /* (Same as your provided styles) */
+        /* Define custom styles for icons */
+        .status-cell select {
+            width: 100px; /* Adjust the width as needed */
+        }
+
+        .status-cell .input-group-text {
+            font-size: 20px;
+            line-height: 1.5;
+        }
+
+        .status-cell .given-icon {
+            color: green;
+        }
+
+        .status-cell .missed-icon {
+            color: red;
+        }
+
+        .status-cell .pending-icon {
+            color: orange;
+        }
     </style>
 </head>
 <body>
@@ -27,89 +46,82 @@
         </div>
     </div>
 
-    <!-- Treatment Chart Table -->
-    <div class="row mt-3">
-        <div class="col">
-            <table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Prescription</th>
-                        <th>Time</th>
-                        <th rowspan="2">Day</th>
-                        <!-- Add columns for days on ward -->
-                        <th>Day 1</th>
-                        <th>Day 2</th>
-                        <th>Day 3</th>
-                        <!-- Add more columns as needed -->
-                    </tr>
-                </thead>
-                <tbody id="prescriptionTableBody">
-<!-- Django template logic to populate prescription data -->
-{% for prescription in prescriptions %}
-    <tr>
-        <td rowspan="{% if prescription.frequency == 'Once Daily' %}1{% elif prescription.frequency == 'Twice Daily' %}2{% elif prescription.frequency == 'Three Times Daily' %}3{% elif prescription.frequency == 'Four Times Daily' %}4{% endif %}">
-            {{ prescription.name }}
-        </td>
-        <td>{{ prescription.start_time }}</td>
-        <td class="status-cell">
-            <!-- Status selection and icons (same as your provided HTML/JS) -->
-        </td>
-        <td class="nurse-cell"></td>
-    </tr>
-    <!-- Additional rows for dosing frequency -->
-    {% if prescription.frequency == 'Twice Daily' %}
+<!-- Treatment Chart Table -->
+<div class="row mt-3">
+    <div class="col">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Prescription</th>
+                    <th>Time</th>
+                    <th rowspan="2">Day</th>
+                    <!-- Add columns for days on ward -->
+                    <th>Day 1</th>
+                    <th>Day 2</th>
+                    <th>Day 3</th>
+                    <!-- Add more columns as needed -->
+                </tr>
+            </thead>
+            <!-- ... -->
+<tbody id="prescriptionTableBody">
+    <!-- Django template logic to populate prescription data -->
+    {% for prescription in prescriptions %}
         <tr>
+            <td rowspan="{{ prescription.frequency_count }}">
+                {{ prescription.name }}
+            </td>
             <td>{{ prescription.start_time }}</td>
             <td class="status-cell">
-                <!-- Status selection and icons (same as your provided HTML/JS) -->
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <select class="custom-select" name="status">
+                            {% for choice in prescription.get_treatment_status_display %}
+                                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
             </td>
-            <td class="nurse-cell"></td>
-        </tr>
-    {% elif prescription.frequency == 'Three Times Daily' %}
-        <tr>
-            <td>{{ prescription.start_time }}</td>
-            <td class="status-cell">
-                <!-- Status selection and icons (same as your provided HTML/JS) -->
+            <td class="nurse-cell">
+                {% prescription.dispenser %}
+                    {{ prescription.dispenser.username }} Given
+                {% else %}
+                    Nurse A Given
+                {% endif %}
             </td>
-            <td class="nurse-cell"></td>
         </tr>
-        <tr>
-            <td>{{ prescription.start_time }}</td>
-            <td class="status-cell">
-                <!-- Status selection and icons (same as your provided HTML/JS) -->
-            </td>
-            <td class="nurse-cell"></td>
-        </tr>
-    {% elif prescription.frequency == 'Four Times Daily' %}
-        <tr>
-            <td>{{ prescription.start_time }}</td>
-            <td class="status-cell">
-                <!-- Status selection and icons (same as your provided HTML/JS) -->
-            </td>
-            <td class="nurse-cell"></td>
-        </tr>
-        <tr>
-            <td>{{ prescription.start_time }}</td>
-            <td class="status-cell">
-                <!-- Status selection and icons (same as your provided HTML/JS) -->
-            </td>
-            <td class="nurse-cell"></td>
-        </tr>
-        <tr>
-            <td>{{ prescription.start_time }}</td>
-            <td class="status-cell">
-                <!-- Status selection and icons (same as your provided HTML/JS) -->
-            </td>
-            <td class="nurse-cell"></td>
-        </tr>
-    {% endif %}
-{% endfor %}
+        <!-- Additional rows for dosing frequency -->
+        {% for i in "x"|ljust:prescription.frequency_count|add:"-1" %}
+            <tr>
+                <td>{{ prescription.start_time }}</td>
+                <td class="status-cell">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <select class="custom-select" name="status">
+                                {% for choice in prescription.get_treatment_status_display %}
+                                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </td>
+                <td class="nurse-cell">
+                    {% if user.is_authenticated %}
+                        {{ user.username }} Given
+                    {% else %}
+                        Nurse A Given
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    {% endfor %}
+</tbody>
+<!-- ... -->
 
-                </tbody>
-            </table>
-        </div>
+        </table>
     </div>
 </div>
+
 
 <!-- Add Prescription Button -->
 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#prescriptionModal">
@@ -127,16 +139,167 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="prescriptionForm" method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
+                <form id="prescriptionForm">
+                    <div class="form-group">
+                        <label for="prescriptionName">Prescription:</label>
+                        <input type="text" class="form-control" id="prescriptionName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="prescriptionTimes">Frequency:</label>
+                        <select class="form-control" id="prescriptionTimes" required>
+                            <option value="1">Once Daily</option>
+                            <option value="2">Twice Daily</option>
+                            <option value="3">Three Times Daily</option>
+                            <!-- Add more options for different frequencies if needed -->
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="prescriptionStartTime">Start Time:</label>
+                        <input type="time" class="form-control" id="prescriptionStartTime">
+                    </div>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save</button>
+                    <button type="button" class="btn btn-primary" id="savePrescriptionBtn">Save</button>
                 </form>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Function to add/update prescription in the table
+    function addOrUpdatePrescription() {
+        const prescriptionName = document.getElementById('prescriptionName').value;
+        const prescriptionTimes = parseInt(document.getElementById('prescriptionTimes').value);
+        const prescriptionStartTime = document.getElementById('prescriptionStartTime').value;
+
+        // Convert the start time to 12-hour format
+        const formattedStartTime = formatTimeIn12Hour(prescriptionStartTime);
+
+        // Create a new table row with prescription details and initial "Pending" status
+        const newRow = document.createElement('tr');
+        newRow.innerHTML = `
+            <td rowspan="${prescriptionTimes}">${prescriptionName}</td>
+            <td>${formattedStartTime}</td>
+            <td class="status-cell">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <select class="custom-select" onchange="updateStatus(this)">
+                            <option value="pending">Pending</option>
+                            <option value="given">Given</option>
+                            <option value="missed">Missed</option>
+                        </select>
+                    </div>
+                    <div class="input-group-append">
+                        <span class="input-group-text pending-icon"></span>
+                    </div>
+                </div>
+            </td>
+            <td class="nurse-cell"></td>
+        `;
+
+        // Append the new row to the table body
+        const tableBody = document.getElementById('prescriptionTableBody');
+        tableBody.appendChild(newRow);
+
+        // Calculate and add additional rows based on dosing frequency
+        for (let i = 1; i < prescriptionTimes; i++) {
+            const formattedTime = formatTimeIn12Hour(calculateNextTime(prescriptionStartTime, i, prescriptionTimes));
+            const additionalRow = document.createElement('tr');
+            additionalRow.innerHTML = `
+                <td>${formattedTime}</td>
+                <td class="status-cell">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <select class="custom-select" onchange="updateStatus(this)">
+                                <option value="pending">Pending</option>
+                                <option value="given">Given</option>
+                                <option value="missed">Missed</option>
+                            </select>
+                        </div>
+                        <div class="input-group-append">
+                            <span class="input-group-text pending-icon"></span>
+                        </div>
+                    </div>
+                </td>
+                <td class="nurse-cell"></td>
+            `;
+            tableBody.appendChild(additionalRow);
+        }
+
+        // Clear the form fields
+        document.getElementById('prescriptionName').value = '';
+        document.getElementById('prescriptionTimes').value = '1'; // Reset to default value
+        document.getElementById('prescriptionStartTime').value = '';
+
+        // Close the modal
+        $('#prescriptionModal').modal('hide');
+    }
+
+    // Calculate the next dosing time based on dosing frequency
+    function calculateNextTime(startTime, index, frequency) {
+        const parts = startTime.split(":");
+        let hours = parseInt(parts[0]);
+        const minutes = parseInt(parts[1]);
+        if (frequency === 2) {
+            // Twice daily: Add 12 hours for the second dose
+            hours += 12 * index;
+        } else if (frequency === 3) {
+            // Three times daily: Add 8 hours for the second dose, 16 hours for the third dose
+            hours += 8 * index;
+        }
+
+        // Handle 24-hour clock wrap-around
+        if (hours >= 24) {
+            hours -= 24;
+        }
+
+        // Format the time as HH:mm
+        const formattedTime = (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes;
+
+        return formattedTime;
+    }
+
+    // Format a given time in 12-hour format (e.g., "02:00 AM")
+    function formatTimeIn12Hour(time) {
+        const parts = time.split(":");
+        let hours = parseInt(parts[0]);
+        const minutes = parseInt(parts[1]);
+        const ampm = hours >= 12 ? "PM" : "AM";
+        hours = hours % 12;
+        hours = hours ? hours : 12; // 12-hour clock with "0" as "12"
+        const formattedTime = (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + " " + ampm;
+        return formattedTime;
+    }
+
+    // Function to update the status and lock the select
+    function updateStatus(select) {
+        const selectedOption = select.value;
+        const cell = select.closest('td.status-cell');
+        const nurseCell = cell.nextElementSibling;
+
+        // Disable the select element to lock it
+        select.disabled = true;
+
+        // Clear any previous content
+        nurseCell.innerHTML = '';
+
+        if (selectedOption === 'given') {
+            // Display the "Given" icon
+            nurseCell.innerHTML = '<i class="fas fa-check-circle given-icon"></i> Nurse A Given';
+        } else if (selectedOption === 'missed') {
+            // Display the "Missed" icon
+            nurseCell.innerHTML = '<i class="fas fa-times-circle missed-icon"></i> Nurse A Missed';
+        } else {
+            // Display the "Pending" icon
+            nurseCell.innerHTML = '<i class="fas fa-hourglass-start pending-icon"></i> Pending';
+        }
+    }
+	
+    // Add event listener for form submission
+    document.getElementById('savePrescriptionBtn').addEventListener('click', function () {
+        addOrUpdatePrescription();
+    });
+</script>
 
 <!-- Include Bootstrap JS and jQuery here (optional) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

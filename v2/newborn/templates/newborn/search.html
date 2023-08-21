@@ -1,16 +1,43 @@
-{% extends 'newborn/base.html' %}
-{% load render_table from django_tables2 %}
+{% extends 'newborn/base3.html' %}
+
 {% block content %}
-	<div class="row">
-		<div class="col">
-			<div class="card card-body">
-				{% if searched %}
-					{% render_table newborns %}
-				{% else %}
-					<h1>No results for {{ searched }}</h1>
-				{% endif %}
-					
-			</div>
-		</div>
-	</div>
+<div class="card">
+    <div class="card-header bg-primary text-white">
+        Latest Admissions
+    </div>
+    <div class="card-body">
+        {% if searched %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Sex</th>
+                        <th>Birth Weight</th>
+                        <th>Delivery Date</th>
+                        <th>Age</th>
+                        <th>Referred In</th>
+                        <th>Mother</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for admission in newborns %}
+                    <tr>
+                        <td>{{ admission.name }}</td>
+                        <td>{{ admission.sex }}</td>
+                        <td>{{ admission.birth_weight }}</td>
+                        <td>{{ admission.delivery_date }}</td>
+			<td>{{ age_days }}</td>
+                        <td>{{ admission.referred_in }}</td>
+                        <td>{{ admission.mother }}</td>
+                        <td><a href="{% url 'clerkship-page' pk=admission.id %}">Details</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>No results for {{ searched }}</p>
+        {% endif %}
+    </div>
+</div>
 {% endblock %}

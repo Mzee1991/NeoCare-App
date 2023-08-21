@@ -357,23 +357,18 @@ class MothersAntenatalDetails(models.Model):
 class Prescription(models.Model):
     admission = models.ForeignKey(NewbornAdmission, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    
-    # Define choices for frequency
-    FREQUENCY_CHOICES = [
-        ('Once Daily', 'Once Daily'),
-        ('Twice Daily', 'Twice Daily'),
-        ('Three Times Daily', 'Three Times Daily'),
-        ('Four Times Daily', 'Four Times Daily'),
+
+    TREATMENT_STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Given', 'Given'),
+        ('Missed', 'Missed'),
     ]
-    frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES)
+    treatment_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES)
     
-    start_time = models.TimeField()
-    
-    # Fields for prescriber and dispenser
+    dosing_times = models.JSONField(default=list)  # Store dosing times as a JSON array
+
     prescriber = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='prescriptions_prescribed')
     dispenser = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='prescriptions_dispensed')
-    
-    # Add other fields for prescription details if needed
 
     def __str__(self):
         return self.name
