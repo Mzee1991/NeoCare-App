@@ -31,6 +31,26 @@
 </head>
 <body>
 
+<div class="modal fade" id="successModal" tabindex="-1" role="dialog" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="redirectToChartBtn">Go to Chart</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="container mt-5">
     <!-- Patient Information -->
     <div class="row">
@@ -42,7 +62,7 @@
         <div class="col">
             <p><strong>Patient Name:</strong> {{ admission.name }}</p>
             <p><strong>Age:</strong> {{ admission.age }}</p>
-            <p><strong>Inpatient Number:</strong> {{ admission.inpatient_number }}</p>
+            <p><strong>Inpatient Number:</strong> {{ admission.pk }}</p>
         </div>
     </div>
 
@@ -62,244 +82,327 @@
                     <!-- Add more columns as needed -->
                 </tr>
             </thead>
-            <!-- ... -->
-<tbody id="prescriptionTableBody">
-    <!-- Django template logic to populate prescription data -->
-    {% for prescription in prescriptions %}
-        <tr>
-            <td rowspan="{{ prescription.frequency_count }}">
-                {{ prescription.name }}
-            </td>
-            <td>{{ prescription.start_time }}</td>
-            <td class="status-cell">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <select class="custom-select" name="status">
-                            {% for choice in prescription.get_treatment_status_display %}
-                                <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                </div>
-            </td>
-            <td class="nurse-cell">
-                {% prescription.dispenser %}
-                    {{ prescription.dispenser.username }} Given
-                {% else %}
-                    Nurse A Given
-                {% endif %}
-            </td>
-        </tr>
-        <!-- Additional rows for dosing frequency -->
-        {% for i in "x"|ljust:prescription.frequency_count|add:"-1" %}
-            <tr>
-                <td>{{ prescription.start_time }}</td>
-                <td class="status-cell">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <select class="custom-select" name="status">
-                                {% for choice in prescription.get_treatment_status_display %}
-                                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                    </div>
-                </td>
-                <td class="nurse-cell">
-                    {% if user.is_authenticated %}
-                        {{ user.username }} Given
-                    {% else %}
-                        Nurse A Given
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-    {% endfor %}
-</tbody>
-<!-- ... -->
+            <tbody id="prescriptionTableBody">
+                {% for prescription in prescriptions %}
+                <tr data-prescription-id="{{ prescription.id }}">
+                    <td rowspan="{{ prescription.frequency_count }}">
+                        {{ prescription.name }} {{ prescription.frequency }}
+                    </td>
+                    <td class="dosing-time-cell">{{ prescription.start_dose_time }}</td>
+ <td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
 
+
+                    <td class="nurse-cell">
+                        Nurse A <!-- Replace with actual nurse data -->
+                    </td>
+                </tr>
+                {% if prescription.second_dose_time %}
+                <tr data-prescription-id="{{ prescription.id }}">
+                    <td class="dosing-time-cell">{{ prescription.second_dose_time }}</td>
+                    <td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+
+                    <td class="nurse-cell">
+                        Nurse A <!-- Replace with actual nurse data -->
+                    </td>
+                </tr>
+                {% endif %}
+		                {% if prescription.third_dose_time %}
+                <tr data-prescription-id="{{ prescription.id }}">
+                    <td class="dosing-time-cell">{{ prescription.third_dose_time }}</td>
+                    <td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+
+                    <td class="nurse-cell">
+                        Nurse A <!-- Replace with actual nurse data -->
+                    </td>
+                </tr>
+		{% endif %}
+		                {% if prescription.fourth_dose_time %}
+                <tr data-prescription-id="{{ prescription.id }}">
+                    <td class="dosing-time-cell">{{ prescription.fourth_dose_time }}</td>
+                    <td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+
+                    <td class="nurse-cell">
+                        Nurse A <!-- Replace with actual nurse data -->
+                    </td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
         </table>
     </div>
 </div>
 
 
-<!-- Add Prescription Button -->
-<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#prescriptionModal">
-    Add Prescription
-</button>
 
-<!-- Prescription Modal -->
-<div class="modal fade" id="prescriptionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Add/Update Prescription</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="prescriptionForm">
-                    <div class="form-group">
-                        <label for="prescriptionName">Prescription:</label>
-                        <input type="text" class="form-control" id="prescriptionName" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="prescriptionTimes">Frequency:</label>
-                        <select class="form-control" id="prescriptionTimes" required>
-                            <option value="1">Once Daily</option>
-                            <option value="2">Twice Daily</option>
-                            <option value="3">Three Times Daily</option>
-                            <!-- Add more options for different frequencies if needed -->
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="prescriptionStartTime">Start Time:</label>
-                        <input type="time" class="form-control" id="prescriptionStartTime">
-                    </div>
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="savePrescriptionBtn">Save</button>
-                </form>
+
+    <!-- Add Prescription Button -->
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#prescriptionModal">
+        Add Prescription
+    </button>
+
+    <!-- Prescription Modal -->
+    <div class="modal fade" id="prescriptionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add/Update Prescription</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="prescriptionForm" action="{% url 'save_prescription' %}" method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="prescriptionName">Prescription Name:</label>
+                            <input type="text" class="form-control" name="name" id="prescriptionName" required>
+                        </div>
+                        <div class="form-group" style="display: none;">
+                            <label for="prescriptionDosingTimes">Dosing Times:</label>
+                            <input type="text" class="form-control" name="dosing_times" id="prescriptionDosingTimes">
+                        </div>
+                        <div class="form-group">
+                            <label for="prescriptionFrequency">Dosing Frequency:</label>
+                            <select class="form-control" name="frequency" id="prescriptionFrequency" required>
+                                <option value="Once Daily">Once Daily</option>
+                                <option value="Twice Daily">Twice Daily</option>
+                                <option value="Three Times Daily">Three Times Daily</option>
+				<option value="Four Times Daily">Four Times Daily</option>
+                                <!-- Add more options for different frequencies if needed -->
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="prescriptionStartTime">Start Time:</label>
+                            <input type="time" class="form-control" name="start_time" id="prescriptionStartTime" required>
+                        </div>
+                        <input type="hidden" name="prescriber" value="{{ user.id }}">
+                        <input type="hidden" name="admission_id" value="{{ admission.id }}">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="savePrescriptionBtn">Save</button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
+
 </div>
 
 <script>
     // Function to add/update prescription in the table
     function addOrUpdatePrescription() {
-        const prescriptionName = document.getElementById('prescriptionName').value;
-        const prescriptionTimes = parseInt(document.getElementById('prescriptionTimes').value);
-        const prescriptionStartTime = document.getElementById('prescriptionStartTime').value;
+        const prescriptionForm = document.getElementById('prescriptionForm');
+        const formData = new FormData(prescriptionForm);
 
-        // Convert the start time to 12-hour format
-        const formattedStartTime = formatTimeIn12Hour(prescriptionStartTime);
+        // Calculate dosing times based on frequency and start time
+        const frequency = formData.get('frequency');
+        const startTime = formData.get('start_time');
+        const frequencyCount = calculateFrequencyCount(frequency);
 
-        // Create a new table row with prescription details and initial "Pending" status
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td rowspan="${prescriptionTimes}">${prescriptionName}</td>
-            <td>${formattedStartTime}</td>
-            <td class="status-cell">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <select class="custom-select" onchange="updateStatus(this)">
-                            <option value="pending">Pending</option>
-                            <option value="given">Given</option>
-                            <option value="missed">Missed</option>
-                        </select>
-                    </div>
-                    <div class="input-group-append">
-                        <span class="input-group-text pending-icon"></span>
-                    </div>
-                </div>
-            </td>
-            <td class="nurse-cell"></td>
-        `;
+        // Set the calculated dosing times in the form data
+        const dosingTimes = calculateDosingTimes(frequency, startTime, frequencyCount);
+        formData.set('dosing_times', JSON.stringify(dosingTimes));
 
-        // Append the new row to the table body
-        const tableBody = document.getElementById('prescriptionTableBody');
-        tableBody.appendChild(newRow);
+        // Include the admission_id in the AJAX request
+        const admissionId = formData.get('admission_id');
+        const prescriptionId = formData.get('prescription_id'); // Get the prescription_id from the form
+        const prescriptionUrl = `/get_prescription_data/${admissionId}/${prescriptionId}/`; // Updated URL
 
-        // Calculate and add additional rows based on dosing frequency
-        for (let i = 1; i < prescriptionTimes; i++) {
-            const formattedTime = formatTimeIn12Hour(calculateNextTime(prescriptionStartTime, i, prescriptionTimes));
-            const additionalRow = document.createElement('tr');
-            additionalRow.innerHTML = `
-                <td>${formattedTime}</td>
-                <td class="status-cell">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <select class="custom-select" onchange="updateStatus(this)">
-                                <option value="pending">Pending</option>
-                                <option value="given">Given</option>
-                                <option value="missed">Missed</option>
-                            </select>
-                        </div>
-                        <div class="input-group-append">
-                            <span class="input-group-text pending-icon"></span>
-                        </div>
-                    </div>
-                </td>
-                <td class="nurse-cell"></td>
-            `;
-            tableBody.appendChild(additionalRow);
+        fetch(prescriptionUrl, {
+            method: prescriptionForm.method,
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+            } else {
+                console.log('Success:', data.message);
+
+            	// Update the modal message with the success message
+            	const successMessage = document.getElementById('successMessage');
+            	successMessage.textContent = data.message;
+
+            	// Show the success modal
+            	$('#successModal').modal('show');
+
+            	// Set the "Go to Chart" button to redirect to the provided URL
+            	const redirectToChartBtn = document.getElementById('redirectToChartBtn');
+            	redirectToChartBtn.addEventListener('click', function () {
+                    window.location.href = data.chart_url;
+            	});
+            // Update the table with the new prescription data
+            updatePrescriptionTable(prescriptionId, formData, dosingTimes, frequencyCount);
         }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
 
-        // Clear the form fields
-        document.getElementById('prescriptionName').value = '';
-        document.getElementById('prescriptionTimes').value = '1'; // Reset to default value
-        document.getElementById('prescriptionStartTime').value = '';
+// Function to update an existing prescription row in the table
+function updatePrescriptionTable(prescriptionId, formData, dosingTimes, frequencyCount) {
+    // Fetch the updated prescription data from the server or form data and update the table row
+    // Example code for updating the table row:
+    const prescriptionRow = document.querySelector(`[data-prescription-id="${prescriptionId}"]`);
+    if (prescriptionRow) {
+        // Update the relevant cells in the row
+        prescriptionRow.querySelector('.status-cell select').value = formData.get('status');
+        prescriptionRow.querySelector('.nurse-cell').textContent = formData.get('dispenser') || 'Nurse A Given';
 
-        // Close the modal
-        $('#prescriptionModal').modal('hide');
+        // Update dosing times based on frequency_count
+        const dosingTimeCells = prescriptionRow.querySelectorAll('.dosing-time-cell');
+        dosingTimeCells.forEach((cell, index) => {
+            if (index < frequencyCount) {
+                cell.textContent = dosingTimes[index];
+            } else {
+                cell.textContent = ''; // Clear extra dosing time cells
+            }
+        });
+    }
+}
+
+    // Calculate frequency count based on the selected frequency
+    function calculateFrequencyCount(frequency) {
+        if (frequency === 'Once Daily') {
+            return 1;
+        } else if (frequency === 'Twice Daily') {
+            return 2;
+        } else if (frequency === 'Three Times Daily') {
+            return 3;
+        } else if (frequency === 'Four Times Daily') {
+            return 4;
+        }
+        return 0;
     }
 
-    // Calculate the next dosing time based on dosing frequency
-    function calculateNextTime(startTime, index, frequency) {
-        const parts = startTime.split(":");
-        let hours = parseInt(parts[0]);
-        const minutes = parseInt(parts[1]);
-        if (frequency === 2) {
-            // Twice daily: Add 12 hours for the second dose
-            hours += 12 * index;
-        } else if (frequency === 3) {
-            // Three times daily: Add 8 hours for the second dose, 16 hours for the third dose
-            hours += 8 * index;
+    // Calculate dosing times based on frequency, start time, and frequency count
+    function calculateDosingTimes(frequency, startTime, frequencyCount) {
+        const dosingTimes = [startTime]; // Initialize with the start time
+
+        // Calculate dosing times based on frequencyCount
+        if (frequencyCount > 1) {
+            const interval = calculateInterval(frequency);
+            for (let i = 1; i < frequencyCount; i++) {
+                const nextTime = calculateNextTime(dosingTimes[i - 1], interval);
+                dosingTimes.push(nextTime);
+            }
         }
 
-        // Handle 24-hour clock wrap-around
-        if (hours >= 24) {
-            hours -= 24;
+        return dosingTimes;
+    }
+
+    // Calculate the dosing interval based on frequency
+    function calculateInterval(frequency) {
+        switch (frequency) {
+            case 'Once Daily':
+                return 24 * 60; // 24 hours in minutes
+            case 'Twice Daily':
+                return 12 * 60; // 12 hours in minutes
+            case 'Three Times Daily':
+                return 8 * 60; // 8 hours in minutes
+            case 'Four Times Daily':
+                return 6 * 60; // 6 hours in minutes
+            default:
+                return 0;
         }
+    }
+
+    // Calculate the next dosing time based on the given time and interval
+    function calculateNextTime(currentTime, interval) {
+        const [hours, minutes] = currentTime.split(':').map(Number);
+        const totalMinutes = hours * 60 + minutes + interval;
+        const nextHours = Math.floor(totalMinutes / 60) % 24;
+        const nextMinutes = totalMinutes % 60;
 
         // Format the time as HH:mm
-        const formattedTime = (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes;
-
+        const formattedTime = `${nextHours.toString().padStart(2, '0')}:${nextMinutes.toString().padStart(2, '0')}`;
         return formattedTime;
     }
 
-    // Format a given time in 12-hour format (e.g., "02:00 AM")
-    function formatTimeIn12Hour(time) {
-        const parts = time.split(":");
-        let hours = parseInt(parts[0]);
-        const minutes = parseInt(parts[1]);
-        const ampm = hours >= 12 ? "PM" : "AM";
-        hours = hours % 12;
-        hours = hours ? hours : 12; // 12-hour clock with "0" as "12"
-        const formattedTime = (hours < 10 ? "0" : "") + hours + ":" + (minutes < 10 ? "0" : "") + minutes + " " + ampm;
-        return formattedTime;
-    }
-
-    // Function to update the status and lock the select
-    function updateStatus(select) {
-        const selectedOption = select.value;
-        const cell = select.closest('td.status-cell');
-        const nurseCell = cell.nextElementSibling;
-
-        // Disable the select element to lock it
-        select.disabled = true;
-
-        // Clear any previous content
-        nurseCell.innerHTML = '';
-
-        if (selectedOption === 'given') {
-            // Display the "Given" icon
-            nurseCell.innerHTML = '<i class="fas fa-check-circle given-icon"></i> Nurse A Given';
-        } else if (selectedOption === 'missed') {
-            // Display the "Missed" icon
-            nurseCell.innerHTML = '<i class="fas fa-times-circle missed-icon"></i> Nurse A Missed';
-        } else {
-            // Display the "Pending" icon
-            nurseCell.innerHTML = '<i class="fas fa-hourglass-start pending-icon"></i> Pending';
+    // Function to update an existing prescription row in the table
+    function updatePrescriptionTable(prescriptionId, formData) {
+        // Fetch the updated prescription data from the server or form data and update the table row
+        // Example code for updating the table row:
+        const prescriptionRow = document.querySelector(`[data-prescription-id="${prescriptionId}"]`);
+        if (prescriptionRow) {
+            // Update the relevant cells in the row
+            prescriptionRow.querySelector('.status-cell select').value = formData.get('status');
+            prescriptionRow.querySelector('.nurse-cell').textContent = formData.get('dispenser') || 'Nurse A Given';
+            
+            // Update dosing times based on frequency_count
+            const dosingTimes = JSON.parse(formData.get('dosing_times'));
+            const dosingTimeCells = prescriptionRow.querySelectorAll('.dosing-time-cell');
+            dosingTimeCells.forEach((cell, index) => {
+                cell.textContent = dosingTimes[index];
+            });
         }
     }
-	
+
+    // Function to extract and return CSRF token from cookies
+    function getCookie(name) {
+        const value = `; ${document.cookie}`;
+        const parts = value.split(`; ${name}=`);
+        if (parts.length === 2) {
+            return parts.pop().split(';').shift();
+        }
+    }
+
     // Add event listener for form submission
     document.getElementById('savePrescriptionBtn').addEventListener('click', function () {
         addOrUpdatePrescription();
     });
+
+    // Mapping of treatment status choices for select options
+    const treatmentStatusChoices = [
+        ['Pending', 'Pending'],
+        ['Given', 'Given'],
+        ['Missed', 'Missed']
+    ];
 </script>
+
 
 <!-- Include Bootstrap JS and jQuery here (optional) -->
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

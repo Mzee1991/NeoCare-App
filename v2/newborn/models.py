@@ -357,7 +357,8 @@ class MothersAntenatalDetails(models.Model):
 class Prescription(models.Model):
     admission = models.ForeignKey(NewbornAdmission, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-
+    dosage = models.CharField(max_length=50)
+    
     TREATMENT_STATUS_CHOICES = [
         ('Pending', 'Pending'),
         ('Given', 'Given'),
@@ -365,8 +366,21 @@ class Prescription(models.Model):
     ]
     treatment_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES)
     
-    dosing_times = models.JSONField(default=list)  # Store dosing times as a JSON array
+    # Fields for dosing times
+    start_dose_time = models.TimeField()
+    second_dose_time = models.TimeField(null=True, blank=True)
+    third_dose_time = models.TimeField(null=True, blank=True)
+    fourth_dose_time = models.TimeField(null=True, blank=True)
+    
+    FREQUENCY_CHOICES = [
+        ('Once Daily', 'Once Daily'),
+        ('Twice Daily', 'Twice Daily'),
+        ('Three Times Daily', 'Three Times Daily'),
+        ('Four Times Daily', 'Four Times Daily'),
+    ]
+    frequency = models.CharField(max_length=20, choices=FREQUENCY_CHOICES)
 
+    start_date = models.DateField()
     prescriber = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='prescriptions_prescribed')
     dispenser = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='prescriptions_dispensed')
 

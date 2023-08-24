@@ -2,7 +2,7 @@ from django.core import serializers
 from django.utils import timezone
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from rest_framework.parsers import JSONParser
 from newborn.models import Newborn, NewbornAdmission, Prescription, MothersAntenatalDetails, MotherDetails, MotherLocation, LabRequest, LabResult, Patient, NewbornExam,Subcounty, Parish, Village, CountyMunicipality
 from newborn.forms import NewbornForm, PrescriptionForm, DynamicLabResultForm, LabTestRequestForm, LabResultForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
@@ -476,13 +476,29 @@ def input_lab_result(request, neonate_pk, lab_request_pk, test_name):
 def pending_lab_tests(request, neonate_pk, lab_request_pk):
     neonate = get_object_or_404(NewbornAdmission, pk=neonate_pk)
     lab_request = get_object_or_404(LabRequest, pk=lab_request_pk, neonate=neonate)
-    
+
+    if not any([
+        lab_request.serology_rpr_requested,
+        lab_request.serology_rct_requested,
+        lab_request.serology_bat_requested,
+        lab_request.microbiology_gram_stain_requested,
+        lab_request.microbiology_culture_requested,
+        lab_request.chemistry_serum_electrolytes_requested,
+        lab_request.chemistry_serum_urea_requested,
+        lab_request.chemistry_serum_creatinine_requested,
+        lab_request.chemistry_urinalysis_requested,
+        # Add other test types as needed
+    ]):
+        return redirect(reverse('lab-requests-dashboard'))
+
     context = {
         'neonate': neonate,
         'lab_request': lab_request,
     }
     return render(request, 'newborn/pending_lab_tests.html', context)
 
+
+@login_required
 def landing_page(request):
     table = NewbornAdmission.objects.all().order_by('-id')[:4]
 
@@ -509,7 +525,6 @@ def patient_treatment_chart(request, admission_id):
         if form.is_valid():
             prescription = form.save(commit=False)
             prescription.admission = admission
-            prescription.dispenser = request.user
             prescription.save()
             return redirect('patient_treatment_chart', admission_id=admission_id)
     else:
@@ -521,3 +536,107 @@ def patient_treatment_chart(request, admission_id):
         prescription.frequency_count = calculate_frequency_count(prescription.frequency)
 
     return render(request, 'newborn/prescription.html', {'admission': admission, 'prescriptions': prescriptions, 'form': form})
+
+
+def calculate_dosing_times(frequency, start_time):
+    dosing_times = [start_time]  # Initialize with the start time
+
+    if frequency == 'Twice Daily':
+        dosing_times.append((timezone.datetime.strptime(start_time, '%H:%M') + timezone.timedelta(hours=12)).strftime('%H:%M'))
+    elif frequency == 'Three Times Daily':
+        dosing_times.extend([
+            (timezone.datetime.strptime(start_time, '%H:%M') + timezone.timedelta(hours=8)).strftime('%H:%M'),
+            (timezone.datetime.strptime(start_time, '%H:%M') + timezone.timedelta(hours=16)).strftime('%H:%M')
+        ])
+    elif frequency == 'Four Times Daily':
+        dosing_times.extend([
+            (timezone.datetime.strptime(start_time, '%H:%M') + timezone.timedelta(hours=6)).strftime('%H:%M'),
+            (timezone.datetime.strptime(start_time, '%H:%M') + timezone.timedelta(hours=12)).strftime('%H:%M'),
+            (timezone.datetime.strptime(start_time, '%H:%M') + timezone.timedelta(hours=18)).strftime('%H:%M')
+        ])
+
+    return dosing_times
+
+
+def save_prescription(request):
+    if request.method == 'POST':
+        form = PrescriptionForm(request.POST, user=request.user)
+        admission_id = request.POST.get('admission_id')
+        admission = get_object_or_404(NewbornAdmission, id=int(admission_id))
+        
+        if form.is_valid():
+            prescription = form.save(commit=False)
+            prescription.admission = admission
+            prescription.treatment_status = 'Pending'
+            prescription.dispenser = None
+            prescription.start_date = date.today()
+
+            # Calculate dosing times based on frequency and start time
+            frequency = request.POST.get('frequency')
+            start_time = request.POST.get('start_time')
+            dosing_times = calculate_dosing_times(frequency, start_time)
+
+            # Assign dosing times to prescription fields
+            prescription.start_dose_time = dosing_times[0]
+            prescription.second_dose_time = dosing_times[1] if len(dosing_times) > 1 else None
+            prescription.third_dose_time = dosing_times[2] if len(dosing_times) > 2 else None
+            prescription.fourth_dose_time = dosing_times[3] if len(dosing_times) > 3 else None
+
+            prescription.save()
+            
+            # Redirect to the patient_treatment_chart page
+            chart_url = reverse('patient_treatment_chart', args=[admission_id])
+            return HttpResponseRedirect(chart_url)
+
+        return JsonResponse({'error': form.errors}, status=400)
+
+    return render(request, 'newborn/prescription.html')
+
+
+
+def get_prescription_data(request, admission_id, prescription_id):
+    try:
+        # First, ensure that the admission exists
+        admission = get_object_or_404(NewbornAdmission, id=admission_id)
+
+        # Then, fetch the prescription data for the specified admission and prescription IDs
+        prescription = get_object_or_404(Prescription, id=prescription_id, admission=admission)
+
+        dosing_times = []
+
+        # Add the start_dose_time
+        dosing_times.append({
+            'time': prescription.start_dose_time,
+            'status': prescription.treatment_status,
+            'nurse': prescription.dispenser.username if prescription.dispenser else None
+        })
+
+        # Add the second_dose_time if available
+        if prescription.second_dose_time:
+            dosing_times.append({
+                'time': prescription.second_dose_time,
+                'status': prescription.treatment_status,
+                'nurse': prescription.dispenser.username if prescription.dispenser else None
+            })
+
+        # Add the third_dose_time if available
+        if prescription.third_dose_time:
+            dosing_times.append({
+                'time': prescription.third_dose_time,
+                'status': prescription.treatment_status,
+                'nurse': prescription.dispenser.username if prescription.dispenser else None
+            })
+
+        # You can add more dosing times in a similar manner
+
+        data = {
+            'prescription_name': prescription.prescription_name,
+            'dosing_times': dosing_times
+        }
+        print("Data: ", data['prescription_name'])
+
+        return render(request, 'newborn/prescription.html', {'data': data})
+    except NewbornAdmission.DoesNotExist:
+        return JsonResponse({'error': 'Admission not found'}, status=404)
+    except Prescription.DoesNotExist:
+        return JsonResponse({'error': 'Prescription not found'}, status=404)
