@@ -15,6 +15,7 @@ from django.db.models import Avg, Count, Q
 from datetime import date, timedelta, datetime
 import json
 from django_tables2 import RequestConfig
+from django.contrib.auth.models import User 
 
 def newborn_list(request):
     """
@@ -557,7 +558,7 @@ def calculate_dosing_times(frequency, start_time):
 
     return dosing_times
 
-
+@login_required
 def save_prescription(request):
     if request.method == 'POST':
         form = PrescriptionForm(request.POST, user=request.user)
@@ -570,6 +571,15 @@ def save_prescription(request):
             prescription.treatment_status = 'Pending'
             prescription.dispenser = None
             prescription.start_date = date.today()
+
+            # Retrieve the prescriber based on the user.id
+            prescriber_id = request.POST.get('prescriber')
+            try:
+                prescriber = User.objects.get(id=prescriber_id)
+                prescription.prescriber = prescriber
+            except User.DoesNotExist:
+                # Handle the case where the user with the provided ID doesn't exist
+                pass
 
             # Calculate dosing times based on frequency and start time
             frequency = request.POST.get('frequency')
@@ -592,51 +602,3 @@ def save_prescription(request):
 
     return render(request, 'newborn/prescription.html')
 
-
-
-def get_prescription_data(request, admission_id, prescription_id):
-    try:
-        # First, ensure that the admission exists
-        admission = get_object_or_404(NewbornAdmission, id=admission_id)
-
-        # Then, fetch the prescription data for the specified admission and prescription IDs
-        prescription = get_object_or_404(Prescription, id=prescription_id, admission=admission)
-
-        dosing_times = []
-
-        # Add the start_dose_time
-        dosing_times.append({
-            'time': prescription.start_dose_time,
-            'status': prescription.treatment_status,
-            'nurse': prescription.dispenser.username if prescription.dispenser else None
-        })
-
-        # Add the second_dose_time if available
-        if prescription.second_dose_time:
-            dosing_times.append({
-                'time': prescription.second_dose_time,
-                'status': prescription.treatment_status,
-                'nurse': prescription.dispenser.username if prescription.dispenser else None
-            })
-
-        # Add the third_dose_time if available
-        if prescription.third_dose_time:
-            dosing_times.append({
-                'time': prescription.third_dose_time,
-                'status': prescription.treatment_status,
-                'nurse': prescription.dispenser.username if prescription.dispenser else None
-            })
-
-        # You can add more dosing times in a similar manner
-
-        data = {
-            'prescription_name': prescription.prescription_name,
-            'dosing_times': dosing_times
-        }
-        print("Data: ", data['prescription_name'])
-
-        return render(request, 'newborn/prescription.html', {'data': data})
-    except NewbornAdmission.DoesNotExist:
-        return JsonResponse({'error': 'Admission not found'}, status=404)
-    except Prescription.DoesNotExist:
-        return JsonResponse({'error': 'Prescription not found'}, status=404)

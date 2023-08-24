@@ -87,105 +87,223 @@
                 <tr data-prescription-id="{{ prescription.id }}">
                     <td rowspan="{{ prescription.frequency_count }}">
                         {{ prescription.name }} {{ prescription.frequency }}
+			<br>
+    <small>Prescribed by: {{ prescription.prescriber.username }}</small>
                     </td>
-                    <td class="dosing-time-cell">{{ prescription.start_dose_time|time:"h:i A" }}</td>
+<!-- Inside the table body where you display dosing times -->
+<td class="dosing-time-cell">{{ prescription.start_dose_time|time:"h:i A" }}</td>
 <td class="status-cell">
     <div class="input-group">
         <div class="input-group-prepend">
-            <select class="custom-select" name="status">
+            <select class="custom-select" name="status_1">
                 <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
                 <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
                 <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
             </select>
         </div>
     </div>
-    {% if prescription.treatment_status == 'Given' or prescription.treatment_status == 'Missed' %}
-    <span class="nurse-cell">
-        {% if prescription.dispenser %}
-            {{ prescription.dispenser.username }}
-        {% else %}
-            Nurse A <!-- Replace with actual nurse data -->
-        {% endif %}
-    </span>
-    {% endif %}
 </td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_2">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_3">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_4">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="nurse-cell">
+    Nurse A <!-- Replace with actual nurse data -->
+</td>
+
 
                 </tr>
                 {% if prescription.second_dose_time %}
                 <tr data-prescription-id="{{ prescription.id }}">
-                    <td class="dosing-time-cell">{{ prescription.second_dose_time|time:"h:i A" }}</td>
+<!-- Inside the table body where you display dosing times -->
+<td class="dosing-time-cell">{{ prescription.second_dose_time|time:"h:i A" }}</td>
 <td class="status-cell">
     <div class="input-group">
         <div class="input-group-prepend">
-            <select class="custom-select" name="status">
+            <select class="custom-select" name="status_1">
                 <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
                 <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
                 <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
             </select>
         </div>
     </div>
-    {% if prescription.treatment_status == 'Given' or prescription.treatment_status == 'Missed' %}
-    <span class="nurse-cell">
-        {% if prescription.dispenser %}
-            {{ prescription.dispenser.username }}
-        {% else %}
-            Nurse A <!-- Replace with actual nurse data -->
-        {% endif %}
-    </span>
-    {% endif %}
 </td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_2">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_3">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_4">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="nurse-cell">
+    Nurse A <!-- Replace with actual nurse data -->
+</td>
+
 
                 </tr>
                 {% endif %}
 		                {% if prescription.third_dose_time %}
                 <tr data-prescription-id="{{ prescription.id }}">
-                    <td class="dosing-time-cell">{{ prescription.third_dose_time|time:"h:i A" }}</td>
+                    <!-- Inside the table body where you display dosing times -->
+<td class="dosing-time-cell">{{ prescription.third_dose_time|time:"h:i A" }}</td>
 <td class="status-cell">
     <div class="input-group">
         <div class="input-group-prepend">
-            <select class="custom-select" name="status">
+            <select class="custom-select" name="status_1">
                 <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
                 <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
                 <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
             </select>
         </div>
     </div>
-    {% if prescription.treatment_status == 'Given' or prescription.treatment_status == 'Missed' %}
-    <span class="nurse-cell">
-        {% if prescription.dispenser %}
-            {{ prescription.dispenser.username }}
-        {% else %}
-            Nurse A <!-- Replace with actual nurse data -->
-        {% endif %}
-    </span>
-    {% endif %}
 </td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_2">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_3">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_4">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="nurse-cell">
+    Nurse A <!-- Replace with actual nurse data -->
+</td>
+
 
                 </tr>
 		{% endif %}
 		                {% if prescription.fourth_dose_time %}
                 <tr data-prescription-id="{{ prescription.id }}">
-                    <td class="dosing-time-cell">{{ prescription.fourth_dose_time|time:"h:i A" }}</td>
+                    <!-- Inside the table body where you display dosing times -->
+<td class="dosing-time-cell">{{ prescription.fourth_dose_time|time:"h:i A" }}</td>
 <td class="status-cell">
     <div class="input-group">
         <div class="input-group-prepend">
-            <select class="custom-select" name="status">
+            <select class="custom-select" name="status_1">
                 <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
                 <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
                 <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
             </select>
         </div>
     </div>
-    {% if prescription.treatment_status == 'Given' or prescription.treatment_status == 'Missed' %}
-    <span class="nurse-cell">
-        {% if prescription.dispenser %}
-            {{ prescription.dispenser.username }}
-        {% else %}
-            Nurse A <!-- Replace with actual nurse data -->
-        {% endif %}
-    </span>
-    {% endif %}
 </td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_2">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_3">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="status-cell">
+    <div class="input-group">
+        <div class="input-group-prepend">
+            <select class="custom-select" name="status_4">
+                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
+                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
+            </select>
+        </div>
+    </div>
+</td>
+<td class="nurse-cell">
+    Nurse A <!-- Replace with actual nurse data -->
+</td>
+
 
                 </tr>
                 {% endif %}
@@ -251,144 +369,9 @@
 </div>
 
 <script>
-    // Function to add/update prescription in the table
-    function addOrUpdatePrescription() {
-        const prescriptionForm = document.getElementById('prescriptionForm');
-        const formData = new FormData(prescriptionForm);
-
-        // Calculate dosing times based on frequency and start time
-        const frequency = formData.get('frequency');
-        const startTime = formData.get('start_time');
-        const frequencyCount = calculateFrequencyCount(frequency);
-
-        // Set the calculated dosing times in the form data
-        const dosingTimes = calculateDosingTimes(frequency, startTime, frequencyCount);
-        formData.set('dosing_times', JSON.stringify(dosingTimes));
-
-        // Include the admission_id in the AJAX request
-        const admissionId = formData.get('admission_id');
-        const prescriptionId = formData.get('prescription_id'); // Get the prescription_id from the form
-        const prescriptionUrl = `/get_prescription_data/${admissionId}/${prescriptionId}/`; // Updated URL
-
-        fetch(prescriptionUrl, {
-            method: prescriptionForm.method,
-            body: formData,
-            headers: {
-                'X-CSRFToken': getCookie('csrftoken')
-            },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                console.error('Error:', data.error);
-            } else {
-                console.log('Success:', data.message);
-
-            	// Update the modal message with the success message
-            	const successMessage = document.getElementById('successMessage');
-            	successMessage.textContent = data.message;
-
-            	// Show the success modal
-            	$('#successModal').modal('show');
-
-            	// Set the "Go to Chart" button to redirect to the provided URL
-            	const redirectToChartBtn = document.getElementById('redirectToChartBtn');
-            	redirectToChartBtn.addEventListener('click', function () {
-                    window.location.href = data.chart_url;
-            	});
-            // Update the table with the new prescription data
-            updatePrescriptionTable(prescriptionId, formData, dosingTimes, frequencyCount);
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
-
-// Function to update an existing prescription row in the table
-function updatePrescriptionTable(prescriptionId, formData, dosingTimes, frequencyCount) {
-    // Fetch the updated prescription data from the server or form data and update the table row
-    // Example code for updating the table row:
-    const prescriptionRow = document.querySelector(`[data-prescription-id="${prescriptionId}"]`);
-    if (prescriptionRow) {
-        // Update the relevant cells in the row
-        prescriptionRow.querySelector('.status-cell select').value = formData.get('status');
-        prescriptionRow.querySelector('.nurse-cell').textContent = formData.get('dispenser') || 'Nurse A Given';
-
-        // Update dosing times based on frequency_count
-        const dosingTimeCells = prescriptionRow.querySelectorAll('.dosing-time-cell');
-        dosingTimeCells.forEach((cell, index) => {
-            if (index < frequencyCount) {
-                cell.textContent = dosingTimes[index];
-            } else {
-                cell.textContent = ''; // Clear extra dosing time cells
-            }
-        });
-    }
-}
-
-    // Calculate frequency count based on the selected frequency
-    function calculateFrequencyCount(frequency) {
-        if (frequency === 'Once Daily') {
-            return 1;
-        } else if (frequency === 'Twice Daily') {
-            return 2;
-        } else if (frequency === 'Three Times Daily') {
-            return 3;
-        } else if (frequency === 'Four Times Daily') {
-            return 4;
-        }
-        return 0;
-    }
-
-    // Calculate dosing times based on frequency, start time, and frequency count
-    function calculateDosingTimes(frequency, startTime, frequencyCount) {
-        const dosingTimes = [startTime]; // Initialize with the start time
-
-        // Calculate dosing times based on frequencyCount
-        if (frequencyCount > 1) {
-            const interval = calculateInterval(frequency);
-            for (let i = 1; i < frequencyCount; i++) {
-                const nextTime = calculateNextTime(dosingTimes[i - 1], interval);
-                dosingTimes.push(nextTime);
-            }
-        }
-
-        return dosingTimes;
-    }
-
-    // Calculate the dosing interval based on frequency
-    function calculateInterval(frequency) {
-        switch (frequency) {
-            case 'Once Daily':
-                return 24 * 60; // 24 hours in minutes
-            case 'Twice Daily':
-                return 12 * 60; // 12 hours in minutes
-            case 'Three Times Daily':
-                return 8 * 60; // 8 hours in minutes
-            case 'Four Times Daily':
-                return 6 * 60; // 6 hours in minutes
-            default:
-                return 0;
-        }
-    }
-
-    // Calculate the next dosing time based on the given time and interval
-    function calculateNextTime(currentTime, interval) {
-        const [hours, minutes] = currentTime.split(':').map(Number);
-        const totalMinutes = hours * 60 + minutes + interval;
-        const nextHours = Math.floor(totalMinutes / 60) % 24;
-        const nextMinutes = totalMinutes % 60;
-
-        // Format the time as HH:mm
-        const formattedTime = `${nextHours.toString().padStart(2, '0')}:${nextMinutes.toString().padStart(2, '0')}`;
-        return formattedTime;
-    }
-
     // Function to update an existing prescription row in the table
-    function updatePrescriptionTable(prescriptionId, formData) {
+    function updatePrescriptionTable(prescriptionId, formData, dosingTimes, frequencyCount) {
         // Fetch the updated prescription data from the server or form data and update the table row
-        // Example code for updating the table row:
         const prescriptionRow = document.querySelector(`[data-prescription-id="${prescriptionId}"]`);
         if (prescriptionRow) {
             // Update the relevant cells in the row
@@ -396,7 +379,6 @@ function updatePrescriptionTable(prescriptionId, formData, dosingTimes, frequenc
             prescriptionRow.querySelector('.nurse-cell').textContent = formData.get('dispenser') || 'Nurse A Given';
             
             // Update dosing times based on frequency_count
-            const dosingTimes = JSON.parse(formData.get('dosing_times'));
             const dosingTimeCells = prescriptionRow.querySelectorAll('.dosing-time-cell');
             dosingTimeCells.forEach((cell, index) => {
                 cell.textContent = dosingTimes[index];
@@ -425,6 +407,8 @@ function updatePrescriptionTable(prescriptionId, formData, dosingTimes, frequenc
         ['Missed', 'Missed']
     ];
 </script>
+
+
 
 
 <!-- Include Bootstrap JS and jQuery here (optional) -->
