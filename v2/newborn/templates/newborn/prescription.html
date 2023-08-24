@@ -88,8 +88,8 @@
                     <td rowspan="{{ prescription.frequency_count }}">
                         {{ prescription.name }} {{ prescription.frequency }}
                     </td>
-                    <td class="dosing-time-cell">{{ prescription.start_dose_time }}</td>
- <td class="status-cell">
+                    <td class="dosing-time-cell">{{ prescription.start_dose_time|time:"h:i A" }}</td>
+<td class="status-cell">
     <div class="input-group">
         <div class="input-group-prepend">
             <select class="custom-select" name="status">
@@ -99,17 +99,22 @@
             </select>
         </div>
     </div>
+    {% if prescription.treatment_status == 'Given' or prescription.treatment_status == 'Missed' %}
+    <span class="nurse-cell">
+        {% if prescription.dispenser %}
+            {{ prescription.dispenser.username }}
+        {% else %}
+            Nurse A <!-- Replace with actual nurse data -->
+        {% endif %}
+    </span>
+    {% endif %}
 </td>
 
-
-                    <td class="nurse-cell">
-                        Nurse A <!-- Replace with actual nurse data -->
-                    </td>
                 </tr>
                 {% if prescription.second_dose_time %}
                 <tr data-prescription-id="{{ prescription.id }}">
-                    <td class="dosing-time-cell">{{ prescription.second_dose_time }}</td>
-                    <td class="status-cell">
+                    <td class="dosing-time-cell">{{ prescription.second_dose_time|time:"h:i A" }}</td>
+<td class="status-cell">
     <div class="input-group">
         <div class="input-group-prepend">
             <select class="custom-select" name="status">
@@ -119,17 +124,23 @@
             </select>
         </div>
     </div>
+    {% if prescription.treatment_status == 'Given' or prescription.treatment_status == 'Missed' %}
+    <span class="nurse-cell">
+        {% if prescription.dispenser %}
+            {{ prescription.dispenser.username }}
+        {% else %}
+            Nurse A <!-- Replace with actual nurse data -->
+        {% endif %}
+    </span>
+    {% endif %}
 </td>
 
-                    <td class="nurse-cell">
-                        Nurse A <!-- Replace with actual nurse data -->
-                    </td>
                 </tr>
                 {% endif %}
 		                {% if prescription.third_dose_time %}
                 <tr data-prescription-id="{{ prescription.id }}">
-                    <td class="dosing-time-cell">{{ prescription.third_dose_time }}</td>
-                    <td class="status-cell">
+                    <td class="dosing-time-cell">{{ prescription.third_dose_time|time:"h:i A" }}</td>
+<td class="status-cell">
     <div class="input-group">
         <div class="input-group-prepend">
             <select class="custom-select" name="status">
@@ -139,17 +150,23 @@
             </select>
         </div>
     </div>
+    {% if prescription.treatment_status == 'Given' or prescription.treatment_status == 'Missed' %}
+    <span class="nurse-cell">
+        {% if prescription.dispenser %}
+            {{ prescription.dispenser.username }}
+        {% else %}
+            Nurse A <!-- Replace with actual nurse data -->
+        {% endif %}
+    </span>
+    {% endif %}
 </td>
 
-                    <td class="nurse-cell">
-                        Nurse A <!-- Replace with actual nurse data -->
-                    </td>
                 </tr>
 		{% endif %}
 		                {% if prescription.fourth_dose_time %}
                 <tr data-prescription-id="{{ prescription.id }}">
-                    <td class="dosing-time-cell">{{ prescription.fourth_dose_time }}</td>
-                    <td class="status-cell">
+                    <td class="dosing-time-cell">{{ prescription.fourth_dose_time|time:"h:i A" }}</td>
+<td class="status-cell">
     <div class="input-group">
         <div class="input-group-prepend">
             <select class="custom-select" name="status">
@@ -159,11 +176,17 @@
             </select>
         </div>
     </div>
+    {% if prescription.treatment_status == 'Given' or prescription.treatment_status == 'Missed' %}
+    <span class="nurse-cell">
+        {% if prescription.dispenser %}
+            {{ prescription.dispenser.username }}
+        {% else %}
+            Nurse A <!-- Replace with actual nurse data -->
+        {% endif %}
+    </span>
+    {% endif %}
 </td>
 
-                    <td class="nurse-cell">
-                        Nurse A <!-- Replace with actual nurse data -->
-                    </td>
                 </tr>
                 {% endif %}
                 {% endfor %}
