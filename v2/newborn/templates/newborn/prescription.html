@@ -50,7 +50,6 @@
     </div>
 </div>
 
-
 <div class="container mt-5">
     <!-- Patient Information -->
     <div class="row">
@@ -60,261 +59,521 @@
     </div>
     <div class="row">
         <div class="col">
-            <p><strong>Patient Name:</strong> {{ admission.name }}</p>
-            <p><strong>Age:</strong> {{ admission.age }}</p>
+            <p><strong>Hospital Stay:</strong>
+    {% if hospital_days > 0 %}
+        {{ hospital_days }} Day{% if hospital_days > 1 %}s{% endif %}
+    {% endif %}
+    {% if hospital_hours > 0 %}
+        {{ hospital_hours }} Hour{% if hospital_hours > 1 %}s{% endif %}
+    {% endif %}
+    {% if hospital_minutes > 0 %}
+        {{ hospital_minutes }} Min{% if hospital_minutes > 1 %}s{% endif %}
+    {% endif %}
+</p>
+	    <p><strong>Patient Name:</strong> {{ admission.name }}</p>
+            <p><strong>Age:</strong> {{ age_days }} Days</p>
             <p><strong>Inpatient Number:</strong> {{ admission.pk }}</p>
         </div>
     </div>
 
-<!-- Treatment Chart Table -->
-<div class="row mt-3">
-    <div class="col">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Prescription</th>
-                    <th>Time</th>
-                    <th rowspan="2">Day</th>
-                    <!-- Add columns for days on ward -->
-                    <th>Day 1</th>
-                    <th>Day 2</th>
-                    <th>Day 3</th>
-                    <!-- Add more columns as needed -->
-                </tr>
-            </thead>
-            <tbody id="prescriptionTableBody">
-                {% for prescription in prescriptions %}
-                <tr data-prescription-id="{{ prescription.id }}">
-                    <td rowspan="{{ prescription.frequency_count }}">
-                        {{ prescription.name }} {{ prescription.frequency }}
-			<br>
-    <small>Prescribed by: {{ prescription.prescriber.username }}</small>
-                    </td>
-<!-- Inside the table body where you display dosing times -->
-<td class="dosing-time-cell">{{ prescription.start_dose_time|time:"h:i A" }}</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_1">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_2">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_3">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_4">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="nurse-cell">
-    Nurse A <!-- Replace with actual nurse data -->
-</td>
+    <!-- Treatment Chart Table -->
+    <div class="row mt-3">
+        <div class="col">
+            <table class="table table-bordered">
+<thead id="dayHeaders">
+    <tr>
+        <!-- Your first header -->
+        <th id="day1Header">
+            {% if prescriptions %}
+                {{ prescriptions.0.start_date|date:"M d, Y" }}
+            {% else %}
+                Day
+            {% endif %}
+        </th>
+    </tr>
+</thead>
 
 
-                </tr>
-                {% if prescription.second_dose_time %}
-                <tr data-prescription-id="{{ prescription.id }}">
-<!-- Inside the table body where you display dosing times -->
-<td class="dosing-time-cell">{{ prescription.second_dose_time|time:"h:i A" }}</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_1">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_2">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_3">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_4">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="nurse-cell">
-    Nurse A <!-- Replace with actual nurse data -->
-</td>
+                <tbody id="prescriptionTableBody">
+                    {% for prescription in prescriptions %}
+                    {% if prescription.start_dose_time %}
+<tr data-prescription-id="{{ prescription.id }}">
+                        <td rowspan="{{ prescription.frequency_count }}">
+                            {{ prescription.name }} {{ prescription.frequency }}
+                            <br>
+                            <small>Prescribed by: {{ prescription.prescriber.username }}</small>
+                        </td>
+    <!-- Inside the table body where you display dosing times -->
+    <td class="dosing-time-cell">{{ prescription.start_dose_time|time:"h:i A" }}</td>
+    
+    <!-- Status cell for start dose time -->
+    <td class="status-cell dose1-status-cell">
+        Loading... <!-- Placeholder until AJAX response is received -->
+    </td>
+    
+    <!-- Repeat the status cell for start dose time -->
+    <td class="status-cell dose1-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for start dose time -->
+    <td class="status-cell dose1-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for start dose time -->
+    <td class="status-cell dose1-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for start dose time -->
+    <td class="status-cell dose1-status-cell">
+        Loading...
+    </td>
+</tr>
+
+<script>
+function updateDose1Status(selector, prescriptionId, dispensationDate) {
+    const elements = document.querySelectorAll(selector);
+
+    elements.forEach((element) => {
+        // Display loading message
+        element.textContent = 'Loading...';
+
+        // Get the prescription ID from the data attribute
+        const dataPrescriptionId = element.closest('tr').getAttribute('data-prescription-id');
+
+        // Check if the .status-cell element exists within the row
+        const statusCell = element.closest('tr').querySelector('.status-cell');
+
+        if (statusCell) {
+            // Fetch dose1_status
+            fetch(`/get_dose1_status/${dataPrescriptionId}/${dispensationDate}/`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.dose1_status !== null) {
+                        // If dose1_status exists, update the content
+                        element.textContent = data.dose1_status;
+                    } else {
+                        // If dose1_status is null, create the select element and append it to the status cell
+                        const selectElement = document.createElement('select');
+                        selectElement.classList.add('custom-select');
+                        selectElement.classList.add('dose1_status'); // Add the class dose1_status if needed
+                        selectElement.name = 'dose1_status';
+                        selectElement.setAttribute('data-prescription-id', prescriptionId); // Use the passed prescriptionId
+
+                        // Populate the select element with options
+                        data.status_choices.forEach((choice) => {
+                            const optionElement = document.createElement('option');
+                            optionElement.value = choice.value;
+                            optionElement.text = choice.label;
+                            selectElement.appendChild(optionElement);
+                        });
+
+                        // Add an event listener to the select element to handle changes
+                        selectElement.addEventListener('change', function () {
+                            const selectedValue = this.value;
+                            // Send a POST request to save the selected dose1_status
+                            fetch('/dose1_status_save_dispensation/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken() // Function to get the CSRF token
+                                },
+                                body: JSON.stringify({
+                                    prescription_id: prescriptionId,
+                                    dose1_status: selectedValue
+                                })
+                            })
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    if (result.status === 'success') {
+                                        // Update the status cell with the selected value
+                                        statusCell.textContent = selectedValue;
+                                    } else {
+                                        console.error('Error:', result.error);
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                });
+                        });
+
+                        // Create and configure the input-group structure
+                        const inputGroup = document.createElement('div');
+                        inputGroup.classList.add('input-group');
+                        const inputGroupPrepend = document.createElement('div');
+                        inputGroupPrepend.classList.add('input-group-prepend');
+                        inputGroupPrepend.appendChild(selectElement);
+                        inputGroup.appendChild(inputGroupPrepend);
+
+                        // Set the content of the status cell to the input-group structure
+                        element.textContent = '';
+                        element.appendChild(inputGroup);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+    });
+}
+
+// Function to get the CSRF token from the cookies
+function getCSRFToken() {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+        const [name, value] = cookie.split('=');
+        if (name === 'csrftoken') {
+            return value;
+        }
+    }
+    return null;
+}
+
+</script>
 
 
-                </tr>
-                {% endif %}
-		                {% if prescription.third_dose_time %}
-                <tr data-prescription-id="{{ prescription.id }}">
-                    <!-- Inside the table body where you display dosing times -->
-<td class="dosing-time-cell">{{ prescription.third_dose_time|time:"h:i A" }}</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_1">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_2">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_3">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_4">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="nurse-cell">
-    Nurse A <!-- Replace with actual nurse data -->
-</td>
+<!-- Call the updateDose1Status function for dose1 -->
+<script>
+updateDose1Status(".dose1-status-cell", {{ prescription.id }}, "{{ prescription.start_date|date:"Y-m-d" }}");
+</script>
+{% endif %}
+
+ {% if prescription.second_dose_time %}
+<tr data-prescription-id="{{ prescription.id }}">
+    <!-- Inside the table body where you display dosing times -->
+    <td class="dosing-time-cell">{{ prescription.second_dose_time|time:"h:i A" }}</td>
+    <td class="status-cell dose2-status-cell">
+        Loading... <!-- Placeholder until AJAX response is received -->
+    </td>
+        <!-- Repeat the status cell for start dose time -->
+    <td class="status-cell dose2-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for start dose time -->
+    <td class="status-cell dose2-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for start dose time -->
+    <td class="status-cell dose2-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for start dose time -->
+    <td class="status-cell dose2-status-cell">
+        Loading...
+    </td>
+</tr>
+
+<script>
+function updateDose2Status(selector, prescriptionId, dispensationDate) {
+    const elements = document.querySelectorAll(selector);
+
+    elements.forEach((element) => {
+        // Display loading message
+        element.textContent = 'Loading...';
+
+        // Get the prescription ID from the data attribute
+        const dataPrescriptionId = element.closest('tr').getAttribute('data-prescription-id');
+
+        // Check if the .status-cell element exists within the row
+        const statusCell = element.closest('tr').querySelector('.status-cell');
+
+        if (statusCell) {
+            // Fetch dose2_status (replace 'get_dose2_status' with your actual endpoint)
+            fetch(`/get_dose2_status/${dataPrescriptionId}/${dispensationDate}/`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.dose2_status !== null) {
+                        // If dose2_status exists, update the content
+                        element.textContent = data.dose2_status;
+                    } else {
+                        // If dose2_status is null, create the select element and append it to the status cell
+                        const selectElement = document.createElement('select');
+                        selectElement.classList.add('custom-select');
+                        selectElement.classList.add('dose2_status'); // Add the class dose2_status if needed
+                        selectElement.name = 'dose2_status';
+                        selectElement.setAttribute('data-prescription-id', prescriptionId); // Use the passed prescriptionId
+
+                        // Populate the select element with options
+                        data.status_choices.forEach((choice) => {
+                            const optionElement = document.createElement('option');
+                            optionElement.value = choice.value;
+                            optionElement.text = choice.label;
+                            selectElement.appendChild(optionElement);
+                        });
+
+                        // Add an event listener to the select element to handle changes
+                        selectElement.addEventListener('change', function () {
+                            const selectedValue = this.value;
+                            // Send a POST request to save the selected dose2_status
+                            fetch('/dose2_status_save_dispensation/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken() // Function to get the CSRF token
+                                },
+                                body: JSON.stringify({
+                                    prescription_id: prescriptionId,
+                                    dose2_status: selectedValue
+                                })
+                            })
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    if (result.status === 'success') {
+                                        // Update the status cell with the selected value
+                                        statusCell.textContent = selectedValue;
+                                    } else {
+                                        console.error('Error:', result.error);
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                });
+                        });
+
+                        // Create and configure the input-group structure
+                        const inputGroup = document.createElement('div');
+                        inputGroup.classList.add('input-group');
+                        const inputGroupPrepend = document.createElement('div');
+                        inputGroupPrepend.classList.add('input-group-prepend');
+                        inputGroupPrepend.appendChild(selectElement);
+                        inputGroup.appendChild(inputGroupPrepend);
+
+                        // Set the content of the status cell to the input-group structure
+                        element.textContent = '';
+                        element.appendChild(inputGroup);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+    });
+}
+
+// Function to get the CSRF token from the cookies (same as in your original script)
+function getCSRFToken() {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+        const [name, value] = cookie.split('=');
+        if (name === 'csrftoken') {
+            return value;
+        }
+    }
+    return null;
+}
+</script>
 
 
-                </tr>
-		{% endif %}
-		                {% if prescription.fourth_dose_time %}
-                <tr data-prescription-id="{{ prescription.id }}">
-                    <!-- Inside the table body where you display dosing times -->
-<td class="dosing-time-cell">{{ prescription.fourth_dose_time|time:"h:i A" }}</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_1">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
+<script>
+updateDose2Status(".dose2-status-cell", {{ prescription.id }}, "{{ prescription.start_date|date:"Y-m-d" }}");
+</script>
+{% endif %}
+
+
+                    {% if prescription.third_dose_time %}
+<tr data-prescription-id="{{ prescription.id }}">
+    <!-- Inside the table body where you display dosing times -->
+    <td class="dosing-time-cell">{{ prescription.third_dose_time|time:"h:i A" }}</td>
+    
+    <!-- Status cell for third dose time -->
+    <td class="status-cell dose3-status-cell">
+        Loading... <!-- Placeholder until AJAX response is received -->
+    </td>
+    
+    <!-- Repeat the status cell for third dose time -->
+    <td class="status-cell dose3-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for third dose time -->
+    <td class="status-cell dose3-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for third dose time -->
+    <td class="status-cell dose3-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for third dose time -->
+    <td class="status-cell dose3-status-cell">
+        Loading...
+    </td>
+</tr>
+
+<script>
+function updateDose3Status(selector, prescriptionId, dispensationDate) {
+    const elements = document.querySelectorAll(selector);
+
+    elements.forEach((element) => {
+        // Display loading message
+        element.textContent = 'Loading...';
+
+        // Get the prescription ID from the data attribute
+        const dataPrescriptionId = element.closest('tr').getAttribute('data-prescription-id');
+
+        // Check if the .status-cell element exists within the row
+        const statusCell = element.closest('tr').querySelector('.status-cell');
+
+        if (statusCell) {
+            // Fetch dose3_status
+            fetch(`/get_dose3_status/${dataPrescriptionId}/${dispensationDate}/`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.dose3_status !== null) {
+                        // If dose3_status exists, update the content
+                        element.textContent = data.dose3_status;
+                    } else {
+                        // If dose3_status is null, create the select element and append it to the status cell
+                        const selectElement = document.createElement('select');
+                        selectElement.classList.add('custom-select');
+                        selectElement.classList.add('dose3_status'); // Add the class dose3_status if needed
+                        selectElement.name = 'dose3_status';
+                        selectElement.setAttribute('data-prescription-id', prescriptionId); // Use the passed prescriptionId
+
+                        // Populate the select element with options
+                        data.status_choices.forEach((choice) => {
+                            const optionElement = document.createElement('option');
+                            optionElement.value = choice.value;
+                            optionElement.text = choice.label;
+                            selectElement.appendChild(optionElement);
+                        });
+
+                        // Create and configure the input-group structure
+                        const inputGroup = document.createElement('div');
+                        inputGroup.classList.add('input-group');
+                        const inputGroupPrepend = document.createElement('div');
+                        inputGroupPrepend.classList.add('input-group-prepend');
+                        inputGroupPrepend.appendChild(selectElement);
+                        inputGroup.appendChild(inputGroupPrepend);
+
+                        // Set the content of the status cell to the input-group structure
+                        element.textContent = '';
+                        element.appendChild(inputGroup);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+    });
+}
+
+</script>
+
+<!-- Call the updateDose3Status function for dose3 -->
+<script>
+updateDose3Status(".dose3-status-cell", {{ prescription.id }}, "{{ prescription.start_date|date:"Y-m-d" }}");
+</script>
+{% endif %}
+{% if prescription.fourth_dose_time %}
+<tr data-prescription-id="{{ prescription.id }}">
+    <!-- Inside the table body where you display dosing times -->
+    <td class="dosing-time-cell">{{ prescription.fourth_dose_time|time:"h:i A" }}</td>
+    
+    <!-- Status cell for fourth dose time -->
+    <td class="status-cell dose4-status-cell">
+        Loading... <!-- Placeholder until AJAX response is received -->
+    </td>
+    
+    <!-- Repeat the status cell for fourth dose time -->
+    <td class="status-cell dose4-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for fourth dose time -->
+    <td class="status-cell dose4-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for fourth dose time -->
+    <td class="status-cell dose4-status-cell">
+        Loading...
+    </td>
+    
+    <!-- Repeat the status cell for fourth dose time -->
+    <td class="status-cell dose4-status-cell">
+        Loading...
+    </td>
+</tr>
+
+<script>
+function updateDose4Status(selector, prescriptionId, dispensationDate) {
+    const elements = document.querySelectorAll(selector);
+
+    elements.forEach((element) => {
+        // Display loading message
+        element.textContent = 'Loading...';
+
+        // Get the prescription ID from the data attribute
+        const dataPrescriptionId = element.closest('tr').getAttribute('data-prescription-id');
+
+        // Check if the .status-cell element exists within the row
+        const statusCell = element.closest('tr').querySelector('.status-cell');
+
+        if (statusCell) {
+            // Fetch dose4_status
+            fetch(`/get_dose4_status/${dataPrescriptionId}/${dispensationDate}/`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.dose4_status !== null) {
+                        // If dose4_status exists, update the content
+                        element.textContent = data.dose4_status;
+                    } else {
+                        // If dose4_status is null, create the select element and append it to the status cell
+                        const selectElement = document.createElement('select');
+                        selectElement.classList.add('custom-select');
+                        selectElement.classList.add('dose4_status'); // Add the class dose4_status if needed
+                        selectElement.name = 'dose4_status';
+                        selectElement.setAttribute('data-prescription-id', prescriptionId); // Use the passed prescriptionId
+
+                        // Populate the select element with options
+                        data.status_choices.forEach((choice) => {
+                            const optionElement = document.createElement('option');
+                            optionElement.value = choice.value;
+                            optionElement.text = choice.label;
+                            selectElement.appendChild(optionElement);
+                        });
+
+                        // Create and configure the input-group structure
+                        const inputGroup = document.createElement('div');
+                        inputGroup.classList.add('input-group');
+                        const inputGroupPrepend = document.createElement('div');
+                        inputGroupPrepend.classList.add('input-group-prepend');
+                        inputGroupPrepend.appendChild(selectElement);
+                        inputGroup.appendChild(inputGroupPrepend);
+
+                        // Set the content of the status cell to the input-group structure
+                        element.textContent = '';
+                        element.appendChild(inputGroup);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                });
+        }
+    });
+}
+
+</script>
+
+<!-- Call the updateDose4Status function for dose4 -->
+<script>
+updateDose4Status(".dose4-status-cell", {{ prescription.id }}, "{{ prescription.start_date|date:"Y-m-d" }}");
+</script>
+{% endif %}
+
+
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_2">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_3">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="status-cell">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <select class="custom-select" name="status_4">
-                <option value="Pending" {% if prescription.treatment_status == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Given" {% if prescription.treatment_status == 'Given' %}selected{% endif %}>Given</option>
-                <option value="Missed" {% if prescription.treatment_status == 'Missed' %}selected{% endif %}>Missed</option>
-            </select>
-        </div>
-    </div>
-</td>
-<td class="nurse-cell">
-    Nurse A <!-- Replace with actual nurse data -->
-</td>
-
-
-                </tr>
-                {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-</div>
-
-
-
 
     <!-- Add Prescription Button -->
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#prescriptionModal">
@@ -348,7 +607,7 @@
                                 <option value="Once Daily">Once Daily</option>
                                 <option value="Twice Daily">Twice Daily</option>
                                 <option value="Three Times Daily">Three Times Daily</option>
-				<option value="Four Times Daily">Four Times Daily</option>
+                                <option value="Four Times Daily">Four Times Daily</option>
                                 <!-- Add more options for different frequencies if needed -->
                             </select>
                         </div>
@@ -365,7 +624,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <script>
@@ -377,7 +635,7 @@
             // Update the relevant cells in the row
             prescriptionRow.querySelector('.status-cell select').value = formData.get('status');
             prescriptionRow.querySelector('.nurse-cell').textContent = formData.get('dispenser') || 'Nurse A Given';
-            
+
             // Update dosing times based on frequency_count
             const dosingTimeCells = prescriptionRow.querySelectorAll('.dosing-time-cell');
             dosingTimeCells.forEach((cell, index) => {
@@ -409,6 +667,233 @@
 </script>
 
 
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const doseSelectElements = document.querySelectorAll(".dose1_status");
+
+        doseSelectElements.forEach(function (select) {
+            select.addEventListener("change", function () {
+                const prescriptionId = this.getAttribute("data-prescription-id");
+                const selectedStatus = this.value;
+
+                // Disable the select element when a selection is made
+                this.disabled = true;
+
+                // Optionally, you can update the style to make it visually clear that it's disabled
+                this.classList.add("disabled-select");
+
+                // Send an AJAX request to save the dose status data
+                updateDoseStatus(prescriptionId, selectedStatus, "dose1_status");
+            });
+        });
+
+        function updateDoseStatus(prescriptionId, selectedStatus, doseFieldName) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "{% url 'dose1_status_save_dispensation' %}", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // Handle a successful response (e.g., update UI)
+                        console.log("Dose status saved successfully");
+                    } else {
+                        // Handle errors here
+                        console.error("Error saving Dose status");
+                    }
+                }
+            };
+
+            // Prepare the data to send
+            const data = `prescription_id=${prescriptionId}&${doseFieldName}=${selectedStatus}`;
+
+            // Send the request
+            xhr.send(data);
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const doseSelectElements = document.querySelectorAll(".dose2_status");
+
+        doseSelectElements.forEach(function (select) {
+            select.addEventListener("change", function () {
+                const prescriptionId = this.getAttribute("data-prescription-id");
+                const selectedStatus = this.value;
+
+                // Disable the select element when a selection is made
+                this.disabled = true;
+
+                // Optionally, you can update the style to make it visually clear that it's disabled
+                this.classList.add("disabled-select");
+
+                // Send an AJAX request to save the dose status data
+                updateDoseStatus(prescriptionId, selectedStatus, "dose2_status");
+            });
+        });
+
+        function updateDoseStatus(prescriptionId, selectedStatus, doseFieldName) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "{% url 'dose2_status_save_dispensation' %}", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // Handle a successful response (e.g., update UI)
+                        console.log("Dose status saved successfully");
+                    } else {
+                        // Handle errors here
+                        console.error("Error saving Dose status");
+                    }
+                }
+            };
+
+            // Prepare the data to send
+            const data = `prescription_id=${prescriptionId}&${doseFieldName}=${selectedStatus}`;
+
+            // Send the request
+            xhr.send(data);
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const doseSelectElements = document.querySelectorAll(".dose3_status");
+
+        doseSelectElements.forEach(function (select) {
+            select.addEventListener("change", function () {
+                const prescriptionId = this.getAttribute("data-prescription-id");
+                const selectedStatus = this.value;
+
+                // Disable the select element when a selection is made
+                this.disabled = true;
+
+                // Optionally, you can update the style to make it visually clear that it's disabled
+                this.classList.add("disabled-select");
+
+                // Send an AJAX request to save the dose status data
+                updateDoseStatus(prescriptionId, selectedStatus, "dose3_status");
+            });
+        });
+
+        function updateDoseStatus(prescriptionId, selectedStatus, doseFieldName) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "{% url 'dose3_status_save_dispensation' %}", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // Handle a successful response (e.g., update UI)
+                        console.log("Dose status saved successfully");
+                    } else {
+                        // Handle errors here
+                        console.error("Error saving Dose status");
+                    }
+                }
+            };
+
+            // Prepare the data to send
+            const data = `prescription_id=${prescriptionId}&${doseFieldName}=${selectedStatus}`;
+
+            // Send the request
+            xhr.send(data);
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const doseSelectElements = document.querySelectorAll(".dose4_status");
+
+        doseSelectElements.forEach(function (select) {
+            select.addEventListener("change", function () {
+                const prescriptionId = this.getAttribute("data-prescription-id");
+                const selectedStatus = this.value;
+
+                // Disable the select element when a selection is made
+                this.disabled = true;
+
+                // Optionally, you can update the style to make it visually clear that it's disabled
+                this.classList.add("disabled-select");
+
+                // Send an AJAX request to save the dose status data
+                updateDoseStatus(prescriptionId, selectedStatus, "dose4_status");
+            });
+        });
+
+        function updateDoseStatus(prescriptionId, selectedStatus, doseFieldName) {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", "{% url 'dose4_status_save_dispensation' %}", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+            xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
+
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        // Handle a successful response (e.g., update UI)
+                        console.log("Dose status saved successfully");
+                    } else {
+                        // Handle errors here
+                        console.error("Error saving Dose status");
+                    }
+                }
+            };
+
+            // Prepare the data to send
+            const data = `prescription_id=${prescriptionId}&${doseFieldName}=${selectedStatus}`;
+
+            // Send the request
+            xhr.send(data);
+        }
+    });
+</script>
+
+<script>
+    function generateDayHeaders(numDays) {
+        const dayHeaders = document.getElementById('dayHeaders').firstElementChild;
+
+        // Clear existing headers
+        dayHeaders.innerHTML = '';
+
+        // Add the "Prescription" and "Time" headers
+        const prescriptionTh = document.createElement('th');
+        prescriptionTh.textContent = 'Prescription';
+        dayHeaders.appendChild(prescriptionTh);
+
+        const timeTh = document.createElement('th');
+        timeTh.textContent = 'Time';
+        dayHeaders.appendChild(timeTh);
+
+        // Generate new date headers
+        for (let i = 1; i <= numDays; i++) {
+            const th = document.createElement('th');
+            th.id = `day${i}Header`;
+
+            // Calculate the date based on the start date and increment
+            const startDate = new Date('{{ prescriptions.0.start_date }}');
+            startDate.setDate(startDate.getDate() + (i - 1));
+            th.textContent = startDate.toDateString(); // Format the date as needed
+
+            dayHeaders.appendChild(th);
+        }
+    }
+
+    // Example usage:
+    const numDays = 5; // Replace with the actual number of days
+    generateDayHeaders(numDays);
+</script>
+
+
+
+
+
 
 
 <!-- Include Bootstrap JS and jQuery here (optional) -->
@@ -416,7 +901,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <!-- Include Font Awesome JS here (optional) -->
-<script src="https://kit.fontawesome.com/a076d05399.js"></script>
-
+<!-- <script src="https://kit.fontawesome.com/a076d05399.js"></script> -->
 </body>
 </html>

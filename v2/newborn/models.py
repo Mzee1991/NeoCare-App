@@ -358,14 +358,7 @@ class Prescription(models.Model):
     admission = models.ForeignKey(NewbornAdmission, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     dosage = models.CharField(max_length=50)
-    
-    TREATMENT_STATUS_CHOICES = [
-        ('Pending', 'Pending'),
-        ('Given', 'Given'),
-        ('Missed', 'Missed'),
-    ]
-    treatment_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES)
-    
+        
     # Fields for dosing times
     start_dose_time = models.TimeField()
     second_dose_time = models.TimeField(null=True, blank=True)
@@ -382,7 +375,25 @@ class Prescription(models.Model):
 
     start_date = models.DateField()
     prescriber = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='prescriptions_prescribed')
-    dispenser = models.ForeignKey(User, on_delete=models.CASCADE, null=True, related_name='prescriptions_dispensed')
 
     def __str__(self):
         return self.name
+
+
+class Dispensation(models.Model):
+    TREATMENT_STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Given', 'Given'),
+        ('Missed', 'Missed'),
+    ]
+    
+    prescription = models.ForeignKey(Prescription, on_delete=models.CASCADE)
+    dispenser = models.ForeignKey(User, on_delete=models.CASCADE)
+    dispensation_datetime = models.DateTimeField(auto_now_add=True)
+    dose1_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES, null=True, blank=True)
+    dose2_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES, null=True, blank=True)
+    dose3_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES, null=True, blank=True)
+    dose4_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES, null=True, blank=True)
+    
+    def __str__(self):
+        return f"{self.prescription.name} - Dispensed by {self.dispenser.username}"
