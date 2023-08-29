@@ -4,30 +4,35 @@
     <!-- Include Bootstrap CSS here -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <!-- Include Font Awesome CSS here -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
-        /* Define custom styles for icons */
-        .status-cell select {
-            width: 100px; /* Adjust the width as needed */
-        }
+    .loading::before {
+        content: "Loading... ";
+        font-style: italic;
+        color: #777;
+    }
 
-        .status-cell .input-group-text {
-            font-size: 20px;
-            line-height: 1.5;
-        }
+    .status-icon {
+        display: flex;
+        align-items: center;
+    }
 
-        .status-cell .given-icon {
-            color: green;
-        }
+    .status-icon i {
+        margin-right: 5px;
+    }
 
-        .status-cell .missed-icon {
-            color: red;
-        }
+    .given-status {
+        color: green;
+        font-weight: bold;
+    }
 
-        .status-cell .pending-icon {
-            color: orange;
-        }
-    </style>
+    .missed-status {
+        color: red;
+        font-weight: bold;
+    }
+</style>
+
+
 </head>
 <body>
 
@@ -81,18 +86,19 @@
     <div class="row mt-3">
         <div class="col">
             <table class="table table-bordered">
-<thead id="dayHeaders">
-    <tr>
-        <!-- Your first header -->
-        <th id="day1Header">
-            {% if prescriptions %}
-                {{ prescriptions.0.start_date|date:"M d, Y" }}
-            {% else %}
-                Day
-            {% endif %}
-        </th>
-    </tr>
-</thead>
+		<thead>
+                    <tr>
+                        <th>Prescription</th>
+                        <th>Time</th>
+                        <th id="day1Header">
+			     {% if prescriptions %}
+                        	{{ prescriptions.0.start_date|date:"M d, Y" }}
+                             {% else %}
+                        	Day
+                             {% endif %}
+			</th>
+                    </tr>
+                </thead>
 
 
                 <tbody id="prescriptionTableBody">
@@ -120,7 +126,7 @@ function updateDose1Status(selector, prescriptionId, dispensationDate) {
 
     elements.forEach((element) => {
         // Display loading message
-        element.textContent = 'Loading...';
+        element.innerHTML = '<span class="loading">Loading...</span>';
 
         // Get the prescription ID from the data attribute
         const dataPrescriptionId = element.closest('tr').getAttribute('data-prescription-id');
@@ -134,8 +140,14 @@ function updateDose1Status(selector, prescriptionId, dispensationDate) {
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.dose1_status !== null) {
-                        // If dose1_status exists, update the content
-                        element.textContent = data.dose1_status;
+                        // If dose1_status exists, update the content with Font Awesome icons and dispenser name
+                        if (data.dose1_status === 'Given') {
+                            element.innerHTML = `<span class="status-icon given-status"><i class="fas fa-check-circle"></i> Given <small>by ${data.dispenser_name}</small></span>`;
+                        } else if (data.dose1_status === 'Missed') {
+                            element.innerHTML = '<span class="status-icon missed-status"><i class="fas fa-times-circle"></i> Missed</span>';
+                        } else {
+                            element.textContent = data.dose1_status; // Handle other statuses as needed
+                        }
                     } else {
                         // If dose1_status is null, create the select element and append it to the status cell
                         const selectElement = document.createElement('select');
@@ -190,7 +202,7 @@ function updateDose1Status(selector, prescriptionId, dispensationDate) {
                         inputGroup.appendChild(inputGroupPrepend);
 
                         // Set the content of the status cell to the input-group structure
-                        element.textContent = '';
+                        element.innerHTML = '';
                         element.appendChild(inputGroup);
                     }
                 })
@@ -212,7 +224,6 @@ function getCSRFToken() {
     }
     return null;
 }
-
 </script>
 
 
@@ -230,13 +241,14 @@ updateDose1Status(".dose1-status-cell", {{ prescription.id }}, "{{ prescription.
         Loading... <!-- Placeholder until AJAX response is received -->
     </td>
 </tr>
+
 <script>
 function updateDose2Status(selector, prescriptionId, dispensationDate) {
     const elements = document.querySelectorAll(selector);
 
     elements.forEach((element) => {
         // Display loading message
-        element.textContent = 'Loading...';
+        element.innerHTML = '<span class="loading">Loading...</span>';
 
         // Get the prescription ID from the data attribute
         const dataPrescriptionId = element.closest('tr').getAttribute('data-prescription-id');
@@ -245,13 +257,19 @@ function updateDose2Status(selector, prescriptionId, dispensationDate) {
         const statusCell = element.closest('tr').querySelector('.status-cell');
 
         if (statusCell) {
-            // Fetch dose2_status
+            // Fetch dose2_status (update the URL as needed)
             fetch(`/get_dose2_status/${dataPrescriptionId}/${dispensationDate}/`)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.dose2_status !== null) {
-                        // If dose2_status exists, update the content
-                        element.textContent = data.dose2_status;
+                        // If dose2_status exists, update the content with Font Awesome icons and dispenser name
+                        if (data.dose2_status === 'Given') {
+                            element.innerHTML = `<span class="status-icon given-status"><i class="fas fa-check-circle"></i> Given<small> by ${data.dispenser_name}</small></span>`;
+                        } else if (data.dose2_status === 'Missed') {
+                            element.innerHTML = '<span class="status-icon missed-status"><i class="fas fa-times-circle"></i> Missed</span>';
+                        } else {
+                            element.textContent = data.dose2_status; // Handle other statuses as needed
+                        }
                     } else {
                         // If dose2_status is null, create the select element and append it to the status cell
                         const selectElement = document.createElement('select');
@@ -271,7 +289,7 @@ function updateDose2Status(selector, prescriptionId, dispensationDate) {
                         // Add an event listener to the select element to handle changes
                         selectElement.addEventListener('change', function () {
                             const selectedValue = this.value;
-                            // Send a POST request to save the selected dose2_status
+                            // Send a POST request to save the selected dose2_status (update the URL as needed)
                             fetch('/dose2_status_save_dispensation/', {
                                 method: 'POST',
                                 headers: {
@@ -306,7 +324,7 @@ function updateDose2Status(selector, prescriptionId, dispensationDate) {
                         inputGroup.appendChild(inputGroupPrepend);
 
                         // Set the content of the status cell to the input-group structure
-                        element.textContent = '';
+                        element.innerHTML = '';
                         element.appendChild(inputGroup);
                     }
                 })
@@ -328,7 +346,6 @@ function getCSRFToken() {
     }
     return null;
 }
-
 </script>
 
 
@@ -358,7 +375,7 @@ function updateDose3Status(selector, prescriptionId, dispensationDate) {
 
     elements.forEach((element) => {
         // Display loading message
-        element.textContent = 'Loading...';
+        element.innerHTML = '<span class="loading">Loading...</span>';
 
         // Get the prescription ID from the data attribute
         const dataPrescriptionId = element.closest('tr').getAttribute('data-prescription-id');
@@ -367,13 +384,19 @@ function updateDose3Status(selector, prescriptionId, dispensationDate) {
         const statusCell = element.closest('tr').querySelector('.status-cell');
 
         if (statusCell) {
-            // Fetch dose3_status
+            // Fetch dose3_status (update the URL as needed)
             fetch(`/get_dose3_status/${dataPrescriptionId}/${dispensationDate}/`)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.dose3_status !== null) {
-                        // If dose3_status exists, update the content
-                        element.textContent = data.dose3_status;
+                        // If dose3_status exists, update the content with Font Awesome icons and dispenser name
+                        if (data.dose3_status === 'Given') {
+                            element.innerHTML = `<span class="status-icon given-status"><i class="fas fa-check-circle"></i> Given<small> by ${data.dispenser_name}</small></span>`;
+                        } else if (data.dose3_status === 'Missed') {
+                            element.innerHTML = '<span class="status-icon missed-status"><i class="fas fa-times-circle"></i> Missed</span>';
+                        } else {
+                            element.textContent = data.dose3_status; // Handle other statuses as needed
+                        }
                     } else {
                         // If dose3_status is null, create the select element and append it to the status cell
                         const selectElement = document.createElement('select');
@@ -393,7 +416,7 @@ function updateDose3Status(selector, prescriptionId, dispensationDate) {
                         // Add an event listener to the select element to handle changes
                         selectElement.addEventListener('change', function () {
                             const selectedValue = this.value;
-                            // Send a POST request to save the selected dose3_status
+                            // Send a POST request to save the selected dose3_status (update the URL as needed)
                             fetch('/dose3_status_save_dispensation/', {
                                 method: 'POST',
                                 headers: {
@@ -428,7 +451,7 @@ function updateDose3Status(selector, prescriptionId, dispensationDate) {
                         inputGroup.appendChild(inputGroupPrepend);
 
                         // Set the content of the status cell to the input-group structure
-                        element.textContent = '';
+                        element.innerHTML = '';
                         element.appendChild(inputGroup);
                     }
                 })
@@ -450,9 +473,7 @@ function getCSRFToken() {
     }
     return null;
 }
-
 </script>
-
 
 
 <!-- Call the updateDose3Status function for dose3 -->
@@ -471,13 +492,14 @@ updateDose3Status(".dose3-status-cell", {{ prescription.id }}, "{{ prescription.
     </td>
     
 </tr>
+
 <script>
 function updateDose4Status(selector, prescriptionId, dispensationDate) {
     const elements = document.querySelectorAll(selector);
 
     elements.forEach((element) => {
         // Display loading message
-        element.textContent = 'Loading...';
+        element.innerHTML = '<span class="loading">Loading...</span>';
 
         // Get the prescription ID from the data attribute
         const dataPrescriptionId = element.closest('tr').getAttribute('data-prescription-id');
@@ -486,13 +508,19 @@ function updateDose4Status(selector, prescriptionId, dispensationDate) {
         const statusCell = element.closest('tr').querySelector('.status-cell');
 
         if (statusCell) {
-            // Fetch dose4_status
+            // Fetch dose4_status (update the URL as needed)
             fetch(`/get_dose4_status/${dataPrescriptionId}/${dispensationDate}/`)
                 .then((response) => response.json())
                 .then((data) => {
                     if (data.dose4_status !== null) {
-                        // If dose4_status exists, update the content
-                        element.textContent = data.dose4_status;
+                        // If dose4_status exists, update the content with Font Awesome icons and dispenser name
+                        if (data.dose4_status === 'Given') {
+                            element.innerHTML = `<span class="status-icon given-status"><i class="fas fa-check-circle"></i> Given<small> by ${data.dispenser_name}</small></span>`;
+                        } else if (data.dose4_status === 'Missed') {
+                            element.innerHTML = '<span class="status-icon missed-status"><i class="fas fa-times-circle"></i> Missed</span>';
+                        } else {
+                            element.textContent = data.dose4_status; // Handle other statuses as needed
+                        }
                     } else {
                         // If dose4_status is null, create the select element and append it to the status cell
                         const selectElement = document.createElement('select');
@@ -512,7 +540,7 @@ function updateDose4Status(selector, prescriptionId, dispensationDate) {
                         // Add an event listener to the select element to handle changes
                         selectElement.addEventListener('change', function () {
                             const selectedValue = this.value;
-                            // Send a POST request to save the selected dose4_status
+                            // Send a POST request to save the selected dose4_status (update the URL as needed)
                             fetch('/dose4_status_save_dispensation/', {
                                 method: 'POST',
                                 headers: {
@@ -547,7 +575,7 @@ function updateDose4Status(selector, prescriptionId, dispensationDate) {
                         inputGroup.appendChild(inputGroupPrepend);
 
                         // Set the content of the status cell to the input-group structure
-                        element.textContent = '';
+                        element.innerHTML = '';
                         element.appendChild(inputGroup);
                     }
                 })
@@ -569,8 +597,8 @@ function getCSRFToken() {
     }
     return null;
 }
-
 </script>
+
 
 
 <!-- Call the updateDose4Status function for dose4 -->
@@ -636,44 +664,6 @@ updateDose4Status(".dose4-status-cell", {{ prescription.id }}, "{{ prescription.
         </div>
     </div>
 </div>
-
-<script>
-    function generateDayHeaders(numDays) {
-        const dayHeaders = document.getElementById('dayHeaders').firstElementChild;
-
-        // Clear existing headers
-        dayHeaders.innerHTML = '';
-
-        // Add the "Prescription" and "Time" headers
-        const prescriptionTh = document.createElement('th');
-        prescriptionTh.textContent = 'Prescription';
-        dayHeaders.appendChild(prescriptionTh);
-
-        const timeTh = document.createElement('th');
-        timeTh.textContent = 'Time';
-        dayHeaders.appendChild(timeTh);
-
-        // Generate new date headers
-        for (let i = 1; i <= numDays; i++) {
-            const th = document.createElement('th');
-            th.id = `day${i}Header`;
-
-            // Calculate the date based on the start date and increment
-            const startDate = new Date('{{ prescriptions.0.start_date }}');
-            startDate.setDate(startDate.getDate() + (i - 1));
-
-            // Format the date as "MMM dd yyyy" (e.g., "Aug 28 2023")
-            const options = { year: 'numeric', month: 'short', day: '2-digit' };
-            th.textContent = startDate.toLocaleDateString(undefined, options);
-
-            dayHeaders.appendChild(th);
-        }
-    }
-
-    // Example usage:
-    const numDays = 1; // Replace with the actual number of days
-    generateDayHeaders(numDays);
-</script>
 
 
 <!-- Include Bootstrap JS and jQuery here (optional) -->

@@ -707,8 +707,10 @@ def get_dose1_status(request, prescription_id, dispensation_date):
 
             if dispensation:
                 dose1_status = getattr(dispensation, 'dose1_status', None)
+                dispenser_name = dispensation.dispenser.username if dose1_status == 'Given' else None
             else:
                 dose1_status = None
+                dispenser_name = None
 
             # You can customize status_choices based on your model
             status_choices = [
@@ -716,7 +718,7 @@ def get_dose1_status(request, prescription_id, dispensation_date):
                 for choice in Dose1Dispensation.TREATMENT_STATUS_CHOICES
             ]
 
-            return JsonResponse({'dose1_status': dose1_status, 'status_choices': status_choices})
+            return JsonResponse({'dose1_status': dose1_status, 'dispenser_name': dispenser_name, 'status_choices': status_choices})
 
         else:
             return JsonResponse({'error': 'Prescription does not have at least one dose time.'}, status=400)
@@ -748,8 +750,10 @@ def get_dose2_status(request, prescription_id, dispensation_date):
 
             if dispensation:
                 dose2_status = getattr(dispensation, 'dose2_status', None)
+                dispenser_name = dispensation.dispenser.username if dose2_status == 'Given' else None
             else:
                 dose2_status = None
+                dispenser_name = None
 
             # You can customize status_choices based on your model
             status_choices = [
@@ -757,7 +761,7 @@ def get_dose2_status(request, prescription_id, dispensation_date):
                 for choice in Dose2Dispensation.TREATMENT_STATUS_CHOICES
             ]
 
-            return JsonResponse({'dose2_status': dose2_status, 'status_choices': status_choices})
+            return JsonResponse({'dose2_status': dose2_status, 'dispenser_name': dispenser_name, 'status_choices': status_choices})
 
         else:
             return JsonResponse({'error': 'Prescription does not have at least two dose times.'}, status=400)
@@ -790,8 +794,10 @@ def get_dose3_status(request, prescription_id, dispensation_date):
 
             if dispensation:
                 dose3_status = getattr(dispensation, 'dose3_status', None)
+                dispenser_name = dispensation.dispenser.username if dose3_status == 'Given' else None
             else:
                 dose3_status = None
+                dispenser_name = None
 
             # You can customize status_choices based on your model
             status_choices = [
@@ -799,7 +805,7 @@ def get_dose3_status(request, prescription_id, dispensation_date):
                 for choice in Dose3Dispensation.TREATMENT_STATUS_CHOICES
             ]
 
-            return JsonResponse({'dose3_status': dose3_status, 'status_choices': status_choices})
+            return JsonResponse({'dose3_status': dose3_status, 'dispenser_name': dispenser_name, 'status_choices': status_choices})
 
         else:
             return JsonResponse({'error': 'Prescription does not have at least three dose times.'}, status=400)
@@ -831,8 +837,10 @@ def get_dose4_status(request, prescription_id, dispensation_date):
 
             if dispensation:
                 dose4_status = getattr(dispensation, 'dose4_status', None)
+                dispenser_name = dispensation.dispenser.username if dose4_status == 'Given' else None
             else:
                 dose4_status = None
+                dispenser_name = None
 
             # You can customize status_choices based on your model
             status_choices = [
@@ -840,7 +848,7 @@ def get_dose4_status(request, prescription_id, dispensation_date):
                 for choice in Dose4Dispensation.TREATMENT_STATUS_CHOICES
             ]
 
-            return JsonResponse({'dose4_status': dose4_status, 'status_choices': status_choices})
+            return JsonResponse({'dose4_status': dose4_status, 'dispenser_name': dispenser_name, 'status_choices': status_choices})
 
         else:
             return JsonResponse({'error': 'Prescription does not have at least four dose times.'}, status=400)
