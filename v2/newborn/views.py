@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from rest_framework.parsers import JSONParser
-from newborn.models import Newborn, NewbornAdmission, Dispensation, Prescription, MothersAntenatalDetails, MotherDetails, MotherLocation, LabRequest, LabResult, Patient, NewbornExam,Subcounty, Parish, Village, CountyMunicipality
+from newborn.models import Newborn, NewbornAdmission, Dose1Dispensation, Dose2Dispensation, Dose3Dispensation, Dose4Dispensation, Prescription, MothersAntenatalDetails, MotherDetails, MotherLocation, LabRequest, LabResult, Patient, NewbornExam,Subcounty, Parish, Village, CountyMunicipality
 from newborn.forms import NewbornForm, PrescriptionForm, DynamicLabResultForm, LabTestRequestForm, LabResultForm, MothersAntenatalDetailsForm, NewbornAdmissionForm, MotherDetailForm, MotherLocationForm, PatientForm, NewbornExamForm, AntenatalHistoryForm
 from .tables import NewbornTable
 from .filters import NewbornFilter
@@ -16,7 +16,8 @@ from datetime import date, timedelta, datetime
 import json
 from django_tables2 import RequestConfig
 from django.contrib.auth.models import User
-from django.views.decorators.csrf import csrf_exempt 
+from django.views.decorators.csrf import csrf_exempt
+from django.utils.timesince import timesince
 
 def newborn_list(request):
     """
@@ -521,10 +522,13 @@ def calculate_frequency_count(frequency):
 @login_required
 def patient_treatment_chart(request, admission_id):
     admission = NewbornAdmission.objects.get(id=admission_id)
+    admission_date = admission.admission_date
+    delivery_date = admission.delivery_date
     
     current_datetime = timezone.now()
-    age_delta = current_datetime - admission.delivery_date
-    hospital_stay = current_datetime - admission.admission_date
+    age_delta = current_datetime - delivery_date
+    hospital_stay = current_datetime - admission_date
+    hospital_duration = timesince(admission_date, current_datetime)
 
     hospital_days = hospital_stay.days
     hospital_hours, remainder_seconds = divmod(hospital_stay.seconds, 3600)
@@ -568,6 +572,7 @@ def patient_treatment_chart(request, admission_id):
         'hospital_days': hospital_days,
         'hospital_hours': hospital_hours,
         'hospital_minutes': hospital_minutes,
+        'hospital_duration': hospital_duration,
     }
 
     return render(request, 'newborn/prescription.html', context)
@@ -694,19 +699,22 @@ def get_dose1_status(request, prescription_id, dispensation_date):
 
         # Check if the prescription has at least one dose time (for dose1_status)
         if num_dose_times >= 1:
-            # Retrieve the dispensation for the given date
-            dispensation = Dispensation.objects.filter(
+            # Retrieve the Dose1Dispensation for the given date
+            dispensation = Dose1Dispensation.objects.filter(
                 prescription_id=prescription_id,
                 dispensation_datetime__date=dispensation_date,
-            ).first()
+            ).last()
 
             if dispensation:
-                dose1_status = dispensation.dose1_status
+                dose1_status = getattr(dispensation, 'dose1_status', None)
             else:
                 dose1_status = None
 
             # You can customize status_choices based on your model
-            status_choices = [ {'value': choice[0], 'label': choice[1]} for choice in Dispensation.TREATMENT_STATUS_CHOICES]
+            status_choices = [
+                {'value': choice[0], 'label': choice[1]}
+                for choice in Dose1Dispensation.TREATMENT_STATUS_CHOICES
+            ]
 
             return JsonResponse({'dose1_status': dose1_status, 'status_choices': status_choices})
 
@@ -732,22 +740,22 @@ def get_dose2_status(request, prescription_id, dispensation_date):
 
         # Check if the prescription has at least two dose times (for dose2_status)
         if num_dose_times >= 2:
-            # Retrieve the dispensation for the given date
-            dispensation = Dispensation.objects.filter(
+            # Retrieve the Dose2Dispensation for the given date
+            dispensation = Dose2Dispensation.objects.filter(
                 prescription_id=prescription_id,
                 dispensation_datetime__date=dispensation_date,
-            ).first()
+            ).last()
 
             if dispensation:
-                dose2_status = dispensation.dose2_status
+                dose2_status = getattr(dispensation, 'dose2_status', None)
             else:
                 dose2_status = None
 
             # You can customize status_choices based on your model
             status_choices = [
-            {'value': choice[0], 'label': choice[1]}
-            for choice in Dispensation.TREATMENT_STATUS_CHOICES
-        ]
+                {'value': choice[0], 'label': choice[1]}
+                for choice in Dose2Dispensation.TREATMENT_STATUS_CHOICES
+            ]
 
             return JsonResponse({'dose2_status': dose2_status, 'status_choices': status_choices})
 
@@ -760,6 +768,7 @@ def get_dose2_status(request, prescription_id, dispensation_date):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
 def get_dose3_status(request, prescription_id, dispensation_date):
     try:
         prescription = Prescription.objects.get(id=prescription_id)
@@ -771,24 +780,24 @@ def get_dose3_status(request, prescription_id, dispensation_date):
             'Four Times Daily': 4,
         }[prescription.frequency]
 
-        # Check if the prescription has at least three dose times (for dose3_status)
+        # Check if the prescription has at least one dose time (for dose3_status)
         if num_dose_times >= 3:
-            # Retrieve the dispensation for the given date
-            dispensation = Dispensation.objects.filter(
+            # Retrieve the Dose3Dispensation for the given date
+            dispensation = Dose3Dispensation.objects.filter(
                 prescription_id=prescription_id,
                 dispensation_datetime__date=dispensation_date,
-            ).first()
+            ).last()
 
             if dispensation:
-                dose3_status = dispensation.dose3_status
+                dose3_status = getattr(dispensation, 'dose3_status', None)
             else:
                 dose3_status = None
 
             # You can customize status_choices based on your model
             status_choices = [
-            {'value': choice[0], 'label': choice[1]}
-            for choice in Dispensation.TREATMENT_STATUS_CHOICES
-        ]
+                {'value': choice[0], 'label': choice[1]}
+                for choice in Dose3Dispensation.TREATMENT_STATUS_CHOICES
+            ]
 
             return JsonResponse({'dose3_status': dose3_status, 'status_choices': status_choices})
 
@@ -812,24 +821,24 @@ def get_dose4_status(request, prescription_id, dispensation_date):
             'Four Times Daily': 4,
         }[prescription.frequency]
 
-        # Check if the prescription has at least four dose times (for dose4_status)
+        # Check if the prescription has at least one dose time (for dose4_status)
         if num_dose_times >= 4:
-            # Retrieve the dispensation for the given date
-            dispensation = Dispensation.objects.filter(
+            # Retrieve the Dose4Dispensation for the given date
+            dispensation = Dose4Dispensation.objects.filter(
                 prescription_id=prescription_id,
                 dispensation_datetime__date=dispensation_date,
-            ).first()
+            ).last()
 
             if dispensation:
-                dose4_status = dispensation.dose4_status
+                dose4_status = getattr(dispensation, 'dose4_status', None)
             else:
                 dose4_status = None
 
             # You can customize status_choices based on your model
             status_choices = [
-            {'value': choice[0], 'label': choice[1]}
-            for choice in Dispensation.TREATMENT_STATUS_CHOICES
-        ]
+                {'value': choice[0], 'label': choice[1]}
+                for choice in Dose4Dispensation.TREATMENT_STATUS_CHOICES
+            ]
 
             return JsonResponse({'dose4_status': dose4_status, 'status_choices': status_choices})
 
@@ -842,6 +851,7 @@ def get_dose4_status(request, prescription_id, dispensation_date):
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
 
+
 @csrf_exempt
 def dose1_status_save_dispensation(request):
     if request.method == 'POST':
@@ -851,7 +861,7 @@ def dose1_status_save_dispensation(request):
             dose1_status = data.get('dose1_status')
             dispenser_id = request.user.id
 
-            dispensation = Dispensation(
+            dispensation = Dose1Dispensation(
                 prescription_id=prescription_id,
                 dispenser_id=dispenser_id,
                 dose1_status=dose1_status,
@@ -874,10 +884,10 @@ def dose2_status_save_dispensation(request):
             dose2_status = data.get('dose2_status')
             dispenser_id = request.user.id
 
-            dispensation = Dispensation(
+            dispensation = Dose2Dispensation(
                 prescription_id=prescription_id,
                 dispenser_id=dispenser_id,
-                dose2_status=dose2_status,  # Update this field to match your model
+                dose2_status=dose2_status,
             )
 
             dispensation.save()
@@ -894,13 +904,13 @@ def dose3_status_save_dispensation(request):
         try:
             data = json.loads(request.body.decode('utf-8'))
             prescription_id = data.get('prescription_id')
-            dose3_status = data.get('dose3_status')  # Update this field to match your model
+            dose3_status = data.get('dose3_status')
             dispenser_id = request.user.id
 
-            dispensation = Dispensation(
+            dispensation = Dose3Dispensation(
                 prescription_id=prescription_id,
                 dispenser_id=dispenser_id,
-                dose3_status=dose3_status,  # Update this field to match your model
+                dose3_status=dose3_status,
             )
 
             dispensation.save()
@@ -917,13 +927,13 @@ def dose4_status_save_dispensation(request):
         try:
             data = json.loads(request.body.decode('utf-8'))
             prescription_id = data.get('prescription_id')
-            dose4_status = data.get('dose4_status')  # Update this field to match your model
+            dose4_status = data.get('dose4_status')
             dispenser_id = request.user.id
 
-            dispensation = Dispensation(
+            dispensation = Dose4Dispensation(
                 prescription_id=prescription_id,
                 dispenser_id=dispenser_id,
-                dose4_status=dose4_status,  # Update this field to match your model
+                dose4_status=dose4_status,
             )
 
             dispensation.save()

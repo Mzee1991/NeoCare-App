@@ -380,20 +380,62 @@ class Prescription(models.Model):
         return self.name
 
 
-class Dispensation(models.Model):
+class Dose1Dispensation(models.Model):
     TREATMENT_STATUS_CHOICES = [
         ('Pending', 'Pending'),
         ('Given', 'Given'),
         ('Missed', 'Missed'),
     ]
-    
+
     prescription = models.ForeignKey(Prescription, on_delete=models.CASCADE)
     dispenser = models.ForeignKey(User, on_delete=models.CASCADE)
     dispensation_datetime = models.DateTimeField(auto_now_add=True)
-    dose1_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES, null=True, blank=True)
-    dose2_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES, null=True, blank=True)
-    dose3_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES, null=True, blank=True)
-    dose4_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES, null=True, blank=True)
-    
+    dose1_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES)
+
     def __str__(self):
-        return f"{self.prescription.name} - Dispensed by {self.dispenser.username}"
+        return f"Dose 1 - {self.prescription.name} - Dispensed by {self.dispenser.username}"
+
+class Dose2Dispensation(models.Model):
+    TREATMENT_STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Given', 'Given'),
+        ('Missed', 'Missed'),
+    ]
+
+    prescription = models.ForeignKey(Prescription, on_delete=models.CASCADE)
+    dispenser = models.ForeignKey(User, on_delete=models.CASCADE)
+    dispensation_datetime = models.DateTimeField(auto_now_add=True)
+    dose2_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES)
+
+    def __str__(self):
+        return f"Dose 2 - {self.prescription.name} - Dispensed by {self.dispenser.username}"
+
+class Dose3Dispensation(models.Model):
+    TREATMENT_STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Given', 'Given'),
+        ('Missed', 'Missed'),
+    ]
+
+    prescription = models.ForeignKey(Prescription, on_delete=models.CASCADE)
+    dispenser = models.ForeignKey(User, on_delete=models.CASCADE)
+    dispensation_datetime = models.DateTimeField(auto_now_add=True)
+    dose3_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES)
+
+    def __str__(self):
+        return f"Dose 3 - {self.prescription.name} - Dispensed by {self.dispenser.username}"
+
+class Dose4Dispensation(models.Model):
+    TREATMENT_STATUS_CHOICES = [
+        ('Pending', 'Pending'),
+        ('Given', 'Given'),
+        ('Missed', 'Missed'),
+    ]
+
+    prescription = models.ForeignKey(Prescription, on_delete=models.CASCADE)
+    dispenser = models.ForeignKey(User, on_delete=models.CASCADE)
+    dispensation_datetime = models.DateTimeField(auto_now_add=True)
+    dose4_status = models.CharField(max_length=15, choices=TREATMENT_STATUS_CHOICES)
+
+    def __str__(self):
+        return f"Dose 4 - {self.prescription.name} - Dispensed by {self.dispenser.username}"

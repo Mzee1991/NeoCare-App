@@ -73,6 +73,7 @@
 	    <p><strong>Patient Name:</strong> {{ admission.name }}</p>
             <p><strong>Age:</strong> {{ age_days }} Days</p>
             <p><strong>Inpatient Number:</strong> {{ admission.pk }}</p>
+	    <p>Patient has been in the hospital for: {{ admission.admission_date|timesince }}.</p>
         </div>
     </div>
 
@@ -111,25 +112,6 @@
         Loading... <!-- Placeholder until AJAX response is received -->
     </td>
     
-    <!-- Repeat the status cell for start dose time -->
-    <td class="status-cell dose1-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for start dose time -->
-    <td class="status-cell dose1-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for start dose time -->
-    <td class="status-cell dose1-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for start dose time -->
-    <td class="status-cell dose1-status-cell">
-        Loading...
-    </td>
 </tr>
 
 <script>
@@ -247,27 +229,7 @@ updateDose1Status(".dose1-status-cell", {{ prescription.id }}, "{{ prescription.
     <td class="status-cell dose2-status-cell">
         Loading... <!-- Placeholder until AJAX response is received -->
     </td>
-        <!-- Repeat the status cell for start dose time -->
-    <td class="status-cell dose2-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for start dose time -->
-    <td class="status-cell dose2-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for start dose time -->
-    <td class="status-cell dose2-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for start dose time -->
-    <td class="status-cell dose2-status-cell">
-        Loading...
-    </td>
 </tr>
-
 <script>
 function updateDose2Status(selector, prescriptionId, dispensationDate) {
     const elements = document.querySelectorAll(selector);
@@ -283,7 +245,7 @@ function updateDose2Status(selector, prescriptionId, dispensationDate) {
         const statusCell = element.closest('tr').querySelector('.status-cell');
 
         if (statusCell) {
-            // Fetch dose2_status (replace 'get_dose2_status' with your actual endpoint)
+            // Fetch dose2_status
             fetch(`/get_dose2_status/${dataPrescriptionId}/${dispensationDate}/`)
                 .then((response) => response.json())
                 .then((data) => {
@@ -355,7 +317,7 @@ function updateDose2Status(selector, prescriptionId, dispensationDate) {
     });
 }
 
-// Function to get the CSRF token from the cookies (same as in your original script)
+// Function to get the CSRF token from the cookies
 function getCSRFToken() {
     const cookies = document.cookie.split('; ');
     for (const cookie of cookies) {
@@ -366,9 +328,12 @@ function getCSRFToken() {
     }
     return null;
 }
+
 </script>
 
 
+
+<!-- Call the updateDose2Status function for dose2 -->
 <script>
 updateDose2Status(".dose2-status-cell", {{ prescription.id }}, "{{ prescription.start_date|date:"Y-m-d" }}");
 </script>
@@ -384,26 +349,7 @@ updateDose2Status(".dose2-status-cell", {{ prescription.id }}, "{{ prescription.
     <td class="status-cell dose3-status-cell">
         Loading... <!-- Placeholder until AJAX response is received -->
     </td>
-    
-    <!-- Repeat the status cell for third dose time -->
-    <td class="status-cell dose3-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for third dose time -->
-    <td class="status-cell dose3-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for third dose time -->
-    <td class="status-cell dose3-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for third dose time -->
-    <td class="status-cell dose3-status-cell">
-        Loading...
-    </td>
+
 </tr>
 
 <script>
@@ -444,6 +390,35 @@ function updateDose3Status(selector, prescriptionId, dispensationDate) {
                             selectElement.appendChild(optionElement);
                         });
 
+                        // Add an event listener to the select element to handle changes
+                        selectElement.addEventListener('change', function () {
+                            const selectedValue = this.value;
+                            // Send a POST request to save the selected dose3_status
+                            fetch('/dose3_status_save_dispensation/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken() // Function to get the CSRF token
+                                },
+                                body: JSON.stringify({
+                                    prescription_id: prescriptionId,
+                                    dose3_status: selectedValue
+                                })
+                            })
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    if (result.status === 'success') {
+                                        // Update the status cell with the selected value
+                                        statusCell.textContent = selectedValue;
+                                    } else {
+                                        console.error('Error:', result.error);
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                });
+                        });
+
                         // Create and configure the input-group structure
                         const inputGroup = document.createElement('div');
                         inputGroup.classList.add('input-group');
@@ -464,7 +439,21 @@ function updateDose3Status(selector, prescriptionId, dispensationDate) {
     });
 }
 
+// Function to get the CSRF token from the cookies
+function getCSRFToken() {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+        const [name, value] = cookie.split('=');
+        if (name === 'csrftoken') {
+            return value;
+        }
+    }
+    return null;
+}
+
 </script>
+
+
 
 <!-- Call the updateDose3Status function for dose3 -->
 <script>
@@ -481,27 +470,7 @@ updateDose3Status(".dose3-status-cell", {{ prescription.id }}, "{{ prescription.
         Loading... <!-- Placeholder until AJAX response is received -->
     </td>
     
-    <!-- Repeat the status cell for fourth dose time -->
-    <td class="status-cell dose4-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for fourth dose time -->
-    <td class="status-cell dose4-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for fourth dose time -->
-    <td class="status-cell dose4-status-cell">
-        Loading...
-    </td>
-    
-    <!-- Repeat the status cell for fourth dose time -->
-    <td class="status-cell dose4-status-cell">
-        Loading...
-    </td>
 </tr>
-
 <script>
 function updateDose4Status(selector, prescriptionId, dispensationDate) {
     const elements = document.querySelectorAll(selector);
@@ -540,6 +509,35 @@ function updateDose4Status(selector, prescriptionId, dispensationDate) {
                             selectElement.appendChild(optionElement);
                         });
 
+                        // Add an event listener to the select element to handle changes
+                        selectElement.addEventListener('change', function () {
+                            const selectedValue = this.value;
+                            // Send a POST request to save the selected dose4_status
+                            fetch('/dose4_status_save_dispensation/', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRFToken': getCSRFToken() // Function to get the CSRF token
+                                },
+                                body: JSON.stringify({
+                                    prescription_id: prescriptionId,
+                                    dose4_status: selectedValue
+                                })
+                            })
+                                .then((response) => response.json())
+                                .then((result) => {
+                                    if (result.status === 'success') {
+                                        // Update the status cell with the selected value
+                                        statusCell.textContent = selectedValue;
+                                    } else {
+                                        console.error('Error:', result.error);
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error('Error:', error);
+                                });
+                        });
+
                         // Create and configure the input-group structure
                         const inputGroup = document.createElement('div');
                         inputGroup.classList.add('input-group');
@@ -560,7 +558,20 @@ function updateDose4Status(selector, prescriptionId, dispensationDate) {
     });
 }
 
+// Function to get the CSRF token from the cookies
+function getCSRFToken() {
+    const cookies = document.cookie.split('; ');
+    for (const cookie of cookies) {
+        const [name, value] = cookie.split('=');
+        if (name === 'csrftoken') {
+            return value;
+        }
+    }
+    return null;
+}
+
 </script>
+
 
 <!-- Call the updateDose4Status function for dose4 -->
 <script>
@@ -627,235 +638,6 @@ updateDose4Status(".dose4-status-cell", {{ prescription.id }}, "{{ prescription.
 </div>
 
 <script>
-    // Function to update an existing prescription row in the table
-    function updatePrescriptionTable(prescriptionId, formData, dosingTimes, frequencyCount) {
-        // Fetch the updated prescription data from the server or form data and update the table row
-        const prescriptionRow = document.querySelector(`[data-prescription-id="${prescriptionId}"]`);
-        if (prescriptionRow) {
-            // Update the relevant cells in the row
-            prescriptionRow.querySelector('.status-cell select').value = formData.get('status');
-            prescriptionRow.querySelector('.nurse-cell').textContent = formData.get('dispenser') || 'Nurse A Given';
-
-            // Update dosing times based on frequency_count
-            const dosingTimeCells = prescriptionRow.querySelectorAll('.dosing-time-cell');
-            dosingTimeCells.forEach((cell, index) => {
-                cell.textContent = dosingTimes[index];
-            });
-        }
-    }
-
-    // Function to extract and return CSRF token from cookies
-    function getCookie(name) {
-        const value = `; ${document.cookie}`;
-        const parts = value.split(`; ${name}=`);
-        if (parts.length === 2) {
-            return parts.pop().split(';').shift();
-        }
-    }
-
-    // Add event listener for form submission
-    document.getElementById('savePrescriptionBtn').addEventListener('click', function () {
-        addOrUpdatePrescription();
-    });
-
-    // Mapping of treatment status choices for select options
-    const treatmentStatusChoices = [
-        ['Pending', 'Pending'],
-        ['Given', 'Given'],
-        ['Missed', 'Missed']
-    ];
-</script>
-
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const doseSelectElements = document.querySelectorAll(".dose1_status");
-
-        doseSelectElements.forEach(function (select) {
-            select.addEventListener("change", function () {
-                const prescriptionId = this.getAttribute("data-prescription-id");
-                const selectedStatus = this.value;
-
-                // Disable the select element when a selection is made
-                this.disabled = true;
-
-                // Optionally, you can update the style to make it visually clear that it's disabled
-                this.classList.add("disabled-select");
-
-                // Send an AJAX request to save the dose status data
-                updateDoseStatus(prescriptionId, selectedStatus, "dose1_status");
-            });
-        });
-
-        function updateDoseStatus(prescriptionId, selectedStatus, doseFieldName) {
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", "{% url 'dose1_status_save_dispensation' %}", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        // Handle a successful response (e.g., update UI)
-                        console.log("Dose status saved successfully");
-                    } else {
-                        // Handle errors here
-                        console.error("Error saving Dose status");
-                    }
-                }
-            };
-
-            // Prepare the data to send
-            const data = `prescription_id=${prescriptionId}&${doseFieldName}=${selectedStatus}`;
-
-            // Send the request
-            xhr.send(data);
-        }
-    });
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const doseSelectElements = document.querySelectorAll(".dose2_status");
-
-        doseSelectElements.forEach(function (select) {
-            select.addEventListener("change", function () {
-                const prescriptionId = this.getAttribute("data-prescription-id");
-                const selectedStatus = this.value;
-
-                // Disable the select element when a selection is made
-                this.disabled = true;
-
-                // Optionally, you can update the style to make it visually clear that it's disabled
-                this.classList.add("disabled-select");
-
-                // Send an AJAX request to save the dose status data
-                updateDoseStatus(prescriptionId, selectedStatus, "dose2_status");
-            });
-        });
-
-        function updateDoseStatus(prescriptionId, selectedStatus, doseFieldName) {
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", "{% url 'dose2_status_save_dispensation' %}", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        // Handle a successful response (e.g., update UI)
-                        console.log("Dose status saved successfully");
-                    } else {
-                        // Handle errors here
-                        console.error("Error saving Dose status");
-                    }
-                }
-            };
-
-            // Prepare the data to send
-            const data = `prescription_id=${prescriptionId}&${doseFieldName}=${selectedStatus}`;
-
-            // Send the request
-            xhr.send(data);
-        }
-    });
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const doseSelectElements = document.querySelectorAll(".dose3_status");
-
-        doseSelectElements.forEach(function (select) {
-            select.addEventListener("change", function () {
-                const prescriptionId = this.getAttribute("data-prescription-id");
-                const selectedStatus = this.value;
-
-                // Disable the select element when a selection is made
-                this.disabled = true;
-
-                // Optionally, you can update the style to make it visually clear that it's disabled
-                this.classList.add("disabled-select");
-
-                // Send an AJAX request to save the dose status data
-                updateDoseStatus(prescriptionId, selectedStatus, "dose3_status");
-            });
-        });
-
-        function updateDoseStatus(prescriptionId, selectedStatus, doseFieldName) {
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", "{% url 'dose3_status_save_dispensation' %}", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        // Handle a successful response (e.g., update UI)
-                        console.log("Dose status saved successfully");
-                    } else {
-                        // Handle errors here
-                        console.error("Error saving Dose status");
-                    }
-                }
-            };
-
-            // Prepare the data to send
-            const data = `prescription_id=${prescriptionId}&${doseFieldName}=${selectedStatus}`;
-
-            // Send the request
-            xhr.send(data);
-        }
-    });
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const doseSelectElements = document.querySelectorAll(".dose4_status");
-
-        doseSelectElements.forEach(function (select) {
-            select.addEventListener("change", function () {
-                const prescriptionId = this.getAttribute("data-prescription-id");
-                const selectedStatus = this.value;
-
-                // Disable the select element when a selection is made
-                this.disabled = true;
-
-                // Optionally, you can update the style to make it visually clear that it's disabled
-                this.classList.add("disabled-select");
-
-                // Send an AJAX request to save the dose status data
-                updateDoseStatus(prescriptionId, selectedStatus, "dose4_status");
-            });
-        });
-
-        function updateDoseStatus(prescriptionId, selectedStatus, doseFieldName) {
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", "{% url 'dose4_status_save_dispensation' %}", true);
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-            xhr.setRequestHeader("X-CSRFToken", getCookie("csrftoken"));
-
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState === 4) {
-                    if (xhr.status === 200) {
-                        // Handle a successful response (e.g., update UI)
-                        console.log("Dose status saved successfully");
-                    } else {
-                        // Handle errors here
-                        console.error("Error saving Dose status");
-                    }
-                }
-            };
-
-            // Prepare the data to send
-            const data = `prescription_id=${prescriptionId}&${doseFieldName}=${selectedStatus}`;
-
-            // Send the request
-            xhr.send(data);
-        }
-    });
-</script>
-
-<script>
     function generateDayHeaders(numDays) {
         const dayHeaders = document.getElementById('dayHeaders').firstElementChild;
 
@@ -879,21 +661,19 @@ updateDose4Status(".dose4-status-cell", {{ prescription.id }}, "{{ prescription.
             // Calculate the date based on the start date and increment
             const startDate = new Date('{{ prescriptions.0.start_date }}');
             startDate.setDate(startDate.getDate() + (i - 1));
-            th.textContent = startDate.toDateString(); // Format the date as needed
+
+            // Format the date as "MMM dd yyyy" (e.g., "Aug 28 2023")
+            const options = { year: 'numeric', month: 'short', day: '2-digit' };
+            th.textContent = startDate.toLocaleDateString(undefined, options);
 
             dayHeaders.appendChild(th);
         }
     }
 
     // Example usage:
-    const numDays = 5; // Replace with the actual number of days
+    const numDays = 1; // Replace with the actual number of days
     generateDayHeaders(numDays);
 </script>
-
-
-
-
-
 
 
 <!-- Include Bootstrap JS and jQuery here (optional) -->
