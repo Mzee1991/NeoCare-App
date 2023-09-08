@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Registration Done</title>
+</head>
+<body>
+    <div class="container p-3 my-3  border rounded">
+        <div class="alert alert-info">
+            {{ message }}
+        </div>
+    </div>
+</body>
+</html>

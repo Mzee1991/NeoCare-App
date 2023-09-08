@@ -6,15 +6,17 @@
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-  <div class="container mt-4">
-    <div class="card mb-4">
-      <div class="card-header">
+  <div class="container mt-5 mb-2">
+    <div class="row justify-content-center">
+      <div class="col-md-9">
+        <div class="card">
+          <div class="card-header bg-info text-white text-center">
         <h2>Newborn Admission Details</h2>
       </div>
       <div class="card-body">
 	<form method="post">
           {% csrf_token %}
-<div class="form-group">
+<div class="form-group text-center">
           {{ form.admission_date.label_tag }}
           {{ form.admission_date }}
         </div>
@@ -139,6 +141,8 @@
       </div>
     </div>
   </div>
+</div>
+</div>
 
   <!-- Add Bootstrap JS and jQuery links for dynamic functionality -->
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>

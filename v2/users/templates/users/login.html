@@ -6,21 +6,21 @@
 {{ form.media }}
 <html lang="en">
 <head>
-	<meta charset="utf-8">
-	<title>Login Form</title>
+    <meta charset="utf-8">
+    <title>Login Form</title>
 </head>
 <body>
-	<nav class="navbar navbar-expand-md navbar-light bg-info topnavbar text-light justify-text-center" style="height: 50px;">
-		<div class="container">
-			<div class="collapse navbar-collapse justify-content-center">
-        <ul class="navbar-nav">
-					<li>
-            <h3><b>NewBorn Admission</b></h3>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+    <nav class="navbar navbar-expand-md navbar-light bg-info topnavbar text-light justify-text-center" style="height: 50px;">
+        <div class="container">
+            <div class="collapse navbar-collapse justify-content-center">
+                <ul class="navbar-nav">
+                    <li>
+                        <h3><b>NewBorn Admission</b></h3>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
     <div class="container p-5 my-3 mx-auto border rounded" style="width: 800px;">
         <form method="POST">
             {% csrf_token %}
@@ -31,8 +31,16 @@
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Login</button>
             </div>
-						<span>
-              <a href="{% url 'password_reset' %}">Forgot password?</a>
+            <!-- Display error message here -->
+            {% if messages %}
+                <div class="alert alert-danger">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+            <span>
+                <a href="{% url 'password_reset' %}">Forgot password?</a>
             </span>
         </form>
         <div class="border-top pt-3">

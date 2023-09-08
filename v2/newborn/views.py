@@ -10,7 +10,7 @@ from .tables import NewbornTable
 from .filters import NewbornFilter
 from newborn.serializers import NewbornSerializer
 from django.views.generic import ListView, CreateView
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import Avg, Count, Q
 from datetime import date, timedelta, datetime
 import json
@@ -18,6 +18,8 @@ from django_tables2 import RequestConfig
 from django.contrib.auth.models import User
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.timesince import timesince
+from functools import wraps
+from django.contrib import messages
 
 def newborn_list(request):
     """
@@ -386,7 +388,32 @@ def newborn_admission(request):
     return render(request, 'newborn/newborn_delivery_notes.html', {'form': form})
 
 
+def custom_user_passes_test(test_func, login_url=None, permission_denied_message=None):
+    """
+    Custom user_passes_test decorator that adds a custom error message and redirects
+    the user to the login page when the test fails.
+    """
+    def decorator(view_func):
+        @wraps(view_func)
+        def _wrapped_view(request, *args, **kwargs):
+            if not test_func(request.user):
+                if permission_denied_message:
+                    messages.error(request, permission_denied_message)
+                return redirect(login_url)
+            return view_func(request, *args, **kwargs)
+        return _wrapped_view
+    return decorator
+
+# Usage example:
+lab_tech_required = custom_user_passes_test(
+    lambda u: u.groups.filter(name='Lab Tech').exists(),
+    login_url='login',
+    permission_denied_message='You do not have permission to access this page.'
+)
+
+
 @login_required
+@lab_tech_required
 def lab_requests_dashboard(request):
     # Retrieve neonates with pending lab results
     neonates_with_pending_results = []
@@ -431,6 +458,9 @@ def lab_requests_dashboard(request):
     context = {
         'neonates_with_pending_results': neonates_with_pending_results,
     }
+    if not request.user.groups.filter(name='Lab Tech').exists():
+        messages.error(request, "You do not have permission to access this view.")
+        return redirect('login')
     return render(request, 'newborn/lab_requests_dashboard.html', context)
 
 def input_lab_result(request, neonate_pk, lab_request_pk, test_name):
@@ -500,7 +530,9 @@ def pending_lab_tests(request, neonate_pk, lab_request_pk):
     }
     return render(request, 'newborn/pending_lab_tests.html', context)
 
+from django.views.decorators.cache import never_cache
 
+@never_cache
 @login_required
 def landing_page(request):
     table = NewbornAdmission.objects.all().order_by('-id')[:4]
@@ -522,6 +554,7 @@ def calculate_frequency_count(frequency):
 @login_required
 def patient_treatment_chart(request, admission_id):
     admission = NewbornAdmission.objects.get(id=admission_id)
+    print(admission)
     admission_date = admission.admission_date
     delivery_date = admission.delivery_date
     
@@ -549,6 +582,9 @@ def patient_treatment_chart(request, admission_id):
         form = PrescriptionForm(user=request.user)
 
     prescriptions = Prescription.objects.filter(admission=admission)
+    print(prescriptions)
+    print("leave a line")
+
 
     if prescriptions:
         start_date = prescriptions[0].start_date
