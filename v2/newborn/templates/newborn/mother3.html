@@ -4,18 +4,19 @@
 <head>
     <meta charset="utf-8">
     <title>Mother Detail Form</title>
-    {% load bootstrap4 %}
+    {% load bootstrap5 %}
     {% bootstrap_css %}
-    {% bootstrap_javascript jquery='full' %}
-    {{ form.media }}
+    {% bootstrap_javascript %}
     <link rel="icon" href="{% static 'newborn/love.png' %}" type="image/png">
+    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
+    <script src="{% static 'jquery.min.js' %}"></script>
 </head>
-<body>
-<div class="container pt-2 my-3">
+<body class="gradient_bg">
+<div class="container pt-2 my-3 custom-text-color-background">
         <form id="my-form" action="" method="POST">
             {% csrf_token %}
 		<div class="card mb-3">
-			<div class="card-header bg-info text-light">
+			<div class="card-header topnavbar text-light">
 				<h3 class="text-center"><b>Mother's BioData</b></h3>
 			</div>
 			<div class="card-body">

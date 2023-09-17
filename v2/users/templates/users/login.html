@@ -1,16 +1,16 @@
+{% load static %}
+{% load bootstrap5 %}
 <!DOCTYPE html>
-{% load crispy_forms_tags %}
-{% load bootstrap4 %}
-{% bootstrap_css %}
-{% bootstrap_javascript jquery='full' %}
-{{ form.media }}
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Login Form</title>
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
 </head>
-<body>
-    <nav class="navbar navbar-expand-md navbar-light bg-info topnavbar text-light justify-text-center" style="height: 50px;">
+<body class="login_bg">
+    <nav class="navbar navbar-expand-md navbar-light topnavbar text-light justify-text-center" style="height: 50px;">
         <div class="container">
             <div class="collapse navbar-collapse justify-content-center">
                 <ul class="navbar-nav">
@@ -21,7 +21,7 @@
             </div>
         </div>
     </nav>
-    <div class="container p-5 my-3 mx-auto border rounded" style="width: 800px;">
+    <div class="container p-5 my-3 mx-auto border rounded custom-text-color-background" style="width: 800px;">
         <form method="POST">
             {% csrf_token %}
             <fieldset class="form-group">
@@ -29,7 +29,7 @@
                 {% bootstrap_form form %}
             </fieldset>
             <div class="form-group">
-                <button class="btn btn-outline-info" type="submit">Login</button>
+                <button class="btn btn-dashboard text-white" type="submit">Login</button>
             </div>
             <!-- Display error message here -->
             {% if messages %}

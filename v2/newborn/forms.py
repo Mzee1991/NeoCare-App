@@ -1,27 +1,9 @@
 from django.contrib.auth.models import User
 from django.forms import ModelForm
 from django import forms
-from .models import Newborn, NewbornAdmission, Prescription, MotherDetails, MotherLocation, LabRequest, LabResult, Patient, NewbornExam, AntenatalHistory, District, Subcounty, Parish, Village, CountyMunicipality, MothersAntenatalDetails
+from .models import NewbornAdmission, MotherDetails, MotherLocation, NewbornExam, District, Subcounty, Parish, Village, CountyMunicipality, MothersAntenatalDetails
 from .models import SEROLOGY_CHOICES, MICROBIOLOGY_CHOICES, CHEMISTRY_CHOICES, HEMATOLOGY_CHOICES
 
-
-class AntenatalHistoryForm(forms.ModelForm):
-    class Meta:
-        model = AntenatalHistory
-        fields = [
-            'attended',
-            'number_of_times_attended',
-            'attended_where',
-            'conditions_during_pregnancy',
-            'received_tetanus_toxoid',
-            'screened_for_syphilis',
-            'received_fansidar',
-        ]
-
-    attended = forms.ChoiceField(choices=AntenatalHistory.Yes_No_CHOICES, widget=forms.RadioSelect)
-    received_tetanus_toxoid = forms.ChoiceField(choices=AntenatalHistory.Yes_No_CHOICES, widget=forms.RadioSelect)
-    screened_for_syphilis = forms.ChoiceField(choices=AntenatalHistory.Yes_No_CHOICES, widget=forms.RadioSelect)
-    received_fansidar = forms.ChoiceField(choices=AntenatalHistory.Yes_No_CHOICES, widget=forms.RadioSelect)
 
 class MotherDetailForm(ModelForm):
     class Meta:
@@ -37,6 +19,13 @@ class MotherDetailForm(ModelForm):
             'level_of_education': forms.Select(attrs={'class': 'form-control'}),
             'occupation': forms.Select(attrs={'class': 'form-control'}),
         }
+    def __init__(self, *args, **kwargs):
+        super(MotherDetailForm, self).__init__(*args, **kwargs)
+        
+        self.fields['blood_group'].choices = [('', 'Select Blood Group')] + list(self.fields['blood_group'].choices)
+        self.fields['hiv_status'].choices = [('', 'Select HIV Status')] + list(self.fields['hiv_status'].choices)
+        self.fields['level_of_education'].choices = [('', 'Select Level of Education')] + list(self.fields['level_of_education'].choices)
+        self.fields['occupation'].choices = [('', 'Select Occupation')] + list(self.fields['occupation'].choices)
 
 class MotherLocationForm(ModelForm):
     district = forms.ModelChoiceField(queryset=District.objects.all(), empty_label='---------')
@@ -125,100 +114,6 @@ class MotherLocationForm(ModelForm):
             raise forms.ValidationError("Please select a village.")
 
         return cleaned_data
-
-class LabTestRequestForm(ModelForm):
-    class Meta:
-        model = LabRequest
-        fields = [
-            'serology_rpr_requested',
-            'serology_rct_requested',
-            'serology_bat_requested',
-            'microbiology_gram_stain_requested',
-            'microbiology_culture_requested',
-            'chemistry_serum_electrolytes_requested',
-            'chemistry_serum_urea_requested',
-            'chemistry_serum_creatinine_requested',
-            'chemistry_urinalysis_requested',
-        ]
-
-
-class LabResultForm(forms.ModelForm):
-    def __init__(self, *args, **kwargs):
-        # Get the lab_request instance passed as a keyword argument
-        lab_request = kwargs.pop('lab_request', None)
-        super().__init__(*args, **kwargs)
-
-        # Get the requested tests from the lab_request
-        requested_tests = []
-        if lab_request:
-            requested_tests.extend([
-                'serology_rpr_result',
-                'serology_rct_result',
-                'serology_bat_result',
-                'microbiology_gram_stain_result',
-                'microbiology_culture_result',
-                'chemistry_serum_electrolytes_result',
-                'chemistry_serum_urea_result',
-                'chemistry_serum_creatinine_result',
-                'chemistry_urinalysis_result',
-            ])
-            # Remove fields that were not requested
-            for field in self.fields.copy():
-                if field not in requested_tests:
-                    del self.fields[field]
-
-            # Add form-control class to input fields
-            for field_name, field in self.fields.items():
-                field.widget.attrs.update({'class': 'form-control'})
-
-    class Meta:
-        model = LabResult
-        fields = [
-            'serology_rpr_result',
-            'serology_rct_result',
-            'serology_bat_result',
-            'microbiology_gram_stain_result',
-            'microbiology_culture_result',
-            'chemistry_serum_electrolytes_result',
-            'chemistry_serum_urea_result',
-            'chemistry_serum_creatinine_result',
-            'chemistry_urinalysis_result',
-        ]
-
-
-class PatientForm(forms.ModelForm):
-    symptoms = forms.CharField(widget=forms.Textarea(attrs={'rows': 4}), required=False)
-
-    class Meta:
-        model = Patient
-        fields = [
-            'symptoms',
-            'general_findings',
-            'respiratory_findings',
-            'cardiovascular_findings',
-            'abdominal_findings',
-        ]
-
-class NewbornForm(forms.ModelForm):
-    class Meta:
-        model = Newborn
-        fields = ('admission_date','name','sex','birth_weight','delivery_date', 'place_of_birth', 'mode_of_delivery', 'resuscitated', 'referral')
-
-    admission_date = forms.DateTimeField(widget=forms.TextInput(attrs={'type': 'datetime-local'}))
-    delivery_date = forms.DateTimeField(widget=forms.TextInput(attrs={'type': 'datetime-local'}))
-    place_of_birth = forms.ChoiceField(choices=Newborn.PLACE_OF_BIRTH_CHOICES)
-    mode_of_delivery = forms.ChoiceField(choices=Newborn.MODE_OF_DELIVERY_CHOICES)
-    resuscitated = forms.ChoiceField(choices=Newborn.Yes_No_CHOICES, widget=forms.RadioSelect)
-    referral = forms.ChoiceField(choices=Newborn.Yes_No_CHOICES, widget=forms.RadioSelect)
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['delivery_date'].input_formats = ('%Y-%m-%dT%H:%M',)  # set input format for datetime-local widget
-        self.fields['admission_date'].input_formats = ('%Y-%m-%dT%H:%M',)  # set input format for datetime-local widget
-
-        # Set the initial value for the 'name' field
-        mother_name = self.initial['mother'].name if 'mother' in self.initial else ""
-        self.fields['name'].initial = f"B/O {mother_name}"
 
 
 class NewbornExamForm(forms.ModelForm):
@@ -388,50 +283,3 @@ class NewbornAdmissionForm(forms.ModelForm):
         # Add more cross-field validation checks as needed
 
         return cleaned_data
-
-
-class DynamicLabResultForm(LabResultForm):
-    def __init__(self, *args, test_name=None, **kwargs):
-        super().__init__(*args, **kwargs)
-        
-        # Remove all fields from the form
-        self.fields.clear()
-
-        # Determine which fields to include based on the selected test_name
-        if test_name == 'serology_rpr':
-            self.fields['serology_rpr_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='RPR Result')
-        elif test_name == 'serology_rct':
-            self.fields['serology_rct_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='RCT Result')
-        elif test_name == 'serology_bat':
-            self.fields['serology_bat_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='BAT Result')
-        elif test_name == 'microbiology_gram_stain':
-            self.fields['microbiology_gram_stain_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Gram stain Result')
-        elif test_name == 'microbiology_culture':
-            self.fields['microbiology_culture_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Culture Result')
-        elif test_name == 'chemistry_serum_electrolytes':
-            self.fields['chemistry_serum_electrolytes_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Serum Electrolytes')
-        elif test_name == 'chemistry_serum_urea':
-            self.fields['chemistry_serum_urea_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}), label='Serum Urea')
-        elif test_name == 'chemistry_serum_creatinine':
-            self.fields['chemistry_serum_creatinine_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
-        elif test_name == 'chemistry_urinalysis':
-            self.fields['chemistry_urinalysis_result'] = forms.CharField(max_length=100, widget=forms.TextInput(attrs={'class': 'form-control'}))
-
-
-
-class PrescriptionForm(forms.ModelForm):
-    start_dose_time = forms.TimeField(required=False, label='Start Dose Time')
-    second_dose_time = forms.TimeField(required=False, label='Second Dose Time')
-    third_dose_time = forms.TimeField(required=False, label='Third Dose Time')
-    fourth_dose_time = forms.TimeField(required=False, label='Fourth Dose Time')
-
-    def __init__(self, *args, **kwargs):
-        user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-        
-        if user:
-            self.fields['prescriber'].initial = user
-
-    class Meta:
-        model = Prescription
-        fields = ['name', 'start_dose_time', 'second_dose_time', 'third_dose_time', 'fourth_dose_time', 'frequency', 'prescriber']

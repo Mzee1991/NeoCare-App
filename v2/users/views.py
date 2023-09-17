@@ -15,7 +15,6 @@ from django.contrib.auth.models import Group
 from django.core.exceptions import ObjectDoesNotExist
 
 
-
 @login_required
 def profile(request):
     if request.method == 'POST':

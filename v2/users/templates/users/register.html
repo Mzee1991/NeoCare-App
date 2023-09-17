@@ -1,16 +1,18 @@
+{% load static %}
 <!DOCTYPE html>
 {% load crispy_forms_tags %}
-{% load bootstrap4 %}
+{% load bootstrap5 %}
 {% bootstrap_css %}
-{% bootstrap_javascript jquery='full' %}
+{% bootstrap_javascript %}
 {{ form.media }}
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Registration Form</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
 </head>
 <body>
-    <nav class="navbar navbar-expand-md navbar-light bg-info topnavbar text-light justify-text-center" style="height: 50px;">
+    <nav class="navbar navbar-expand-md navbar-light topnavbar  text-light justify-text-center" style="height: 50px;">
         <div class="container">
             <div class="collapse navbar-collapse justify-content-center">
                 <ul class="navbar-nav">
@@ -27,11 +29,11 @@
             {% if messages %}
                 {% for message in messages %}
                     {% if message.tags == 'error' %}
-                        <div class="alert alert-danger">
+                        <div class="alert alert-danger text-light">
                             {{ message }}
                         </div>
                     {% else %}
-                        <div class="alert alert-{{ message.tags }}">
+                        <div class="alert alert-{{ message.tags }} text-light">
                             {{ message }}
                         </div>
                     {% endif %}
@@ -40,7 +42,7 @@
         </div>
         <div class="row justify-content-center">
             <div class="col-md-8">
-                <div class="container p-3 my-2 border rounded">
+                <div class="container p-3 my-2 border rounded custom-text-color-background">
                     <form method="POST">
                         {% csrf_token %}
                         <fieldset class="form-group">
@@ -89,7 +91,7 @@
                             </div>
                         </fieldset>
                         <div class="form-group">
-                            <button class="btn btn-outline-info" type="submit">Sign Up</button>
+                            <button class="btn btn-dashboard text-white mb-2" type="submit">Sign Up</button>
                         </div>
                     </form>
                     <div class="border-top pt-3">

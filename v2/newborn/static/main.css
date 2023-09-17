@@ -1,0 +1,58 @@
+
+body.masthead {
+    background-image: url("/static/images/background.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%; /* Adjust this property to control how the background image scales */
+    background-attachment: fixed;
+}
+
+body.input_result {
+    background-image: url("/static/images/background2.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%; /* Adjust this property to control how the background image scales */
+    background-attachment: fixed;
+}
+
+body.landing_page {
+    background-image: url("/static/images/landing_page.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%; /* Adjust this property to control how the background image scales */
+    background-attachment: fixed;
+}
+
+body.login_bg {
+    background-image: url("/static/images/landing_page.jpg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%; /* Adjust this property to control how the background image scales */
+    background-attachment: fixed;
+}
+
+body.gradient_bg {
+    background-image: linear-gradient(to bottom right, #D63384, #F35037); /* Replace the colors as needed */
+    /* You can adjust the direction and colors of the gradient */
+}
+
+
+.topnavbar {
+	background:#055160;
+}
+
+
+.bottomnavbar {
+	background:#087990;
+}
+.tablenavbar {
+	background:#0AA2C0;
+}
+.btn-dashboard {
+	background:#087990;
+}
+.text-color-background {
+	background-color: white;
+	color: #055160;
+}
+.custom-text-color-background {
+	background: white;
+	color: #087990;
+}
+

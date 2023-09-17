@@ -305,50 +305,49 @@
     </div>
     <div class="card-body">
         {% if pending_lab_requests %}
-            {% for lab_request in pending_lab_requests %}
                 <div class="card mb-3">
                     <div class="card-header">
                         <h4 class="mb-0">Pending Lab Request</h4>
                     </div>
                     <div class="card-body">
-                        <!-- Display pending lab requests based on available fields -->
-                        {% if lab_request.serology_rpr_requested %}
-                            <p><b>RPR Requested</b></p>
+			<ul>
+			    {% for lab_request in pending_lab_requests %}
+				{% if lab_request.serology_rpr_requested %}
+                            <li><b>RPR Requested</b></li>
                         {% endif %}
                         {% if lab_request.serology_rct_requested %}
-                            <p><b>RCT Requested</b></p>
+                            <li><b>RCT Requested</b></li>
                         {% endif %}
                         {% if lab_request.serology_bat_requested %}
-                            <p><b>BAT Requested</b></p>
+                            <li><b>BAT Requested</b></li>
                         {% endif %}
                         {% if lab_request.microbiology_gram_stain_requested %}
-                            <p><b>Gram Stain Requested</b></p>
+                            <li><b>Gram Stain Requested</b></li>
                         {% endif %}
                         {% if lab_request.microbiology_culture_requested %}
-                            <p><b>Culture and Sensitivity Requested</b></p>
+                            <li><b>Culture and Sensitivity Requested</b></li>
                         {% endif %}
                         {% if lab_request.chemistry_serum_electrolytes_requested %}
-                            <p><b>Serum Electrolytes Requested</b></p>
+                            <li><b>Serum Electrolytes Requested</b></li>
                         {% endif %}
                         {% if lab_request.chemistry_serum_urea_requested %}
-                            <p><b>Serum Urea Requested</b></p>
+                            <li><b>Serum Urea Requested</b></li>
                         {% endif %}
                         {% if lab_request.chemistry_serum_creatinine_requested %}
-                            <p><b>Serum Creatinine Requested</b></p>
+                            <li><b>Serum Creatinine Requested</b></li>
                         {% endif %}
                         {% if lab_request.chemistry_urinalysis_requested %}
-                            <p><b>Urinalysis Requested</b></p>
+                            <li><b>Urinalysis Requested</b></li>
                         {% endif %}
-                        <!-- ... Display other pending lab request fields ... -->
-                    </div>
-                </div>
-            {% endfor %}
+		     {% endfor %}
+ 		 </ul>
+               </div>
+            </div>
         {% else %}
-            <p>No pending lab requests.</p>
+            <li>No pending lab requests.</li>
         {% endif %}
     </div>
 </div>
-
 
 
         </div>
