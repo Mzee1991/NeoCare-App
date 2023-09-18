@@ -27,11 +27,28 @@ body.login_bg {
     background-attachment: fixed;
 }
 
+body.antenatal_bg {
+    background-image: url("/static/images/antenatal.jpeg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%; /* Adjust this property to control how the background image scales */
+    background-attachment: fixed;
+}
+
+body.print_bg {
+    background-image: url("/static/images/black_baby_216852618.jpeg");
+    background-repeat: no-repeat;
+    background-size: 100% 100%; /* Adjust this property to control how the background image scales */
+    background-attachment: fixed;
+}
+
 body.gradient_bg {
     background-image: linear-gradient(to bottom right, #D63384, #F35037); /* Replace the colors as needed */
     /* You can adjust the direction and colors of the gradient */
 }
 
+.gradient_print {
+    background-image: linear-gradient(to bottom right, rgba(8, 121, 144, 0.7), rgba(10, 162, 192, 0.7));
+}
 
 .topnavbar {
 	background:#055160;

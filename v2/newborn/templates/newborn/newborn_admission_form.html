@@ -1,14 +1,13 @@
+{% load static %}
+{% load bootstrap5 %}
 <!DOCTYPE html>
 <html>
 <head>
   <title>Mother's Antenatal Details</title>
-  <!-- Add Bootstrap CSS link -->
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-  <!-- Add Bootstrap JS and jQuery links for dynamic functionality -->
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   {% bootstrap_css %}
+   {% bootstrap_javascript %}
+   <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
+   <script src="{% static 'jquery.min.js' %}"></script>
 
   <style>
     body {
@@ -20,12 +19,12 @@
     }
   </style>
 </head>
-<body>
+<body class="antenatal_bg">
   <div class="container mt-5">
     <div class="row justify-content-center">
       <div class="col-md-8">
         <div class="card">
-          <div class="card-header bg-primary text-white">
+          <div class="card-header topnavbar text-white">
             <h4 class="card-title mb-0">Mother's Antenatal Details</h4>
           </div>
           <div class="card-body">
@@ -41,7 +40,7 @@
               <!-- Stepwise Inner Flow for Dynamically Displayed Fields -->
               <div id="stepwiseFlow" {% if form.attended.value != 'Yes' %}style="display: none;"{% endif %}>
                 <div class="card">
-                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#attendedDetailsSection">
+                  <div class="card-header bottomnavbar text-white" data-bs-toggle="collapse" href="#attendedDetailsSection">
                     <h5 class="mb-0">Attendance Details</h5>
                   </div>
                   <div id="attendedDetailsSection" class="collapse {% if form.attended.value == 'Yes' %}show{% endif %}">
@@ -64,7 +63,7 @@
 
                 <!-- Step 2: Conditions during pregnancy -->
                 <div class="card mt-3">
-                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#conditionsPregnancySection">
+                  <div class="card-header bottomnavbar text-white" data-bs-toggle="collapse" href="#conditionsPregnancySection">
                     <h5 class="mb-0">Conditions during pregnancy</h5>
                   </div>
                   <div id="conditionsPregnancySection" class="collapse">
@@ -85,7 +84,7 @@
 
                 <!-- Step 3: Received T.T -->
                 <div class="card mt-3">
-                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#receivedTTSection">
+                  <div class="card-header bottomnavbar text-white" data-bs-toggle="collapse" href="#receivedTTSection">
                     <h5 class="mb-0">Received T.T</h5>
                   </div>
                   <div id="receivedTTSection" class="collapse">
@@ -106,7 +105,7 @@
 
                 <!-- Step 4: Received IPT -->
                 <div class="card mt-3">
-                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#receivedIPTSection">
+                  <div class="card-header bottomnavbar text-white" data-bs-toggle="collapse" href="#receivedIPTSection">
                     <h5 class="mb-0">Received IPT</h5>
                   </div>
                   <div id="receivedIPTSection" class="collapse">
@@ -127,7 +126,7 @@
 
                 <!-- Step 5: Screened for HIV & Is Mother on ART -->
                 <div class="card mt-3">
-                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#screenedHIVSection">
+                  <div class="card-header bottomnavbar text-white" data-bs-toggle="collapse" href="#screenedHIVSection">
                     <h5 class="mb-0">HIV Screening</h5>
                   </div>
                   <div id="screenedHIVSection" class="collapse">
@@ -154,7 +153,7 @@
 
                 <!-- Step 6: Screened for Syphilis & Did Mother receive Treatment -->
                 <div class="card mt-3">
-                  <div class="card-header bg-secondary text-white" data-toggle="collapse" href="#screenedSyphilisSection">
+                  <div class="card-header bottomnavbar text-white" data-bs-toggle="collapse" href="#screenedSyphilisSection">
                     <h5 class="mb-0">Syphilis Screening & Rx</h5>
                   </div>
                   <div id="screenedSyphilisSection" class="collapse">
