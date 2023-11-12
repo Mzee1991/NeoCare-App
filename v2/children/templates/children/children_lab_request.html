@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+{% load crispy_forms_tags %}
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+{{ form.media }}
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Hello</title>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="card" style="background-color: #F5F5F5;">
+            <div class="card-header bg-info text-light text-center">
+                <h4>Lab Investigations</h4>
+            </div>
+            <form class="" method="POST">
+                {% csrf_token %}
+
+                <div class="card-body">
+                    <!-- Hematology Sub-cardboard -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h5>Hematology</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check">
+                                {{ form.complete_blood_count_requested }}
+                                <label class="form-check-label">Complete Blood Count</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.blood_grouping_requested }}
+                                <label class="form-check-label">Blood Grouping</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.peripheral_thin_film_requested }}
+                                <label class="form-check-label">Peripheral Thin Film</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.blood_smear_requested }}
+                                <label class="form-check-label">Blood Smear</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.sickling_test_requested }}
+                                <label class="form-check-label">Sickling Test</label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Clinical Chemistry Sub-cardboard -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5>Clinical Chemistry</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check">
+                                {{ form.serum_electrolytes_requested }}
+                                <label class="form-check-label">Serum Electrolytes</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.serum_bilirubin_requested }}
+                                <label class="form-check-label">Serum Bilirubin</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.serum_ast_requested }}
+                                <label class="form-check-label">Serum AST</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.serum_alt_requested }}
+                                <label class="form-check-label">Serum ALT</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.serum_alp_requested }}
+                                <label class="form-check-label">Serum ALP</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.serum_urea_requested }}
+                                <label class="form-check-label">Serum Urea</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.serum_creatinine_requested }}
+                                <label class="form-check-label">Serum Creatinine</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.rbs_requested }}
+                                <label class="form-check-label">RBS</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.rct_requested }}
+                                <label class="form-check-label">RCT</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.rpr_requested }}
+                                <label class="form-check-label">RPR</label>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Microbiology Sub-cardboard -->
+                    <div class="card mt-3">
+                        <div class="card-header">
+                            <h5>Microbiology</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="form-check">
+                                {{ form.urinalysis_requested }}
+                                <label class="form-check-label">Urinalysis</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.stool_analysis_requested }}
+                                <label class="form-check-label">Stool Analysis</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.h_pylori_stool_antigen_test_requested }}
+                                <label class="form-check-label">H.Pylori Stool Antigen Test</label>
+                            </div>
+                            <div class="form-check">
+                                {{ form.antistreptolysin_test_requested }}
+                                <label class="form-check-label">Antistreptolysin Test</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="text-center mt-3">
+                        <button type="submit" class="btn btn-info mx-2">Continue and Request Lab Test</button>
+                        <button class="btn btn-warning mx-2" onclick="history.back()">Close without Requesting Lab Test</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Bum Lab Details</title>
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Lab Test Details for {{ child.first_name }} {{ child.second_name }}</h2>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Lab Test</th>
+                    <th>Status</th>
+                    <th>Result</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for lab_item in lab_data %}
+                <tr>
+                    <td>{{ lab_item.test_name }}</td>
+                    <td>{{ lab_item.status }}</td>
+                    <td>{{ lab_item.result }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

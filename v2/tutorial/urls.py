@@ -23,6 +23,7 @@ urlpatterns = [
     path('', include('newborn.urls')),
     path('lab/', include('lab.urls')),
     path('treatment/', include('treatment.urls')),
+    path('children/', include('children.urls')),
     path('register/', user_views.register, name='register'),
     path('registration-done/', user_views.registration_done, name='registration-done'),
     path('approve_registration/<str:token>/', user_views.approve_registration, name='approve_registration'),

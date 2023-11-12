@@ -1,0 +1,43 @@
+{% extends "children/base_template.html" %}
+
+{% block title %}hmop Lab Details{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Lab Test Details for {{ child.first_name }} {{ child.second_name }}</h2>
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Lab Test</th>
+                <th>Status</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lab_item in lab_data %}
+            <tr>
+                <td>{{ lab_item.test_name }}</td>
+                <td>
+                    {% if lab_item.status == "Done" %}
+                        <span class="badge bg-success text-white">{{ lab_item.status }}</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">{{ lab_item.status }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if lab_item.status == "Done" %}
+                        <ul>
+                            {% for field, result in lab_item.results.items %}
+                            <li><strong>{{ field }}:</strong> {{ result }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        [Blank]
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

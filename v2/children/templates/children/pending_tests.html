@@ -1,0 +1,33 @@
+{% extends "children/base_template.html" %}
+
+{% block title %}Pending Tests{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Pending Lab Tests for {{ child.first_name }} {{ child.second_name }}</h2>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Test Name</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lab_request in pending_lab_requests %}
+            <tr>
+                <td>{{ lab_request.get_test_name }}</td>
+                <td>
+                    {% if lab_request.timestamp %}
+                        Pending
+                    {% else %}
+                        Completed
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <!-- Button to add more lab tests -->
+    <a href="{% url 'children_lab_request' child.pk %}" class="btn btn-primary">Add More Lab Tests</a>
+</div>
+{% endblock %}

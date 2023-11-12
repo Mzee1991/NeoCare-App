@@ -1,13 +1,17 @@
-<!DOCTYPE html>
 {% load crispy_forms_tags %}
-{% load bootstrap4 %}
-{% bootstrap_css %}
-{% bootstrap_javascript jquery='full' %}
+{% load bootstrap5 %}
+{% load static %}
+<!DOCTYPE html>
 {{ form.media }}
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Hello</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+</head>
 <body>
     <div class="container mt-4">
         <div class="card" style="background-color: #F5F5F5;">
@@ -93,7 +97,7 @@
                 </div>
                 {% endif %}
 	</div>
-                <div class="text-center mt-3">
+                <div class="text-center mt-3 mb-2">
                     <button type="submit" class="btn btn-info mx-2">Continue and Request Lab Test</button>
                     <button class="btn btn-warning mx-2" onclick="history.back()">Close without Requesting Lab Test</button>
                 </div>

@@ -1,17 +1,17 @@
 {% load static %}
+{% load bootstrap5 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
     <title>Mother Detail Form</title>
-    {% load bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
     <link rel="icon" href="{% static 'newborn/love.png' %}" type="image/png">
-    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
-    <script src="{% static 'jquery.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
 </head>
-<body class="gradient_bg">
+<body class="gradient_print">
 <div class="container pt-2 my-3 custom-text-color-background">
         <form id="my-form" action="" method="POST">
             {% csrf_token %}

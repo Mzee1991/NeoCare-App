@@ -1,0 +1,163 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Child Registration Form</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <link rel="icon" href="{% static 'newborn/love.png' %}" type="image/png">
+    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'jquery-ui-1.13.2/jquery-ui.min.css' %}">
+    <script src="{% static 'jquery-ui-1.13.2/jquery-ui.min.js' %}"></script>
+    <script>
+        $(function() {
+            $("#id_date_of_birth").datepicker({
+                dateFormat: 'yy-mm-dd'  // Set your desired date format
+            });
+        });
+    </script>
+</head>
+<body class="gradient_bg">
+<div class="container pt-2 my-3 custom-text-color-background">
+        <form id="my-form" action="" method="POST">
+            {% csrf_token %}
+		<div class="card mb-3">
+			<div class="card-header topnavbar text-light">
+				<h3 class="text-center"><b>Child's BioData</b></h3>
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-6 mb-3">
+						<div class="card">
+							<div class="card-header bg-white">
+								<h3 class="text-center"><b>Registration Details</b></h3>
+							</div>
+							<div class="card-body">
+								{% bootstrap_form registration_form %}
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 mb-3">
+						<div class="card">
+							<div class="card-header bg-white">
+								<h3 class="text-center"><b>Contact Information</b></h3>
+							</div>
+							<div class="card-body">
+								{% bootstrap_form location_form %}
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="text-center">
+					<button type="submit" class="btn btn-primary mb-2">Submit</button>
+				</div>
+			</div>
+		</div>
+         </form>
+	</div>
+
+<script>
+	$(document).ready(function() {
+  // District select change event
+  $('#id_district').change(function() {
+    var districtId = $(this).val();
+    if (districtId) {
+      // Fetch county/municipalities based on the selected district
+      $.ajax({
+        url: '/fetch-county-municipalities/' + districtId + '/',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          // Populate county/municipality select options
+          var countyMunicipalitySelect = $('#id_county_municipality');
+          countyMunicipalitySelect.empty().append('<option value="">---------</option>');
+          $.each(data.county_municipalities, function(index, countyMunicipality) {
+            countyMunicipalitySelect.append('<option value="' + countyMunicipality.id + '">' + countyMunicipality.name + '</option>');
+          });
+        }
+      });
+    } else {
+      // Empty county/municipality select options if no district is selected
+      $('#id_county_municipality').empty().append('<option value="">---------</option>');
+    }
+  });
+
+  // County/Municipality select change event
+  $('#id_county_municipality').change(function() {
+    var countyMunicipalityId = $(this).val();
+    if (countyMunicipalityId) {
+      // Fetch subcounties based on the selected county/municipality
+      $.ajax({
+        url: '/fetch-subcounties/' + countyMunicipalityId + '/',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          // Populate subcounty select options
+          var subcountySelect = $('#id_subcounty');
+          subcountySelect.empty().append('<option value="">---------</option>');
+          $.each(data.subcounties, function(index, subcounty) {
+            subcountySelect.append('<option value="' + subcounty.id + '">' + subcounty.name + '</option>');
+          });
+        }
+      });
+    } else {
+      // Empty subcounty select options if no county/municipality is selected
+      $('#id_subcounty').empty().append('<option value="">---------</option>');
+    }
+  });
+
+  // Subcounty select change event
+  $('#id_subcounty').change(function() {
+    var subcountyId = $(this).val();
+    if (subcountyId) {
+      // Fetch parishes based on the selected subcounty
+      $.ajax({
+        url: '/fetch-parishes/' + subcountyId + '/',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          // Populate parish select options
+          var parishSelect = $('#id_parish');
+          parishSelect.empty().append('<option value="">---------</option>');
+          $.each(data.parishes, function(index, parish) {
+            parishSelect.append('<option value="' + parish.id + '">' + parish.name + '</option>');
+          });
+        }
+      });
+    } else {
+      // Empty parish select options if no subcounty is selected
+      $('#id_parish').empty().append('<option value="">---------</option>');
+    }
+  });
+
+  // Parish select change event
+  $('#id_parish').change(function() {
+    var parishId = $(this).val();
+    if (parishId) {
+      // Fetch villages based on the selected parish
+      $.ajax({
+        url: '/fetch-villages/' + parishId + '/',
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          // Populate village select options
+          var villageSelect = $('#id_village');
+          villageSelect.empty().append('<option value="">---------</option>');
+          $.each(data.villages, function(index, village) {
+            villageSelect.append('<option value="' + village.id + '">' + village.name + '</option>');
+          });
+        }
+      });
+    } else {
+      // Empty village select options if no parish is selected
+      $('#id_village').empty().append('<option value="">---------</option>');
+    }
+  });
+});
+</script>
+
+</body>
+</html>

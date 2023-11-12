@@ -1,0 +1,101 @@
+{% load static %}
+{% load bootstrap5 %}
+{% load bootstrap_icons %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Patient Information{% endblock %}</title>
+    <!-- Add Bootstrap 5 CSS link -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+    <style>
+        .table td, .table th {
+            padding: 0.25rem 0.5rem; /* Adjust these values as needed */
+        }
+    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
+</head>
+<body>
+<!-- Top Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary topnavbar">
+    <div class="container">
+        <a class="navbar-brand" href="#">Holy Innocents Children's Hospital</a>
+    </div>
+</nav>
+
+<!-- Second Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light bottomnavbar">
+    <div class="container">
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Dashboards
+                </a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <li><a class="dropdown-item active" href="{% url 'lab-requests-dashboard' %}">Lab Requests</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Pending Discharges</a></li>
+                    <li><a class="dropdown-item" href="#">Admissions</a></li>
+                </ul>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'mother-details' %}">Admit Newborn</a>
+            </li>
+        </ul>
+        <form class="d-flex" method="GET" action="{% url 'search-newborn' %}">
+            {% csrf_token %}
+            <input class="form-control me-2 mr-2" type="search" placeholder="Search" aria-label="Search" name="searched_item">
+            <button class="btn btn-outline-dark" type="submit">Search</button>
+        </form>
+        <!-- Conditional User Authentication Logic -->
+        {% if user.is_authenticated %}
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <strong><span class="nav-link">{{ user.username }}</span></strong>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'logout' %}">
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        {% else %}
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{% url 'login' %}">
+                        Login
+                    </a>
+                </li>
+            </ul>
+        {% endif %}
+    </div>
+</nav>
+
+<div class="container">
+    <div class="row">
+        <!-- Left Sidebar -->
+        <div class="col-md-2 bg-light mt-5">
+            <ul class="list-group">
+                <li class="list-group-item"><a href="{% url 'child-registration-form' %}">Registration</a></li>
+                <li class="list-group-item"><a href="{% url 'pending-tests-for-child' child.pk %}">Lab</a></li>
+                <li class="list-group-item"><a href="#">Billing</a></li>
+            </ul>
+        </div>
+        <!-- Main Content -->
+        <div class="col-md-8 text-center">
+            {% block content %}{% endblock %}
+        </div>
+        <!-- Right Sidebar -->
+        <div class="col-md-2 bg-light mt-5">
+            <ul class="list-group">
+                <li class="list-group-item"><a href="#">Appointments</a></li>
+                <li class="list-group-item"><a href="#">Encounter's List</a></li>
+                <li class="list-group-item"><a href="{% url 'record_measurements' child.pk %}">Measurements</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

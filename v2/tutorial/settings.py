@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'users',
     'lab',
     'treatment',
+    'children',
     #'bootstrap_datepicker_plus',
     'crispy_forms',
     'bootstrap4',
@@ -154,6 +155,13 @@ CRISPY_ALLOWED_TEMPLATE_PACKS = ("bootstrap3", "bootstrap4", "bootstrap5")
 #}
 #DATE_FORMAT = ['N j, Y']
 #DATE_INPUT_FORMATS = ['%d-%m-%Y']
+BS_ICONS_NOT_FOUND = '<?xml version="1.0" ?>\
+<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-power" viewBox="0 0 16 16">\
+    <path d="M7.5 1v7h1V1h-1z"/>\
+    <path d="M3 8.812a4.999 4.999 0 0 1 2.578-4.375l-.485-.874A6 6 0 1 0 11 3.616l-.501.865A5 5 0 1 1 3 8.812z"/>\
+</svg>'
+
+
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home-page'
 

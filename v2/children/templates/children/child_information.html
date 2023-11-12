@@ -1,0 +1,67 @@
+{% extends "children/base_template.html" %}
+
+{% block title %}Patient's Details{% endblock %}
+
+{% block content %}
+            <h1>Patient's Details</h1>
+            <table class="table table-bordered">
+                <tbody>
+                    <tr>
+                        <td class="bg-light">Registration Date</td>
+                        <td>{{ child.registration_date }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">IP no</td>
+                        <td>{{ child.id }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Full Name</td>
+                        <td>{{ child.first_name }} {{ child.second_name }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Other Names</td>
+                        <td>{{ child.other_names }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Date of Birth</td>
+                        <td>{{ child.date_of_birth }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Age</td>
+                        <td>{{ age_years }} years, {{ age_months }} months</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Sex</td>
+                        <td>{{ child.get_sex_display }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Location</td>
+                        <td>{{ child.location.district }}, {{ child.location.village }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Religion</td>
+                        <td>{{ child.get_religion_display }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Tribe</td>
+                        <td>{{ child.tribe }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Next of Kin</td>
+                        <td>{{ child.next_of_kin }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Next of Kin's Contact</td>
+                        <td>{{ child.location.contact }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Relationship</td>
+                        <td>{{ child.get_relationship_display }}</td>
+                    </tr>
+                    <tr>
+                        <td class="bg-light">Registered By</td>
+                        <td>{{ child.registered_by }}</td>
+                    </tr>
+                </tbody>
+            </table>
+{% endblock %}

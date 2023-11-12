@@ -1,14 +1,14 @@
 {% load static %}
+{% load bootstrap5 %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    {% load bootstrap5 %}
-    {% bootstrap_css %}
-    {% bootstrap_javascript %}
     {% load bootstrap_icons %}
-    <link rel="stylesheet" type="text/css" href="{% static 'main.css' %}">
     <link rel="stylesheet" href="{% static 'bootstrap_icons/css/bootstrap_icons.css' %}">
-    <script src="{% static 'jquery.min.js' %}"></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <script src="{% static 'jquery/jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap/js/bootstrap.bundle.min.js' %}"></script>
     <style>
     .loading::before {
         content: "Loading... ";
